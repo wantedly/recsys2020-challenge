@@ -8,14 +8,17 @@ from typing import (
     Any,
     DefaultDict,
     Generator,
+    Dict,
 )
 import enum
 from logging import getLogger
 import itertools
+from pathlib import Path
 
-import pandas as pd
-from google.cloud import bigquery
-import numpy as np
+import click
+import apache_beam as beam
+from apache_beam.io import ReadFromText
+from apache_beam.options.pipeline_options import PipelineOptions, SetupOptions
 
 
 _logger = getLogger(__name__)
@@ -28,17 +31,17 @@ class Column(NamedTuple):
 
     def bigquery_schema(self):
         if self.typ == int:
-            return bigquery.SchemaField(self.name, "INT64", mode="REQUIRED")
+            return dict(name=self.name, type="INT64", mode="REQUIRED")
         if self.typ == str:
-            return bigquery.SchemaField(self.name, "STRING", mode="REQUIRED")
+            return dict(name=self.name, type="STRING", mode="REQUIRED")
         if self.typ == bool:
-            return bigquery.SchemaField(self.name, "BOOL", mode="REQUIRED")
+            return dict(name=self.name, type="BOOL", mode="REQUIRED")
         if self.typ == List[int]:
-            return bigquery.SchemaField(self.name, "INT64", mode="REPEATED")
+            return dict(name=self.name, type="INT64", mode="REPEATED")
         if self.typ == List[str]:
-            return bigquery.SchemaField(self.name, "STRING", mode="REPEATED")
+            return dict(name=self.name, type="STRING", mode="REPEATED")
         if self.typ == Optional[int]:
-            return bigquery.SchemaField(self.name, "INT64")
+            return dict(name=self.name, type="INT64", mode="NULLABLE")
 
 
 COLUMNS = [
@@ -70,77 +73,81 @@ COLUMNS = [
 
 
 def schema():
-    return [x.bigquery_schema() for x in COLUMNS]
+    return {"fields": [x.bigquery_schema() for x in COLUMNS]}
 
 
-def parse_to_dataframes(
-    lines: Iterable[str], verbose: bool = False, chunk_size: int = 2 ** 20
-) -> Generator[pd.DataFrame, None, None]:
-    if verbose:
-        try:
-            import tqdm
+class ParseFn(beam.DoFn):
+    def __init__(self, columns: List[Column]) -> None:
+        self.columns = columns
 
-            lines = tqdm.tqdm(lines, desc="Read and parsing")
-        except ImportError:
-            _logger.warning("`tqdm` is missing")
-
-    chunks: List[pd.DataFrame] = []
-    values: DefaultDict[str, List[Any]] = DefaultDict(list)
-
-    for ith, line in enumerate(lines):
-        line = line.strip()
-        if not line:
-            continue
+    def process(self, element):
+        line = element.strip()
+        target_columns = self.columns
         columns = line.split("\x01")
-        assert len(COLUMNS) == len(columns) or len(COLUMNS) - 4 == len(
+        assert len(target_columns) == len(columns) or len(target_columns) - 4 == len(
             columns
         ), "expected {} or {} columns, but got {} columns.".format(
-            len(COLUMNS), len(COLUMNS) - 4, len(columns)
+            len(target_columns), len(target_columns) - 4, len(columns)
         )
-        for definition, value in itertools.zip_longest(COLUMNS, columns):
-            try:
-                v: Any = None
-                if definition.typ == List[int]:
-                    v = np.asarray(
-                        [int(x) for x in value.split("\t") if x], dtype=np.int32
-                    )
-                elif definition.typ == List[str]:
-                    v = np.asarray([x for x in value.split("\t") if x], dtype=str)
-                elif definition.typ == int:
-                    v = int(value)
-                elif definition.typ == str:
-                    v = value
-                elif definition.typ == bool:
-                    if value == "true":
-                        v = True
-                    elif value == "false":
-                        v = False
-                    else:
-                        raise RuntimeError(
-                            "value of boolean column {} must be either `true` or `false`, but {}".format(
-                                definition.name, value
-                            )
-                        )
-                elif definition.typ == Optional[int]:
-                    if not value:
-                        v = None
-                    else:
-                        v = int(value)
+        values = {}
+        for definition, value in itertools.zip_longest(target_columns, columns):
+            v: Any = None
+            if definition.typ == List[int]:
+                v = [int(x) for x in value.split("\t") if x]
+            elif definition.typ == List[str]:
+                v = [x for x in value.split("\t") if x]
+            elif definition.typ == int:
+                v = int(value)
+            elif definition.typ == str:
+                v = value
+            elif definition.typ == bool:
+                if value == "true":
+                    v = True
+                elif value == "false":
+                    v = False
                 else:
                     raise RuntimeError(
-                        "unsupported value type ({} is of type {})".format(
-                            definition.name, definition.typ
+                        "value of boolean column {} must be either `true` or `false`, but {}".format(
+                            definition.name, value
                         )
                     )
-                values[definition.name].append(v)
-            except RuntimeError as ex:
+            elif definition.typ == Optional[int]:
+                if not value:
+                    v = None
+                else:
+                    v = int(value)
+            else:
                 raise RuntimeError(
-                    "error ({}) occurs while processing {}th {}".format(
-                        ex, ith, definition.name
+                    "unsupported value type ({} is of type {})".format(
+                        definition.name, definition.typ
                     )
                 )
-        if (ith + 1) % chunk_size == 0:
-            yield pd.DataFrame(values).convert_dtypes()
-            values = DefaultDict(list)
-    if len(values["text_tokens"]) == 0:
-        yield pd.DataFrame(values).convert_dtypes()
+            values[definition.name] = v
+        yield values
+
+
+@click.command(context_settings=dict(ignore_unknown_options=True))
+@click.argument("input")
+@click.argument("table")
+@click.option("--project", default="wantedly-individual-naomichi")
+@click.argument("pipeline_args", nargs=-1, type=click.UNPROCESSED)
+def main(input: str, table: str, project: str, pipeline_args):
+    pipeline_args = list(pipeline_args)
+    pipeline_args.extend([
+        "--runner=DataflowRunner",
+        f"--project={project}",
+        "--temp_location=gs://recsys2020-challenge-wantedly/temp",
+        "--staging_location=gs://recsys2020-challenge-wantedly/staging",
+    ])
+    pipeline_options = PipelineOptions(pipeline_args)
+    pipeline_options.view_as(SetupOptions).save_main_session = True
+    with beam.Pipeline(options=pipeline_options) as p:
+        lines = p | ReadFromText(input)
+        rows = lines | "Parse" >> beam.ParDo(ParseFn(COLUMNS))
+        rows | beam.io.gcp.bigquery.WriteToBigQuery(
+            table, schema=schema(), project=project,
+        )
+
+
+if __name__ == "__main__":
+    main()

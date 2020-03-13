@@ -17,7 +17,8 @@ matplotlib = "^3.2.0"
 click = "^7.1.1"
 torch = "^1.4.0"
 transformers = "^2.5.1"
-pyarrow = "^0.16.0"
+apache-beam = {extras = ["gcp"], version = "^2.19.0"}
+pyarrow = "0.15.1"
 
 [tool.poetry.dev-dependencies]
 ipython = "^7.13.0"
