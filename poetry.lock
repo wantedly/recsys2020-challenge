@@ -38,6 +38,34 @@ pytz = ">=2018.3"
 python = ">=3.0"
 version = ">=1.8.1,<2.0.0"
 
+[package.dependencies.cachetools]
+optional = true
+version = ">=3.1.0,<4"
+
+[package.dependencies.google-apitools]
+optional = true
+version = ">=0.5.28,<0.5.29"
+
+[package.dependencies.google-cloud-bigquery]
+optional = true
+version = ">=1.6.0,<1.18.0"
+
+[package.dependencies.google-cloud-bigtable]
+optional = true
+version = ">=0.31.1,<1.1.0"
+
+[package.dependencies.google-cloud-core]
+optional = true
+version = ">=0.28.1,<2"
+
+[package.dependencies.google-cloud-datastore]
+optional = true
+version = ">=1.7.1,<1.8.0"
+
+[package.dependencies.google-cloud-pubsub]
+optional = true
+version = ">=0.39.0,<1.1.0"
+
 [package.dependencies.pyarrow]
 python = ">=3.0"
 version = ">=0.15.1,<0.16.0"
@@ -189,8 +217,8 @@ category = "main"
 description = "Extensible memoizing collections and decorators"
 name = "cachetools"
 optional = false
-python-versions = "~=3.5"
-version = "4.0.0"
+python-versions = "*"
+version = "3.1.1"
 
 [[package]]
 category = "main"
@@ -292,6 +320,18 @@ snappy = ["python-snappy"]
 
 [[package]]
 category = "main"
+description = "A python package that provides useful locks."
+name = "fasteners"
+optional = false
+python-versions = "*"
+version = "0.15"
+
+[package.dependencies]
+monotonic = ">=0.1"
+six = "*"
+
+[[package]]
+category = "main"
 description = "A platform independent file lock."
 name = "filelock"
 optional = false
@@ -338,6 +378,24 @@ grpcio-gcp = ["grpcio-gcp (>=0.2.2)"]
 
 [[package]]
 category = "main"
+description = "client libraries for humans"
+name = "google-apitools"
+optional = false
+python-versions = "*"
+version = "0.5.28"
+
+[package.dependencies]
+fasteners = ">=0.14"
+httplib2 = ">=0.8"
+oauth2client = ">=1.4.12"
+six = ">=1.12.0"
+
+[package.extras]
+cli = ["python-gflags (>=3.0.6)"]
+testing = ["unittest2 (>=0.5.1)", "mock (>=1.0.1)"]
+
+[[package]]
+category = "main"
 description = "Google Authentication Library"
 name = "google-auth"
 optional = false
@@ -372,15 +430,12 @@ description = "Google BigQuery API client library"
 name = "google-cloud-bigquery"
 optional = false
 python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
-version = "1.24.0"
+version = "1.17.0"
 
 [package.dependencies]
-google-api-core = ">=1.15.0,<2.0dev"
-google-auth = ">=1.9.0,<2.0dev"
-google-cloud-core = ">=1.1.0,<2.0dev"
-google-resumable-media = ">=0.5.0,<0.6dev"
+google-cloud-core = ">=1.0.0,<2.0dev"
+google-resumable-media = ">=0.3.1"
 protobuf = ">=3.6.0"
-six = ">=1.13.0,<2.0.0dev"
 
 [package.extras]
 all = ["google-cloud-bigquery-storage (>=0.6.0,<2.0.0dev)", "pyarrow (>=0.13.0,<0.14.0 || >0.14.0)", "pandas (>=0.17.1)", "pyarrow (>=0.4.1,<0.14.0 || >0.14.0)", "tqdm (>=4.0.0,<5.0.0dev)"]
@@ -389,6 +444,22 @@ fastparquet = ["fastparquet", "python-snappy"]
 pandas = ["pandas (>=0.17.1)"]
 pyarrow = ["pyarrow (>=0.4.1,<0.14.0 || >0.14.0)"]
 tqdm = ["tqdm (>=4.0.0,<5.0.0dev)"]
+
+[[package]]
+category = "main"
+description = "Google Cloud Bigtable API client library"
+name = "google-cloud-bigtable"
+optional = false
+python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
+version = "1.0.0"
+
+[package.dependencies]
+google-cloud-core = ">=1.0.0,<2.0dev"
+grpc-google-iam-v1 = ">=0.12.3,<0.13dev"
+
+[package.dependencies.google-api-core]
+extras = ["grpc"]
+version = ">=1.14.0,<2.0.0dev"
 
 [[package]]
 category = "main"
@@ -403,6 +474,36 @@ google-api-core = ">=1.16.0,<2.0.0dev"
 
 [package.extras]
 grpc = ["grpcio (>=1.8.2,<2.0dev)"]
+
+[[package]]
+category = "main"
+description = "Google Cloud Datastore API client library"
+name = "google-cloud-datastore"
+optional = false
+python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
+version = "1.7.4"
+
+[package.dependencies]
+google-cloud-core = ">=0.29.0,<2.0dev"
+
+[package.dependencies.google-api-core]
+extras = ["grpc"]
+version = ">=1.6.0,<2.0.0dev"
+
+[[package]]
+category = "main"
+description = "Google Cloud Pub/Sub API client library"
+name = "google-cloud-pubsub"
+optional = false
+python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
+version = "1.0.2"
+
+[package.dependencies]
+grpc-google-iam-v1 = ">=0.12.3,<0.13dev"
+
+[package.dependencies.google-api-core]
+extras = ["grpc"]
+version = ">=1.14.0,<2.0.0dev"
 
 [[package]]
 category = "main"
@@ -455,6 +556,21 @@ protobuf = ">=3.6.0"
 
 [package.extras]
 grpc = ["grpcio (>=1.0.0)"]
+
+[[package]]
+category = "main"
+description = "GRPC library for the google-iam-v1 service"
+name = "grpc-google-iam-v1"
+optional = false
+python-versions = "*"
+version = "0.12.3"
+
+[package.dependencies]
+grpcio = ">=1.0.0,<2.0.0dev"
+
+[package.dependencies.googleapis-common-protos]
+extras = ["grpc"]
+version = ">=1.5.2,<2.0.0dev"
 
 [[package]]
 category = "main"
@@ -701,6 +817,14 @@ six = ">=1.9"
 [package.extras]
 docs = ["sphinx", "Pygments (<2)", "jinja2 (<2.7)", "sphinx (<1.3)"]
 test = ["unittest2 (>=1.1.0)"]
+
+[[package]]
+category = "main"
+description = "An implementation of time.monotonic() for Python 2 & < 3.3"
+name = "monotonic"
+optional = false
+python-versions = "*"
+version = "1.5"
 
 [[package]]
 category = "dev"
@@ -1368,7 +1492,7 @@ python-versions = "*"
 version = "1.11.2"
 
 [metadata]
-content-hash = "fdffa2dcec1f548888c93a10f8c5972a6aa3c0568bfade37e79d9b061b4f5c58"
+content-hash = "7c485e857d9b178bfa66ee42e04573de64f0b2dba1df1648ce3f142fbc586bc3"
 python-versions = "3.7.3"
 
 [metadata.files]
@@ -1432,8 +1556,8 @@ botocore = [
     {file = "botocore-1.15.20.tar.gz", hash = "sha256:4aabdfb65e1f3eb6d35fe5d921a9b6fd2880ea0ec39ad874af762192b6c40825"},
 ]
 cachetools = [
-    {file = "cachetools-4.0.0-py3-none-any.whl", hash = "sha256:b304586d357c43221856be51d73387f93e2a961598a9b6b6670664746f3b6c6c"},
-    {file = "cachetools-4.0.0.tar.gz", hash = "sha256:9a52dd97a85f257f4e4127f15818e71a0c7899f121b34591fcc1173ea79a0198"},
+    {file = "cachetools-3.1.1-py2.py3-none-any.whl", hash = "sha256:428266a1c0d36dc5aca63a2d7c5942e88c2c898d72139fca0e97fdd2380517ae"},
+    {file = "cachetools-3.1.1.tar.gz", hash = "sha256:8ea2d3ce97850f31e4a08b0e2b5e6c34997d7216a9d2c98e0f3978630d4da69a"},
 ]
 certifi = [
     {file = "certifi-2019.11.28-py2.py3-none-any.whl", hash = "sha256:017c25db2a153ce562900032d5bc68e9f191e44e9a0f762f373977de9df1fbb3"},
@@ -1496,6 +1620,10 @@ fastavro = [
     {file = "fastavro-0.21.24-cp37-cp37m-win_amd64.whl", hash = "sha256:aca98476caf95371cdf3e140616d7ac6b0eb32d06d8b09a93746ff90a85623a4"},
     {file = "fastavro-0.21.24.tar.gz", hash = "sha256:7ac9bcf6e1226393d6db163f33ab5915e98ebf867fdab8f6239dc15c26f474da"},
 ]
+fasteners = [
+    {file = "fasteners-0.15-py2.py3-none-any.whl", hash = "sha256:007e4d2b2d4a10093f67e932e5166722d2eab83b77724156e92ad013c6226574"},
+    {file = "fasteners-0.15.tar.gz", hash = "sha256:3a176da6b70df9bb88498e1a18a9e4a8579ed5b9141207762368a1017bf8f5ef"},
+]
 filelock = [
     {file = "filelock-3.0.12-py3-none-any.whl", hash = "sha256:929b7d63ec5b7d6b71b0fa5ac14e030b3f70b75747cef1b10da9b879fef15836"},
     {file = "filelock-3.0.12.tar.gz", hash = "sha256:18d82244ee114f543149c66a6e0c14e9c4f8a1044b5cdaadd0f82159d6a6ff59"},
@@ -1510,6 +1638,10 @@ google-api-core = [
     {file = "google-api-core-1.16.0.tar.gz", hash = "sha256:92e962a087f1c4b8d1c5c88ade1c1dfd550047dcffb320c57ef6a534a20403e2"},
     {file = "google_api_core-1.16.0-py2.py3-none-any.whl", hash = "sha256:859f7392676761f2b160c6ee030c3422135ada4458f0948c5690a6a7c8d86294"},
 ]
+google-apitools = [
+    {file = "google-apitools-0.5.28.tar.gz", hash = "sha256:c41792b0cb1a9d952545a95bb5a18376fd727e4c4977d6fa3f1643d1d51a7177"},
+    {file = "google_apitools-0.5.28-py2-none-any.whl", hash = "sha256:25c44d04a6a1f48066401af9d8b8b7220564b7dcbbe9469b7edcc1981d27d8f6"},
+]
 google-auth = [
     {file = "google-auth-1.11.2.tar.gz", hash = "sha256:1ee22e22f35d6e00f068d7b3999b2ce24ecb5d0dcbd485aa6896d2b83c8907d6"},
     {file = "google_auth-1.11.2-py2.py3-none-any.whl", hash = "sha256:28a848d47c55075a0f29d7e26b7a213515c137ab8f0670e546e46d1277060e47"},
@@ -1519,12 +1651,24 @@ google-auth-oauthlib = [
     {file = "google_auth_oauthlib-0.4.1-py2.py3-none-any.whl", hash = "sha256:a92a0f6f41a0fb6138454fbc02674e64f89d82a244ea32f98471733c8ef0e0e1"},
 ]
 google-cloud-bigquery = [
-    {file = "google-cloud-bigquery-1.24.0.tar.gz", hash = "sha256:7ffcceed8becea20cb4ce4bdf9b924822780416ff1a9d497f9a1238a3f1442b1"},
-    {file = "google_cloud_bigquery-1.24.0-py2.py3-none-any.whl", hash = "sha256:23c9180e87f6093eb6f2ae880d7f7697fdab991a4616439ad0f95cd37014f0dd"},
+    {file = "google-cloud-bigquery-1.17.0.tar.gz", hash = "sha256:b735e936dabcf15876c614815ba3e0aa6b32767f224a72baa76e96d933e3a276"},
+    {file = "google_cloud_bigquery-1.17.0-py2.py3-none-any.whl", hash = "sha256:ce9dfc4407c938b44287fe68da387a0da1bb15da4b7cfa43db864f66a8bb310c"},
+]
+google-cloud-bigtable = [
+    {file = "google-cloud-bigtable-1.0.0.tar.gz", hash = "sha256:1c40f09593b5d16cf2a5ee91644676a0b01acc8082304c3100e4c0fb7c821d8b"},
+    {file = "google_cloud_bigtable-1.0.0-py2.py3-none-any.whl", hash = "sha256:4323362b836ddf9e7324b0be1a34e3f80d09729356233c05e969b577244c49a3"},
 ]
 google-cloud-core = [
     {file = "google-cloud-core-1.3.0.tar.gz", hash = "sha256:878f9ad080a40cdcec85b92242c4b5819eeb8f120ebc5c9f640935e24fc129d8"},
     {file = "google_cloud_core-1.3.0-py2.py3-none-any.whl", hash = "sha256:6ae5c62931e8345692241ac1939b85a10d6c38dc9e2854bdbacb7e5ac3033229"},
+]
+google-cloud-datastore = [
+    {file = "google-cloud-datastore-1.7.4.tar.gz", hash = "sha256:7a44d9b0263cbbe05963522f61ba177e64282043f30999e0bc3368fd79a3af12"},
+    {file = "google_cloud_datastore-1.7.4-py2.py3-none-any.whl", hash = "sha256:ffb075abf606ebd248c3ad76ac0e6d3e93858d8c61a063139938a162a58b28d0"},
+]
+google-cloud-pubsub = [
+    {file = "google-cloud-pubsub-1.0.2.tar.gz", hash = "sha256:afb08eb558f3e4d836e6f77443f81555d6921ffc888c7c3085acd1205fba6e8c"},
+    {file = "google_cloud_pubsub-1.0.2-py2.py3-none-any.whl", hash = "sha256:12ff565ef00e4ca19d2ae26ae4515070094ba857d7c7024370dbed81fc7d58ab"},
 ]
 google-cloud-storage = [
     {file = "google-cloud-storage-1.26.0.tar.gz", hash = "sha256:ffdfaeb319c47deaf5b25c6bf1f1f52a183ba6abb0bb80586509a9b68dc35d31"},
@@ -1541,6 +1685,9 @@ google-resumable-media = [
 ]
 googleapis-common-protos = [
     {file = "googleapis-common-protos-1.51.0.tar.gz", hash = "sha256:013c91704279119150e44ef770086fdbba158c1f978a6402167d47d5409e226e"},
+]
+grpc-google-iam-v1 = [
+    {file = "grpc-google-iam-v1-0.12.3.tar.gz", hash = "sha256:0bfb5b56f648f457021a91c0df0db4934b6e0c300bd0f2de2333383fe958aa72"},
 ]
 grpcio = [
     {file = "grpcio-1.27.2-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:dbec0a3a154dbf2eb85b38abaddf24964fa1c059ee0a4ad55d6f39211b1a4bca"},
@@ -1749,6 +1896,10 @@ mccabe = [
 mock = [
     {file = "mock-2.0.0-py2.py3-none-any.whl", hash = "sha256:5ce3c71c5545b472da17b72268978914d0252980348636840bd34a00b5cc96c1"},
     {file = "mock-2.0.0.tar.gz", hash = "sha256:b158b6df76edd239b8208d481dc46b6afd45a846b7812ff0ce58971cf5bc8bba"},
+]
+monotonic = [
+    {file = "monotonic-1.5-py2.py3-none-any.whl", hash = "sha256:552a91f381532e33cbd07c6a2655a21908088962bb8fa7239ecbcc6ad1140cc7"},
+    {file = "monotonic-1.5.tar.gz", hash = "sha256:23953d55076df038541e648a53676fb24980f7a1be290cdda21300b3bc21dfb0"},
 ]
 mypy = [
     {file = "mypy-0.761-cp35-cp35m-macosx_10_6_x86_64.whl", hash = "sha256:7f672d02fffcbace4db2b05369142e0506cdcde20cea0e07c7c2171c4fd11dd6"},
