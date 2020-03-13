@@ -99,10 +99,10 @@ description = "The AWS SDK for Python"
 name = "boto3"
 optional = false
 python-versions = "*"
-version = "1.12.17"
+version = "1.12.20"
 
 [package.dependencies]
-botocore = ">=1.15.17,<1.16.0"
+botocore = ">=1.15.20,<1.16.0"
 jmespath = ">=0.7.1,<1.0.0"
 s3transfer = ">=0.3.0,<0.4.0"
 
@@ -112,7 +112,7 @@ description = "Low-level, data-driven core of boto 3."
 name = "botocore"
 optional = false
 python-versions = "*"
-version = "1.15.17"
+version = "1.15.20"
 
 [package.dependencies]
 docutils = ">=0.10,<0.16"
@@ -997,7 +997,7 @@ description = "TensorFlow Estimator."
 name = "tensorflow-estimator"
 optional = false
 python-versions = "*"
-version = "2.1.0"
+version = "2.2.0rc0"
 
 [[package]]
 category = "main"
@@ -1160,8 +1160,8 @@ python-versions = "*"
 version = "1.11.2"
 
 [metadata]
-content-hash = "3b312c7bf923922afbc22ebdeefabc776e1cfdbf9ba5a7ae9da1415dab63f60f"
-python-versions = "^3.7"
+content-hash = "4dacb6fed6bdb72c1292f802f7bb9ae85c3310e38f9984719afa6e7254497f8b"
+python-versions = "3.7.3"
 
 [metadata.files]
 absl-py = [
@@ -1196,12 +1196,12 @@ black = [
     {file = "black-19.10b0.tar.gz", hash = "sha256:c2edb73a08e9e0e6f65a0e6af18b059b8b1cdd5bef997d7a0b181df93dc81539"},
 ]
 boto3 = [
-    {file = "boto3-1.12.17-py2.py3-none-any.whl", hash = "sha256:ef2d050e0c37e00dab6ff1135befe7ed4b9e1ec26c752b8ad01d043e184ea6d1"},
-    {file = "boto3-1.12.17.tar.gz", hash = "sha256:13ac5526d80e1f1c9f7adcaeae7237f8bd1a5f268e918ca16e770eb865d3292b"},
+    {file = "boto3-1.12.20-py2.py3-none-any.whl", hash = "sha256:918c2e2153d96a5ae30c27ff8bfe2d5f5fc48ce0e62c766236c78a4f5aaff931"},
+    {file = "boto3-1.12.20.tar.gz", hash = "sha256:8804cd39b53ac2add31db3f8617548ce25d373dba179ba7f6d505861fd506042"},
 ]
 botocore = [
-    {file = "botocore-1.15.17-py2.py3-none-any.whl", hash = "sha256:17a70c5d8743237896907d00f3de0f51d31aeca863ab0da8d0d8c178608b7ce1"},
-    {file = "botocore-1.15.17.tar.gz", hash = "sha256:b09aed94cd7a01fbccbbf5746b69ca62ed37c0feaed42e0420f9a121ae7df755"},
+    {file = "botocore-1.15.20-py2.py3-none-any.whl", hash = "sha256:babe0e84fc8ba1d8b349acf2cd98d5b15d8974912d393ad149ff2b385097a062"},
+    {file = "botocore-1.15.20.tar.gz", hash = "sha256:4aabdfb65e1f3eb6d35fe5d921a9b6fd2880ea0ec39ad874af762192b6c40825"},
 ]
 cachetools = [
     {file = "cachetools-4.0.0-py3-none-any.whl", hash = "sha256:b304586d357c43221856be51d73387f93e2a961598a9b6b6670664746f3b6c6c"},
@@ -1603,6 +1603,7 @@ pyarrow = [
     {file = "pyarrow-0.16.0-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:a609354433dd31ffc4c8de8637de915391fd6ff781b3d8c5d51d3f4eec6fcf39"},
     {file = "pyarrow-0.16.0-cp35-cp35m-manylinux2010_x86_64.whl", hash = "sha256:c1214f1689711d6562df70863cbd62d6f2a83e68214bb4c97c489f2f97ddeaf4"},
     {file = "pyarrow-0.16.0-cp35-cp35m-manylinux2014_x86_64.whl", hash = "sha256:8a00a8497e2367c4f206bb8b7df01852d1e3f1261107ee77a217af654793ac0e"},
+    {file = "pyarrow-0.16.0-cp35-cp35m-win_amd64.whl", hash = "sha256:df8ff1c5de2e454dcab9421d70d0db3985ad4efc40899d947687ca6d36846fc8"},
     {file = "pyarrow-0.16.0-cp36-cp36m-macosx_10_9_intel.whl", hash = "sha256:7aebec0f1b76e73a6307b5027618c843eadb4dc4f6e1f08ca496a01a7273ac64"},
     {file = "pyarrow-0.16.0-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:dd18bc60cef3e72f8082c46de4cfb0cf9fb294c0ff7a201e2b95924fb5d2d146"},
     {file = "pyarrow-0.16.0-cp36-cp36m-manylinux2010_x86_64.whl", hash = "sha256:00abec64636aa506d948926ab5dd37fdfe8c0407b069602ba16c68c19ccb0257"},
@@ -1811,7 +1812,7 @@ tensorflow = [
     {file = "tensorflow-2.1.0-cp37-cp37m-win_amd64.whl", hash = "sha256:7bad8ea686a1f33d9dac13eb578c4597346789d4f826980c8bbcfbd08e7dc921"},
 ]
 tensorflow-estimator = [
-    {file = "tensorflow_estimator-2.1.0-py2.py3-none-any.whl", hash = "sha256:e5c5f648a636f18d1be4cf7ed46132b108a2f0f3fd9f1c850eba924263dc6972"},
+    {file = "tensorflow_estimator-2.2.0rc0-py2.py3-none-any.whl", hash = "sha256:c24aba63b33de5db089e66585399e1abefad75038c4aacca8d8d1328ab3e8282"},
 ]
 termcolor = [
     {file = "termcolor-1.1.0.tar.gz", hash = "sha256:1d6d69ce66211143803fbc56652b41d73b4a400a2891d7bf7a1cdf4c02de613b"},
