@@ -6,8 +6,8 @@
 poetry install
 ```
 
-## parse して GCS に jsonl として upload するスクリプト
+## Dataflow を使って生データを BigQuery に入れるスクリプト
 
 ```bash
-python cli.py rawdata parse-to-gcs --help
+python preprocessing/rawdata.py gs://recsys2020-challenge-wantedly/training.tsv recsys2020.training --region us-west1 --requirements_file ./dataflow_requirements.txt
 ```
