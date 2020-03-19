@@ -28,7 +28,7 @@ class BaseFeature(abc.ABC):
 
     @abc.abstractmethod
     def make_features(
-        self, df_train_input: pd.DataFrame, df_val_input: pd.DataFrame
+        self, df_train_input: pd.DataFrame, df_test_input: pd.DataFrame
     ) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """BigQuery から取得した生データの DataFrame を特徴量に変換する
         """
