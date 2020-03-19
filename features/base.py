@@ -25,7 +25,9 @@ class BaseFeature(abc.ABC):
         ...
 
     @abc.abstractmethod
-    def make_features(self, df_train_input: pd.DataFrame, df_val_input: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    def make_features(
+        self, df_train_input: pd.DataFrame, df_val_input: pd.DataFrame
+    ) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """BigQuery から取得した生データの DataFrame を特徴量に変換する
         """
         ...
@@ -36,30 +38,54 @@ class BaseFeature(abc.ABC):
         with tempfile.TemporaryDirectory() as tempdir:
             files: List[str] = []
             if TESTING:
-                test_path = self.read_and_generate_features("`wantedly-individual-naomichi.recsys2020.test`", os.path.join(tempdir.name, f"{self.name}_test.ftr"))
-                files.append(test_path)
+                valid_path = os.path.join(tempdir.name, f"{self.name}_test.ftr")
+                valid_table = "`wantedly-individual-naomichi.recsys2020.test`"
             else:
-                val_path = self.read_and_generate_features("`wantedly-individual-naomichi.recsys2020.val`", os.path.join(tempdir.name, f"{self.name}_val.ftr"))
-                files.append(val_path)
-            train_path = self.read_and_generate_features("`wantedly-individual-naomichi.recsys2020.training`", os.path.join(tempdir.name, f"{self.name}_training.ftr"))
-            files.append(train_path)
-            self._upload_to_gs(files)
+                valid_path = os.path.join(tempdir.name, f"{self.name}_val.ftr")
+                valid_table = "`wantedly-individual-naomichi.recsys2020.val`"
+            train_path = os.path.join(tempdir.name, f"{self.name}_training.ftr")
+            train_table = "`wantedly-individual-naomichi.recsys2020.training`"
+            self.read_and_save_features(
+                train_table, valid_table, train_path, valid_path,
+            )
+            self._upload_to_gs([valid_path, train_path])
 
-    def read_and_generate_features(self, table_name: str, output_path: str) -> str:
-        self._logger.info(f"Processing {table_name}")
+    def read_and_save_features(
+        self,
+        train_table_name: str,
+        valid_table_name: str,
+        train_output_path: str,
+        valid_table_name: str,
+    ) -> None:
+        df_train_input = self._read_from_bigquery(train_table_name)
+        df_valid_input = self._read_from_bigquery(valid_table_name)
+        df_train_features, df_valid_features = self.make_features(
+            df_train_input, df_valid_input
+        )
+        assert (
+            df_train_input.shape[0] == df_train_features.shape[0]
+        ), "generated train features is not compatible with the table"
+        assert (
+            df_valid_input.shape[0] == df_valid_features.shape[0]
+        ), "generated valid features is not compatible with the table"
+        self._logger.info(f"Saving features into {output_path}")
+        df_train_features.columns = f"{self.name}_" + df_train_features.columns
+        df_valid_features.columns = f"{self.name}_" + df_valid_features.columns
+        df_train_features.to_feather(train_output_path)
+        df_valid_features.to_feather(valid_output_path)
+
+    def _read_from_bigquery(self, table_name: str) -> pd.DataFrame:
+        self._logger.info(f"Reading from {table_name}")
         query = """
             select {}
             from {}
             order by tweet_id, engaging_user_id
-        """.format(self.import_columns.join(", "), table_name)
-        self._logger.info("Executing query {}".format(repr(query)))
-        df_input = pd.read_gbq(query, dialect="standard", project_id="wantedly-individual-naomichi")
-        df_features = self.make_features(df_input)
-        assert df_input.shape[0] == df_features.shape[0], "generated features is not compatible with the table"
-        self._logger.info(f"Saving features into {output_path}")
-        df_features.columns = f"{self.name}_" + df_features.columns
-        df_features.to_feather(output_path)
-        return output_path
+        """.format(
+            self.import_columns.join(", "), table_name
+        )
+        return pd.read_gbq(
+            query, dialect="standard", project_id="wantedly-individual-naomichi"
+        )
 
     def _upload_to_gs(self, files: List[str]):
         client = storage.Client(project="wantedly-individual-naomichi")
