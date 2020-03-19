@@ -41,46 +41,46 @@ class BaseFeature(abc.ABC):
         with tempfile.TemporaryDirectory() as tempdir:
             files: List[str] = []
             if TESTING:
-                valid_path = os.path.join(tempdir.name, f"{self.name}_test.ftr")
-                valid_table = "`wantedly-individual-naomichi.recsys2020.test`"
+                test_path = os.path.join(tempdir.name, f"{self.name}_test.ftr")
+                test_table = "`wantedly-individual-naomichi.recsys2020.test`"
             else:
-                valid_path = os.path.join(tempdir.name, f"{self.name}_val.ftr")
-                valid_table = "`wantedly-individual-naomichi.recsys2020.val`"
+                test_path = os.path.join(tempdir.name, f"{self.name}_val.ftr")
+                test_table = "`wantedly-individual-naomichi.recsys2020.val`"
             train_path = os.path.join(tempdir.name, f"{self.name}_training.ftr")
             train_table = "`wantedly-individual-naomichi.recsys2020.training`"
             self.read_and_save_features(
-                train_table, valid_table, train_path, valid_path,
+                train_table, test_table, train_path, test_path,
             )
             is not self.debugging:
-                self._upload_to_gs([valid_path, train_path])
+                self._upload_to_gs([test_path, train_path])
 
     def read_and_save_features(
         self,
         train_table_name: str,
-        valid_table_name: str,
+        test_table_name: str,
         train_output_path: str,
-        valid_table_name: str,
+        test_table_name: str,
     ) -> None:
         df_train_input = self._read_from_bigquery(train_table_name)
-        df_valid_input = self._read_from_bigquery(valid_table_name)
-        df_train_features, df_valid_features = self.make_features(
-            df_train_input, df_valid_input
+        df_test_input = self._read_from_bigquery(test_table_name)
+        df_train_features, df_test_features = self.make_features(
+            df_train_input, df_test_input
         )
         assert (
             df_train_input.shape[0] == df_train_features.shape[0]
         ), "generated train features is not compatible with the table"
         assert (
-            df_valid_input.shape[0] == df_valid_features.shape[0]
-        ), "generated valid features is not compatible with the table"
+            df_test_input.shape[0] == df_test_features.shape[0]
+        ), "generated test features is not compatible with the table"
         self._logger.info(f"Saving features into {output_path}")
         df_train_features.columns = f"{self.name}_" + df_train_features.columns
-        df_valid_features.columns = f"{self.name}_" + df_valid_features.columns
+        df_test_features.columns = f"{self.name}_" + df_test_features.columns
         if self.save_memory:
             # TODO: fp16 にしたりする。
             df_train_features = df_train_features.convert_dtypes()
-            df_valid_features = df_valid_features.convert_dtypes()
+            df_test_features = df_test_features.convert_dtypes()
         df_train_features.to_feather(train_output_path)
-        df_valid_features.to_feather(valid_output_path)
+        df_test_features.to_feather(test_output_path)
 
     def _read_from_bigquery(self, table_name: str) -> pd.DataFrame:
         self._logger.info(f"Reading from {table_name}")
