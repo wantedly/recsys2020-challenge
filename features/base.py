@@ -1,3 +1,4 @@
+import argparse
 import abc
 from typing import Optional, List, Tuple
 from logging import Logger
@@ -13,10 +14,11 @@ GCS_BUCKET_NAME = "gs://recsys2020-challenge-wantedly"
 
 
 class BaseFeature(abc.ABC):
-    def __init__(self, name: Optional[str], save_memory: bool = True, debugging: bool = False) -> None:
+    save_memory: bool = True
+
+    def __init__(self, debugging: bool = False, **kwargs) -> None:
         super().__init__()
-        self.name = name or self.__class__.__name__
-        self.save_memory = save_memory
+        self.name = self.__class__.__name__
         self.debugging = debugging
         self._logger = Logger(self.__class__.__name__)
 
@@ -33,6 +35,19 @@ class BaseFeature(abc.ABC):
         """BigQuery から取得した生データの DataFrame を特徴量に変換する
         """
         ...
+
+    @abc.abstractclassmethod
+    def add_feature_specific_arguments(cls, parser: argparse.ArgumentParser):
+        return
+
+    @classmethod
+    def main(cls):
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--debug", action="store_true")
+        cls.add_feature_specific_arguments(parser)
+        args = parser.parse_args()
+        instance = cls(debugging=args.debugging, **vars(args))
+        instance.run()
 
     def run(self):
         """何も考えずにとりあえずこれを実行すれば BigQuery からデータを読み込んで変換し GCS にアップロードしてくれる
