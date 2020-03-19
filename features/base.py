@@ -13,9 +13,10 @@ GCS_BUCKET_NAME = "gs://recsys2020-challenge-wantedly"
 
 
 class BaseFeature(abc.ABC):
-    def __init__(self, name: Optional[str]) -> None:
-        super().__init__
+    def __init__(self, name: Optional[str], save_memory: bool = True) -> None:
+        super().__init__()
         self.name = name or self.__class__.__name__
+        self.save_memory = save_memory
         self._logger = Logger(self.__class__.__name__)
 
     @abc.abstractproperty
@@ -71,6 +72,10 @@ class BaseFeature(abc.ABC):
         self._logger.info(f"Saving features into {output_path}")
         df_train_features.columns = f"{self.name}_" + df_train_features.columns
         df_valid_features.columns = f"{self.name}_" + df_valid_features.columns
+        if self.save_memory:
+            # TODO: fp16 にしたりする。
+            df_train_features = df_train_features.convert_dtypes()
+            df_valid_features = df_valid_features.convert_dtypes()
         df_train_features.to_feather(train_output_path)
         df_valid_features.to_feather(valid_output_path)
 
