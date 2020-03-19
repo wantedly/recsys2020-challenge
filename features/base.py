@@ -48,6 +48,7 @@ class BaseFeature(abc.ABC):
     @classmethod
     def main(cls):
         import logging
+
         logging.basicConfig(level=logging.INFO)
         parser = argparse.ArgumentParser()
         parser.add_argument("--debug", action="store_true")
