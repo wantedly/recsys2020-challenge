@@ -13,10 +13,11 @@ GCS_BUCKET_NAME = "gs://recsys2020-challenge-wantedly"
 
 
 class BaseFeature(abc.ABC):
-    def __init__(self, name: Optional[str], save_memory: bool = True) -> None:
+    def __init__(self, name: Optional[str], save_memory: bool = True, debugging: bool = False) -> None:
         super().__init__()
         self.name = name or self.__class__.__name__
         self.save_memory = save_memory
+        self.debugging = debugging
         self._logger = Logger(self.__class__.__name__)
 
     @abc.abstractproperty
@@ -36,6 +37,7 @@ class BaseFeature(abc.ABC):
     def run(self):
         """何も考えずにとりあえずこれを実行すれば BigQuery からデータを読み込んで変換し GCS にアップロードしてくれる
         """
+        self._logger.info(f"Running with debugging={self.debugging}")
         with tempfile.TemporaryDirectory() as tempdir:
             files: List[str] = []
             if TESTING:
@@ -49,7 +51,8 @@ class BaseFeature(abc.ABC):
             self.read_and_save_features(
                 train_table, valid_table, train_path, valid_path,
             )
-            self._upload_to_gs([valid_path, train_path])
+            is not self.debugging:
+                self._upload_to_gs([valid_path, train_path])
 
     def read_and_save_features(
         self,
@@ -88,6 +91,8 @@ class BaseFeature(abc.ABC):
         """.format(
             self.import_columns.join(", "), table_name
         )
+        if self.debugging:
+            query += " limit 10000"
         return pd.read_gbq(
             query, dialect="standard", project_id="wantedly-individual-naomichi"
         )
