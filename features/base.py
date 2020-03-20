@@ -11,6 +11,7 @@ from google.cloud import storage
 
 TESTING = False
 GCS_BUCKET_NAME = "recsys2020-challenge-wantedly"
+PROJECT_ID = "wantedly-individual-naomichi"
 
 
 class BaseFeature(abc.ABC):
@@ -65,17 +66,16 @@ class BaseFeature(abc.ABC):
             files: List[str] = []
             if TESTING:
                 test_path = os.path.join(tempdir, f"{self.name}_test.ftr")
-                test_table = "`wantedly-individual-naomichi.recsys2020.test`"
+                test_table = f"`{PROJECT_ID}.recsys2020.test`"
             else:
                 test_path = os.path.join(tempdir, f"{self.name}_val.ftr")
-                test_table = "`wantedly-individual-naomichi.recsys2020.val`"
+                test_table = f"`{PROJECT_ID}.recsys2020.val`"
             train_path = os.path.join(tempdir, f"{self.name}_training.ftr")
-            train_table = "`wantedly-individual-naomichi.recsys2020.training`"
+            train_table = f"`{PROJECT_ID}.recsys2020.training`"
             self.read_and_save_features(
                 train_table, test_table, train_path, test_path,
             )
-            if not self.debugging:
-                self._upload_to_gs([test_path, train_path])
+            self._upload_to_gs([test_path, train_path])
 
     def read_and_save_features(
         self,
@@ -119,14 +119,20 @@ class BaseFeature(abc.ABC):
         if self.debugging:
             query += " limit 10000"
         return pd.read_gbq(
-            query, dialect="standard", project_id="wantedly-individual-naomichi"
+            query, dialect="standard", project_id=PROJECT_ID
         )
 
     def _upload_to_gs(self, files: List[str]):
-        client = storage.Client(project="wantedly-individual-naomichi")
+        client = storage.Client(project=PROJECT_ID)
         bucket = client.get_bucket(GCS_BUCKET_NAME)
+
+        if self.debugging:
+            bucket_dir_name = "features_debug"
+        else:
+            bucket_dir_name = "features"
+
         for filename in files:
             basename = os.path.basename(filename)
-            blob = storage.Blob(os.path.join("features", basename), bucket)
+            blob = storage.Blob(os.path.join(bucket_dir_name, basename), bucket)
             self._logger.info(f"Uploading {basename} to {blob.path}")
             blob.upload_from_filename(filename)
