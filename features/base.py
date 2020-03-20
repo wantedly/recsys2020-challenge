@@ -7,6 +7,7 @@ import os
 
 import pandas as pd
 from google.cloud import storage
+from utils import reduce_mem_usage
 
 
 TESTING = False
@@ -97,11 +98,13 @@ class BaseFeature(abc.ABC):
         ), "generated test features is not compatible with the table"
         df_train_features.columns = f"{self.name}_" + df_train_features.columns
         df_test_features.columns = f"{self.name}_" + df_test_features.columns
+
         if self.save_memory:
-            # TODO: fp16 にしたりする。
-            self._logger.info("Reduce memory size")
-            df_train_features = df_train_features.convert_dtypes()
-            df_test_features = df_test_features.convert_dtypes()
+            self._logger.info("Reduce memory size - train data")
+            df_train_features = reduce_mem_usage(df_train_features)
+            self._logger.info("Reduce memory size - test data")
+            df_test_features = reduce_mem_usage(df_test_features)
+
         self._logger.info(f"Saving features to {train_output_path}")
         df_train_features.to_feather(train_output_path)
         self._logger.info(f"Saving features to {test_output_path}")
