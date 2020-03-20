@@ -6,8 +6,9 @@ import tempfile
 import os
 
 import pandas as pd
-from google.cloud import storage
+from google.cloud import storage, bigquery
 from utils import reduce_mem_usage
+from google.cloud import bigquery_storage_v1beta1
 
 
 TESTING = False
@@ -121,9 +122,15 @@ class BaseFeature(abc.ABC):
         )
         if self.debugging:
             query += " limit 10000"
-        return pd.read_gbq(
-            query, dialect="standard", project_id=PROJECT_ID
+
+        bqclient = bigquery.Client(project=PROJECT_ID)
+        bqstorageclient = bigquery_storage_v1beta1.BigQueryStorageClient()
+        df = (
+            bqclient.query(query)
+            .result()
+            .to_dataframe(bqstorage_client=bqstorageclient)
         )
+        return df
 
     def _upload_to_gs(self, files: List[str]):
         client = storage.Client(project=PROJECT_ID)
