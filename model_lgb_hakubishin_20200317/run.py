@@ -8,8 +8,6 @@ from src.feature_loader import FeatureLoader
 from src.get_folds import Fold
 from src.runner import Runner
 from src.models.model_lightgbm import Model_LightGBM
-#from src.submission import create_submission
-#from src.metrics import calc_metric
 
 
 seed_everything(71)
@@ -66,8 +64,10 @@ def main():
 
     target_list = config["target"]
     feature_list = config["features"]
+    key_list = config["key"]
     logger.info(f'target: {target_list}')
     logger.info(f'feature: {feature_list}')
+    logger.info(f'feature: {key_list}')
 
     y_train = FeatureLoader(
         data_type="training", debugging=args.debug
@@ -76,12 +76,17 @@ def main():
         data_type="training", debugging=args.debug
         ).load_features(feature_list)
     x_test = FeatureLoader(
-        data_type="val", debugging=args.debug
+        data_type=config["test_data_type"], debugging=args.debug
         ).load_features(feature_list)
+    key_test = FeatureLoader(
+        data_type=config["test_data_type"], debugging=args.debug
+        ).load_features(key_list)
 
     logger.debug(f'y_train: {y_train.shape}')
     logger.debug(f'x_train: {x_train.shape}')
     logger.debug(f'x_test: {x_test.shape}')
+    logger.debug(f'test_data_type: {config["test_data_type"]}')
+    logger.debug(f'key_test: {key_test.shape}')
 
 
     # =========================================
@@ -118,11 +123,12 @@ def main():
         config.update(evals_result)
         test_preds = runner.predict_cv(x_test)
 
-    # =========================================
-    # === Make submission file
-    # =========================================
-    # sub = create_submission(test_preds_list)
-    # sub.iloc[:, 1:].to_csv(model_output_dir/ 'submission.csv', index=False, header=True)
+        # Make submission file
+        sub = pd.concat([key_test, pd.Series(test_preds).rename("pred")], axis=1)
+        sub = sub[["KeyCategories_tweet_id", "KeyCategories_engaging_user_id", "pred"]]
+        sub_file_name = f"{cat}_submission_{config['test_data_type']}.csv"
+        sub.to_csv(model_output_dir/ sub_file_name, index=False, header=False)
+
 
     # =========================================
     # === Save files
