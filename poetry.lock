@@ -371,6 +371,10 @@ requests = ">=2.18.0,<3.0.0dev"
 setuptools = ">=34.0.0"
 six = ">=1.10.0"
 
+[package.dependencies.grpcio]
+optional = true
+version = ">=1.8.2,<2.0dev"
+
 [package.extras]
 grpc = ["grpcio (>=1.8.2,<2.0dev)"]
 grpcgcp = ["grpcio-gcp (>=0.2.2)"]
@@ -444,6 +448,24 @@ fastparquet = ["fastparquet", "python-snappy"]
 pandas = ["pandas (>=0.17.1)"]
 pyarrow = ["pyarrow (>=0.4.1,<0.14.0 || >0.14.0)"]
 tqdm = ["tqdm (>=4.0.0,<5.0.0dev)"]
+
+[[package]]
+category = "main"
+description = "BigQuery Storage API API client library"
+name = "google-cloud-bigquery-storage"
+optional = false
+python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
+version = "0.8.0"
+
+[package.dependencies]
+[package.dependencies.google-api-core]
+extras = ["grpc"]
+version = ">=1.14.0,<2.0.0dev"
+
+[package.extras]
+fastavro = ["fastavro (>=0.21.2)"]
+pandas = ["pandas (>=0.17.1)"]
+pyarrow = ["pyarrow (>=0.13.0,<0.14.0 || >0.14.0)"]
 
 [[package]]
 category = "main"
@@ -1492,7 +1514,7 @@ python-versions = "*"
 version = "1.11.2"
 
 [metadata]
-content-hash = "7c485e857d9b178bfa66ee42e04573de64f0b2dba1df1648ce3f142fbc586bc3"
+content-hash = "44ef7992282d5b0d72756ca244a43a851221c56b51174a021dabfe995ccde941"
 python-versions = "3.7.3"
 
 [metadata.files]
@@ -1653,6 +1675,10 @@ google-auth-oauthlib = [
 google-cloud-bigquery = [
     {file = "google-cloud-bigquery-1.17.0.tar.gz", hash = "sha256:b735e936dabcf15876c614815ba3e0aa6b32767f224a72baa76e96d933e3a276"},
     {file = "google_cloud_bigquery-1.17.0-py2.py3-none-any.whl", hash = "sha256:ce9dfc4407c938b44287fe68da387a0da1bb15da4b7cfa43db864f66a8bb310c"},
+]
+google-cloud-bigquery-storage = [
+    {file = "google-cloud-bigquery-storage-0.8.0.tar.gz", hash = "sha256:37bbe332d1b1b2e8f6496d2c62bfece2a172c4d884e58afa00651fef3ae879e5"},
+    {file = "google_cloud_bigquery_storage-0.8.0-py2.py3-none-any.whl", hash = "sha256:ce0568c0a4009756997ce2edb849ee31ff15d9855630ddb146c7c87b442a8c90"},
 ]
 google-cloud-bigtable = [
     {file = "google-cloud-bigtable-1.0.0.tar.gz", hash = "sha256:1c40f09593b5d16cf2a5ee91644676a0b01acc8082304c3100e4c0fb7c821d8b"},
