@@ -15,3 +15,13 @@ def label_encoding(col: str, train: pd.DataFrame, test: pd.DataFrame) -> Tuple[
     test_feature = le.transform(test_label)
 
     return train_feature, test_feature
+
+
+def count_encoding(col: str, train: pd.DataFrame, test: pd.DataFrame) -> Tuple[
+        pd.DataFrame, pd.DataFrame]:
+    total = pd.concat([train, test], ignore_index=True, sort=False)
+    count_map = total[col].value_counts().to_dict()
+    train_feature = train[col].map(count_map)
+    test_feature = test[col].map(count_map)
+
+    return train_feature, test_feature
