@@ -789,6 +789,19 @@ version = "1.4.3"
 
 [[package]]
 category = "main"
+description = "LightGBM Python Package"
+name = "lightgbm"
+optional = false
+python-versions = "*"
+version = "2.3.1"
+
+[package.dependencies]
+numpy = "*"
+scikit-learn = "*"
+scipy = "*"
+
+[[package]]
+category = "main"
 description = "Python implementation of Markdown."
 name = "markdown"
 optional = false
@@ -1514,7 +1527,7 @@ python-versions = "*"
 version = "1.11.2"
 
 [metadata]
-content-hash = "44ef7992282d5b0d72756ca244a43a851221c56b51174a021dabfe995ccde941"
+content-hash = "f85b951224e11397edd99b9214be5ddce1f4a90f31db1e183dabea027ee139fe"
 python-versions = "3.7.3"
 
 [metadata.files]
@@ -1894,6 +1907,12 @@ lazy-object-proxy = [
     {file = "lazy_object_proxy-1.4.3-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:a6ae12d08c0bf9909ce12385803a543bfe99b95fe01e752536a60af2b7797c62"},
     {file = "lazy_object_proxy-1.4.3-cp38-cp38-win32.whl", hash = "sha256:5541cada25cd173702dbd99f8e22434105456314462326f06dba3e180f203dfd"},
     {file = "lazy_object_proxy-1.4.3-cp38-cp38-win_amd64.whl", hash = "sha256:59f79fef100b09564bc2df42ea2d8d21a64fdcda64979c0fa3db7bdaabaf6239"},
+]
+lightgbm = [
+    {file = "lightgbm-2.3.1-py2.py3-none-macosx_10_9_x86_64.macosx_10_10_x86_64.macosx_10_11_x86_64.macosx_10_12_x86_64.macosx_10_13_x86_64.macosx_10_14_x86_64.macosx_10_15_x86_64.whl", hash = "sha256:c35743f825af65bd96106d4df1ee36a5f0f2d1140e2ed2e98e6742a931771730"},
+    {file = "lightgbm-2.3.1-py2.py3-none-manylinux1_x86_64.whl", hash = "sha256:d0c51c79cf34c6dc717fd6a1c1e5c73eb428ade51228fedd6e6ca26ed4756190"},
+    {file = "lightgbm-2.3.1-py2.py3-none-win_amd64.whl", hash = "sha256:c6968efcc5c19f9867592f885edbfaf2d753f7fd8ce924453ac8b453dbf81f55"},
+    {file = "lightgbm-2.3.1.tar.gz", hash = "sha256:bd1817be401e74c0d8b049e97ea2f35d2ce155cfa130119ce4195ea207bd6388"},
 ]
 markdown = [
     {file = "Markdown-3.2.1-py2.py3-none-any.whl", hash = "sha256:e4795399163109457d4c5af2183fbe6b60326c17cfdf25ce6e7474c6624f725d"},
