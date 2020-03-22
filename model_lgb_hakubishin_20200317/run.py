@@ -5,7 +5,6 @@ import numpy as np
 import pandas as pd
 from src.utils import seed_everything, get_logger, json_dump
 from src.feature_loader import FeatureLoader
-from src.get_folds import Fold
 from src.runner import Runner
 from src.models.model_lightgbm import Model_LightGBM
 
