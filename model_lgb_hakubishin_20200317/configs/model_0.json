@@ -17,10 +17,17 @@
     "key": [
         "KeyCategories"
     ],
-    "cv": {
-        "n_splits": 5,
-        "shuffle": true,
-        "random_state": 71
+    "folds": [
+        "StratifiedGroupKFold"
+    ],
+    "negative_down_sampling": {
+        "enable": true,
+        "bagging_size": 1,
+        "random_seed": 71
+    },
+    "random_sampling": {
+        "frac": 0.9,
+        "random_seed": 71
     },
     "model": {
         "name": "lightgbm",
@@ -29,10 +36,12 @@
             "objective": "binary",
             "metric": "binary",
             "learning_rate": 0.1,
-            "max_depth": 3,
-            "subsample": 1.0,
+            "max_depth": 8,
+            "min_child_samples": 50,
+            "subsample": 0.1,
             "subsample_freq": 1,
             "colsample_bytree": 0.7,
+            "min_child_weight": 0,
             "seed": 71,
             "bagging_seed": 71,
             "feature_fraction_seed": 71,

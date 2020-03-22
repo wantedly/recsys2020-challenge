@@ -8,16 +8,16 @@ from .models.model import Base_Model
 
 class Runner(object):
     def __init__(self, model_cls: Callable[[str, dict, pathlib.PosixPath], Base_Model],
-            params: dict, model_output_dir: pathlib.PosixPath, run_name: str) -> None:
+            model_params: dict, model_output_dir: pathlib.PosixPath, run_name: str) -> None:
         self.model_cls = model_cls
-        self.params = params
+        self.model_params = model_params
         self.model_output_dir = model_output_dir
         self.run_name = run_name
         self.n_fold = None
 
     def build_model(self, i_fold):
         run_fold_name = f'{self.run_name}_{i_fold}'
-        return self.model_cls(run_fold_name, self.params, self.model_output_dir)
+        return self.model_cls(run_fold_name, self.model_params, self.model_output_dir)
 
     def train_one_fold(self, i_fold: int, x_trn: pd.DataFrame, y_trn: Union[pd.Series, np.array],
             x_val: pd.DataFrame, y_val: Union[pd.Series, np.array]) -> Tuple[
@@ -31,7 +31,7 @@ class Runner(object):
         return model, scores, val_preds
 
     def train_cv(self, x_train: pd.DataFrame, y_train: Union[pd.Series, np.array],
-            folds_ids: List[Tuple[np.array]]) -> Tuple[np.array, dict]:
+            folds_ids: List[Tuple[np.array]], train_settings: dict) -> Tuple[np.array, dict]:
         oof_preds = np.zeros(len(x_train))
         importances = pd.DataFrame(index=x_train.columns)
         cv_score_list = []
@@ -44,18 +44,28 @@ class Runner(object):
             y_trn = y_train[trn_idx]
             x_val = x_train.iloc[val_idx]
             y_val = y_train[val_idx]
+            print("original train size: ", len(x_trn))
 
             # negative sampling
-            import random
-            ratio = 2.0
-            neg_trn_idx = trn_idx[y_train[trn_idx] == 0]
-            pos_trn_idx = trn_idx[y_train[trn_idx] == 1]
-            n_new_neg = max(len(neg_trn_idx), int(ratio * len(pos_trn_idx)))
-            if len(neg_trn_idx) >= n_new_neg:
-                new_neg_trn_idx = pd.Int64Index(random.sample(list(neg_trn_idx), n_new_neg))
-                trn_idx = pos_trn_idx.union(new_neg_trn_idx)
-                x_trn = x_train.iloc[trn_idx]
-                y_trn = y_train[trn_idx]
+            positive_data = x_trn[y_trn == 1]
+            positive_ratio = float(len(positive_data)) / len(x_trn)
+            negative_data = x_trn[y_trn == 0].sample(
+                frac=positive_ratio / (1 - positive_ratio),
+                random_state=train_settings["negative_down_sampling"]["random_seed"]
+            )
+            trn_idx = positive_data.index.union(negative_data.index).sort_values()
+            x_trn = x_train.iloc[trn_idx]
+            y_trn = y_train[trn_idx]
+            print("train size after negative sampling: ", len(x_trn))
+
+            # random sampling
+            random_sampling_idx = x_trn.sample(
+                frac=train_settings["random_sampling"]["frac"],
+                random_state=train_settings["random_sampling"]["random_seed"]
+            ).index
+            x_trn = x_train.iloc[random_sampling_idx]
+            y_trn = y_train[random_sampling_idx]
+            print("train size after random sampling: ", len(x_trn))
 
             # Training
             model, score, val_pred = self.train_one_fold(i_fold, x_trn, y_trn, x_val, y_val)

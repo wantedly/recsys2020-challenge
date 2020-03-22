@@ -61,31 +61,38 @@ def main():
     # === Loading features
     # =========================================
     logger.info('Loading features')
+    logger.info(f'targets: {config["target"]}')
+    logger.info(f'features: {config["features"]}')
+    logger.info(f'keys: {config["key"]}')
+    logger.info(f'folds: {config["folds"]}')
 
-    target_list = config["target"]
-    feature_list = config["features"]
-    key_list = config["key"]
-    logger.info(f'target: {target_list}')
-    logger.info(f'feature: {feature_list}')
-    logger.info(f'feature: {key_list}')
-
-    y_train = FeatureLoader(
-        data_type="training", debugging=args.debug
-        ).load_features(target_list)
+    # features
     x_train = FeatureLoader(
         data_type="training", debugging=args.debug
-        ).load_features(feature_list)
+        ).load_features(config["features"])
     x_test = FeatureLoader(
         data_type=config["test_data_type"], debugging=args.debug
-        ).load_features(feature_list)
+        ).load_features(config["features"])
+
+    # targets
+    y_train_set = FeatureLoader(
+        data_type="training", debugging=args.debug
+        ).load_features(config["target"])
+
+    # keys
     key_test = FeatureLoader(
         data_type=config["test_data_type"], debugging=args.debug
-        ).load_features(key_list)
+        ).load_features(config["key"])
 
-    logger.debug(f'y_train: {y_train.shape}')
+    # folds
+    folds_train = FeatureLoader(
+        data_type="training", debugging=args.debug
+        ).load_features(config["folds"])
+
+    logger.debug(f'test_data_type: {config["test_data_type"]}')
+    logger.debug(f'y_train_set: {y_train_set.shape}')
     logger.debug(f'x_train: {x_train.shape}')
     logger.debug(f'x_test: {x_test.shape}')
-    logger.debug(f'test_data_type: {config["test_data_type"]}')
     logger.debug(f'key_test: {key_test.shape}')
 
 
@@ -94,24 +101,42 @@ def main():
     # =========================================
     logger.info('Train model and predict')
 
-    # Get folds
-    folds_ids = Fold(
-        n_splits=config['cv']['n_splits'],
-        shuffle=config['cv']['shuffle'],
-        random_state=config['cv']['random_state']
-    ).get_kfold(x_train)
-
     # Modeling
-    target_categories_list = y_train.columns
-    for cat in target_categories_list:
+    target_columns = [
+        "reply_engagement",
+        "retweet_engagement",
+        "retweet_with_comment_engagement",
+        "like_engagement",
+    ]
+    for cat in target_columns:
         print(f'============= {cat} =============')
 
+        # Get target values
+        y_train = y_train_set[f"TargetCategories_{cat}"].values
+
+        # Get folds
+        folds_col = [c for c in folds_train.columns if c.find(cat) != -1]
+        assert len(folds_col) == 1, "The number of fold column must be one"
+        folds = folds_train[folds_col]
+        n_fold = folds.max().values[0]
+        folds_ids = []
+
+        print(f"total pos: {y_train.sum()}")
+        for i in range(n_fold):
+            trn_idx = folds[folds != i+1].dropna().index
+            val_idx = folds[folds == i+1].dropna().index
+            folds_ids.append((trn_idx, val_idx))
+            print(f"{i+1}fold: n_trn={len(trn_idx)}, n_val={len(val_idx)}")
+            print(f"  trn_pos={y_train[trn_idx].sum()}, val_pos={y_train[val_idx].sum()}")
+
         # Train and predict
-        model_name = config['model']['name']
-        model_cls = model_map[model_name]
-        params = config['model']
-        runner = Runner(model_cls, params, model_output_dir, f'Train_{model_cls.__name__}_{cat}')
-        oof_preds, evals_result, importances = runner.train_cv(x_train, y_train[cat].values, folds_ids)
+        model_cls = model_map[config['model']['name']]
+        model_params = config['model']
+        runner = Runner(
+            model_cls, model_params, model_output_dir, f'Train_{model_cls.__name__}_{cat}'
+        )
+        oof_preds, evals_result, importances = runner.train_cv(
+            x_train, y_train, folds_ids, config)
 
         importances.mean(axis=1).sort_values(ascending=False).reset_index().rename(
             columns={'index': 'feature_name', 0: 'imp'}).to_csv(
