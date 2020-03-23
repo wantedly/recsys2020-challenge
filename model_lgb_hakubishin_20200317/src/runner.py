@@ -14,6 +14,7 @@ class Runner(object):
         self.model_output_dir = model_output_dir
         self.run_name = run_name
         self.n_fold = None
+        self.under_sampling_rate = []
 
     def build_model(self, i_fold):
         run_fold_name = f'{self.run_name}_{i_fold}'
@@ -46,11 +47,14 @@ class Runner(object):
             y_val = y_train[val_idx]
             print("original train size: ", len(x_trn))
 
-            # negative sampling
+            # Negative down sampling
             positive_data = x_trn[y_trn == 1]
             positive_ratio = float(len(positive_data)) / len(x_trn)
+            under_sampling_rate = positive_ratio / (1 - positive_ratio)
+            self.under_sampling_rate.append(under_sampling_rate)
+
             negative_data = x_trn[y_trn == 0].sample(
-                frac=positive_ratio / (1 - positive_ratio),
+                frac=under_sampling_rate,
                 random_state=train_settings["negative_down_sampling"]["random_seed"]
             )
             trn_idx = positive_data.index.union(negative_data.index).sort_values()
@@ -59,16 +63,19 @@ class Runner(object):
             print("train size after negative sampling: ", len(x_trn))
 
             # random sampling
-            random_sampling_idx = x_trn.sample(
-                frac=train_settings["random_sampling"]["frac"],
-                random_state=train_settings["random_sampling"]["random_seed"]
-            ).index
-            x_trn = x_train.iloc[random_sampling_idx]
-            y_trn = y_train[random_sampling_idx]
+            frac = float(train_settings["random_sampling"]["n_data"] / len(x_trn))
+            if frac < 1:
+                random_sampling_idx = x_trn.sample(
+                    frac=frac,
+                    random_state=train_settings["random_sampling"]["random_seed"]
+                ).index
+                x_trn = x_train.iloc[random_sampling_idx]
+                y_trn = y_train[random_sampling_idx]
             print("train size after random sampling: ", len(x_trn))
 
             # Training
             model, score, val_pred = self.train_one_fold(i_fold, x_trn, y_trn, x_val, y_val)
+            val_pred = val_pred / (val_pred + ((1 - val_pred) / under_sampling_rate))
             oof_preds[val_idx] = val_pred
             cv_score_list.append(score)
             best_iteration += model.get_best_iteration() / len(folds_ids)
@@ -91,9 +98,10 @@ class Runner(object):
         evals_result = {"evals_result": {
             "n_data": len(x_train),
             "n_features": len(x_train.columns),
+            "best_iteration": best_iteration,
+            "under_sampling_rate": {f"cv{i+1}": rate for i, rate in enumerate(self.under_sampling_rate)},
             "oof_score": oof_score,
             "cv_score": {f"cv{i+1}": cv_score for i, cv_score in enumerate(cv_score_list)},
-            "best_iteration": best_iteration
         }}
         return oof_preds, evals_result, importances
 
@@ -104,6 +112,8 @@ class Runner(object):
             model = self.build_model(i_fold)
             model.load_model()
             y_pred = model.predict(x)
+            under_sampling_rate = self.under_sampling_rate[i_fold]
+            y_pred = y_pred / (y_pred + ((1 - y_pred) / under_sampling_rate))
             preds_list.append(y_pred)
 
         pred_avg = np.mean(preds_list, axis=0)
