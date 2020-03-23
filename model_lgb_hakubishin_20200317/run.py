@@ -137,6 +137,7 @@ def main():
         oof_preds, evals_result, importances = runner.train_cv(
             x_train, y_train, folds_ids, config)
 
+        # Save importance
         importances.mean(axis=1).sort_values(ascending=False).reset_index().rename(
             columns={'index': 'feature_name', 0: 'imp'}).to_csv(
             model_output_dir / f'feature_importances_{cat}.csv', header=True, index=False
@@ -159,6 +160,27 @@ def main():
     # =========================================
     save_path = model_output_dir / 'output.json'
     json_dump(config, save_path)
+
+
+    # =========================================
+    # === Upload to GCS
+    # =========================================
+    if not args.debug:
+        import os
+        from google.cloud import storage, bigquery
+        GCS_BUCKET_NAME = "recsys2020-challenge-wantedly"
+        PROJECT_ID = "wantedly-individual-naomichi"
+        client = storage.Client(project=PROJECT_ID)
+        bucket = client.get_bucket(GCS_BUCKET_NAME)
+
+        files = list(model_output_dir.iterdir())
+        bucket_dir_name = config["model_dir_name"] + "/" + model_no
+
+        for filename in files:
+            basename = os.path.basename(filename)
+            blob = storage.Blob(os.path.join(bucket_dir_name, basename), bucket)
+            logger.info(f"Uploading {basename} to {blob.path}")
+            blob.upload_from_filename(str(filename))
 
 
 if __name__ == '__main__':
