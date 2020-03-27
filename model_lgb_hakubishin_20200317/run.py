@@ -3,7 +3,7 @@ import pathlib
 import argparse
 import numpy as np
 import pandas as pd
-from src.utils import seed_everything, get_logger, json_dump
+from src.utils import seed_everything, get_logger, json_dump, upload_to_gcs
 from src.feature_loader import FeatureLoader
 from src.runner import Runner
 from src.models.model_lightgbm import Model_LightGBM
@@ -44,17 +44,18 @@ def main():
 
     # Create a directory for model output
     model_no = pathlib.Path(args.config).stem
-    model_output_dir = \
-        pathlib.Path(config['model_dir_name']) /\
+    model_output_dir = (
+        pathlib.Path(config['model_dir_name']) /
         pathlib.Path(config['dataset']['output_directory']) / model_no
+    )
     if not model_output_dir.exists():
         model_output_dir.mkdir()
+
     logger.info(f'model_output_dir: {str(model_output_dir)}')
     logger.debug(f'model_output_dir exists: {model_output_dir.exists()}')
     config.update({
         'model_output_dir': str(model_output_dir)
     })
-
 
     # =========================================
     # === Loading features
@@ -166,21 +167,13 @@ def main():
     # === Upload to GCS
     # =========================================
     if not args.debug:
-        import os
-        from google.cloud import storage, bigquery
-        GCS_BUCKET_NAME = "recsys2020-challenge-wantedly"
-        PROJECT_ID = "wantedly-individual-naomichi"
-        client = storage.Client(project=PROJECT_ID)
-        bucket = client.get_bucket(GCS_BUCKET_NAME)
+        logger.info('Upload to GCS')
+
+        bucket_dir_name = config["model_dir_name"] + "/" + model_no
+        logger.info(f'bucket_dir_name: {bucket_dir_name}')
 
         files = list(model_output_dir.iterdir())
-        bucket_dir_name = config["model_dir_name"] + "/" + model_no
-
-        for filename in files:
-            basename = os.path.basename(filename)
-            blob = storage.Blob(os.path.join(bucket_dir_name, basename), bucket)
-            logger.info(f"Uploading {basename} to {blob.path}")
-            blob.upload_from_filename(str(filename))
+        upload_to_gcs(bucket_dir_name, files)
 
 
 if __name__ == '__main__':
