@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
-from typing import Tuple
+from typing import Tuple, List
 
 
 def label_encoding(col: str, train: pd.DataFrame, test: pd.DataFrame) -> Tuple[
@@ -25,3 +25,21 @@ def count_encoding(col: str, train: pd.DataFrame, test: pd.DataFrame) -> Tuple[
     test_feature = test[col].map(count_map)
 
     return train_feature, test_feature
+
+
+def target_encoding(col: str, train: pd.DataFrame, test: pd.DataFrame,
+                    target: str, folds_ids: List[Tuple[np.asarray]]):
+    train[f"{col}_ta"] = np.nan
+    for i_fold, (trn_idx, val_idx) in enumerate(folds_ids):
+        target_mean = train.iloc[trn_idx].groupby(col)[target].mean()
+        train.set_index(col, inplace=True)
+        train.iloc[val_idx, -1] = target_mean
+        train.reset_index(inplace=True)
+
+    test_target_mean = train.groupby(col)[target].mean()
+    test[f"{col}_ta"] = np.nan
+    test.set_index(col, inplace=True)
+    test.iloc[:,-1] = test_target_mean
+    test.reset_index(inplace=True)
+
+    return train[f"{col}_ta"], test[f"{col}_ta"]
