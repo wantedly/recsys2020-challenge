@@ -9,7 +9,9 @@
         "LabelEncoding",
         "CountEncoding",
         "CommonNumericFeatures",
-        "CommonFlgFeatures"
+        "CommonFlgFeatures",
+        "EngagedFollowFollowerRatio",
+        "EngagingFollowFollowerRatio"
     ],
     "target": [
         "TargetCategories"
