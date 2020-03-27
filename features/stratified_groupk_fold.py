@@ -12,6 +12,9 @@ TESTING = False
 GCS_BUCKET_NAME = "recsys2020-challenge-wantedly"
 PROJECT_ID = "wantedly-individual-naomichi"
 
+FOLD = 4
+RANDOM_STATE = 71
+SHUFFLE = True
 
 class StratifiedGroupKFold(BaseFeature):
     def import_columns(self):
@@ -45,9 +48,9 @@ class StratifiedGroupKFold(BaseFeature):
             )
 
             kf = StratifiedKFold(
-                n_splits=3,
-                shuffle=True,
-                random_state=71
+                n_splits=FOLD,
+                shuffle=SHUFFLE,
+                random_state=RANDOM_STATE
             )
             split = kf.split(target_grp_by_max, target_grp_by_max)
 
