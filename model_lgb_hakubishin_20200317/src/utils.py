@@ -5,6 +5,21 @@ import codecs
 import logging
 import numpy as np
 from sklearn.externals import joblib
+from typing import List
+from google.cloud import storage, bigquery
+
+
+def upload_to_gcs(bucket_dir_name: str, files: List[str]):
+    GCS_BUCKET_NAME = "recsys2020-challenge-wantedly"
+    PROJECT_ID = "wantedly-individual-naomichi"
+    client = storage.Client(project=PROJECT_ID)
+    bucket = client.get_bucket(GCS_BUCKET_NAME)
+
+    for filename in files:
+        basename = os.path.basename(filename)
+        blob = storage.Blob(os.path.join(bucket_dir_name, basename), bucket)
+        print(f"Uploading {basename} to {blob.path}")
+        blob.upload_from_filename(str(filename))
 
 
 def seed_everything(seed: int=71, gpu_mode: bool=False):
