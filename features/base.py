@@ -67,17 +67,14 @@ class BaseFeature(abc.ABC):
 
         with tempfile.TemporaryDirectory() as tempdir:
             files: List[str] = []
-
             if TESTING:
                 test_path = os.path.join(tempdir, f"{self.name}_test.ftr")
                 test_table = f"`{PROJECT_ID}.recsys2020.test`"
             else:
                 test_path = os.path.join(tempdir, f"{self.name}_val.ftr")
                 test_table = f"`{PROJECT_ID}.recsys2020.val`"
-
             train_path = os.path.join(tempdir, f"{self.name}_training.ftr")
             train_table = f"`{PROJECT_ID}.recsys2020.training`"
-
             self.read_and_save_features(
                 train_table, test_table, train_path, test_path,
             )
