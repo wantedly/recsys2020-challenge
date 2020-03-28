@@ -64,7 +64,6 @@ class BaseFeature(abc.ABC):
         """何も考えずにとりあえずこれを実行すれば BigQuery からデータを読み込んで変換し GCS にアップロードしてくれる
         """
         self._logger.info(f"Running with debugging={self.debugging}")
-
         with tempfile.TemporaryDirectory() as tempdir:
             files: List[str] = []
             if TESTING:
