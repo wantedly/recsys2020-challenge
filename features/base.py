@@ -9,6 +9,7 @@ import pandas as pd
 from google.cloud import storage, bigquery
 from utils import reduce_mem_usage
 from google.cloud import bigquery_storage_v1beta1
+from io import BytesIO
 
 
 TESTING = False

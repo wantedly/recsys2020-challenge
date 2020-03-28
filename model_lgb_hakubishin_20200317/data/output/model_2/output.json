@@ -1,0 +1,194 @@
+{
+    "model_dir_name": "model_lgb_hakubishin_20200317",
+    "test_data_type": "val",
+    "features": [
+        "LabelEncoding",
+        "CountEncoding",
+        "CommonNumericFeatures",
+        "CommonFlgFeatures",
+        "EngagedFollowFollowerRatio",
+        "EngagingFollowFollowerRatio"
+    ],
+    "target": [
+        "TargetCategories"
+    ],
+    "key": [
+        "KeyCategories"
+    ],
+    "folds": [
+        "StratifiedGroupKFold"
+    ],
+    "negative_down_sampling": {
+        "enable": true,
+        "bagging_size": 1,
+        "random_seed": 71
+    },
+    "random_sampling": {
+        "n_data": 100000,
+        "random_seed": 71
+    },
+    "model": {
+        "name": "lightgbm",
+        "model_params": {
+            "boosting_type": "gbdt",
+            "objective": "binary",
+            "metric": "binary",
+            "learning_rate": 0.1,
+            "max_depth": 8,
+            "min_child_samples": 50,
+            "subsample": 0.7,
+            "subsample_freq": 1,
+            "colsample_bytree": 0.7,
+            "min_child_weight": 0,
+            "seed": 71,
+            "bagging_seed": 71,
+            "feature_fraction_seed": 71,
+            "drop_seed": 71,
+            "verbose": -1
+        },
+        "train_params": {
+            "num_boost_round": 10000,
+            "early_stopping_rounds": 100,
+            "verbose_eval": 500
+        }
+    },
+    "dataset": {
+        "input_directory": "data/input/",
+        "intermediate_directory": "data/interim/",
+        "feature_directory": "data/features/",
+        "output_directory": "data/output/"
+    },
+    "args": {
+        "config": "model_lgb_hakubishin_20200317/configs/model_2.json",
+        "debug": false
+    },
+    "model_output_dir": "model_lgb_hakubishin_20200317/data/output/model_2",
+    "evals_result_reply_engagement": {
+        "n_data": 148075238,
+        "n_features": 19,
+        "best_iteration": 127.0,
+        "under_sampling_rate": {
+            "cv1": 0.02823139507729049,
+            "cv2": 0.028242915596821398,
+            "cv3": 0.028187964963736087
+        },
+        "oof_score": {
+            "ce": 0.11268804956867971,
+            "rce": 10.386995545159506,
+            "prauc": 0.09042685213215096
+        },
+        "cv_score": {
+            "cv1": {
+                "ce": 0.5782945900411229,
+                "rce": -360.1400023685795,
+                "prauc": 0.09078248907248844
+            },
+            "cv2": {
+                "ce": 0.5809743092715203,
+                "rce": -362.5595608295483,
+                "prauc": 0.0903754627405735
+            },
+            "cv3": {
+                "ce": 0.5848137850314007,
+                "rce": -364.2453832877872,
+                "prauc": 0.09051599916825676
+            }
+        }
+    },
+    "evals_result_retweet_engagement": {
+        "n_data": 148075238,
+        "n_features": 19,
+        "best_iteration": 204.66666666666669,
+        "under_sampling_rate": {
+            "cv1": 0.12766972281973993,
+            "cv2": 0.12739686768352124,
+            "cv3": 0.1274637509617362
+        },
+        "oof_score": {
+            "ce": 0.3162928734879759,
+            "rce": 10.380139072789618,
+            "prauc": 0.2884855644837708
+        },
+        "cv_score": {
+            "cv1": {
+                "ce": 0.606273232010923,
+                "rce": -72.0359337281542,
+                "prauc": 0.28722761267184516
+            },
+            "cv2": {
+                "ce": 0.6081154683761831,
+                "rce": -72.12701969200985,
+                "prauc": 0.28926961277968954
+            },
+            "cv3": {
+                "ce": 0.6054682459460485,
+                "rce": -71.48327021477748,
+                "prauc": 0.28924040568349924
+            }
+        }
+    },
+    "evals_result_retweet_with_comment_engagement": {
+        "n_data": 148075238,
+        "n_features": 19,
+        "best_iteration": 185.33333333333334,
+        "under_sampling_rate": {
+            "cv1": 0.007853564590431933,
+            "cv2": 0.007849606707844433,
+            "cv3": 0.007849158595815411
+        },
+        "oof_score": {
+            "ce": 0.04355121809487894,
+            "rce": 4.445848115071415,
+            "prauc": 0.019691477441915007
+        },
+        "cv_score": {
+            "cv1": {
+                "ce": 0.6301772031631632,
+                "rce": -1283.4554725088558,
+                "prauc": 0.01962590493433472
+            },
+            "cv2": {
+                "ce": 0.6353547997025197,
+                "rce": -1293.6680532757557,
+                "prauc": 0.019911687210442272
+            },
+            "cv3": {
+                "ce": 0.6297607276299937,
+                "rce": -1281.2663663075311,
+                "prauc": 0.01960089502322489
+            }
+        }
+    },
+    "evals_result_like_engagement": {
+        "n_data": 148075238,
+        "n_features": 19,
+        "best_iteration": 158.66666666666666,
+        "under_sampling_rate": {
+            "cv1": 0.782354162575864,
+            "cv2": 0.7833077607553505,
+            "cv3": 0.7836406685641698
+        },
+        "oof_score": {
+            "ce": 0.6134904147216386,
+            "rce": 10.534765196078178,
+            "prauc": 0.6512873439159227
+        },
+        "cv_score": {
+            "cv1": {
+                "ce": 0.6193419495660961,
+                "rce": 9.696460835067155,
+                "prauc": 0.6511084332149701
+            },
+            "cv2": {
+                "ce": 0.6200163491092033,
+                "rce": 9.578886893530292,
+                "prauc": 0.6511206503921232
+            },
+            "cv3": {
+                "ce": 0.6199023684589103,
+                "rce": 9.588724326220355,
+                "prauc": 0.651714650852871
+            }
+        }
+    }
+}

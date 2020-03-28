@@ -31,7 +31,8 @@ def reduce_mem_usage(df):
                     df[col] = df[col].astype(np.int64)  
             else:
                 if c_min > np.finfo(np.float16).min and c_max < np.finfo(np.float16).max:
-                    df[col] = df[col].astype(np.float16)
+                    # Float16 is not implemented in the Feather format yet.
+                    df[col] = df[col].astype(np.float32)
                 elif c_min > np.finfo(np.float32).min and c_max < np.finfo(np.float32).max:
                     df[col] = df[col].astype(np.float32)
                 else:
