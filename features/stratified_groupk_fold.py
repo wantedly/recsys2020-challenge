@@ -12,7 +12,7 @@ TESTING = False
 GCS_BUCKET_NAME = "recsys2020-challenge-wantedly"
 PROJECT_ID = "wantedly-individual-naomichi"
 
-FOLD = 4
+FOLD = 3
 RANDOM_STATE = 71
 SHUFFLE = True
 
