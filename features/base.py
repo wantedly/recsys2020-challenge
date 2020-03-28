@@ -147,7 +147,7 @@ class BaseFeature(abc.ABC):
             self._logger.info(f"Uploading {basename} to {blob.path}")
             blob.upload_from_filename(filename)
 
-    def _download_from_gs(self, feature_file_name: str) -> pd.DataFrame:
+    def _download_from_gs(self, feather_file_name: str) -> pd.DataFrame:
         client = storage.Client(project=PROJECT_ID)
         bucket = client.get_bucket(GCS_BUCKET_NAME)
 
@@ -157,11 +157,11 @@ class BaseFeature(abc.ABC):
             bucket_dir_name = "features"
 
         blob = storage.Blob(
-            os.path.join(bucket_dir_name, feature_file_name),
+            os.path.join(bucket_dir_name, feather_file_name),
             bucket
         )
         content = blob.download_as_string()
-        print(f"Downloading {feature_file_name} from {blob.path}")
-        df_feature = pd.read_feather(BytesIO(content))
+        print(f"Downloading {feather_file_name} from {blob.path}")
+        df = pd.read_feather(BytesIO(content))
 
-        return df_feature
+        return df
