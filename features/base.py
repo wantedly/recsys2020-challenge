@@ -161,7 +161,7 @@ class BaseFeature(abc.ABC):
             bucket
         )
         content = blob.download_as_string()
-        print(f"Downloading {feature_file_name} to {blob.path}")
+        print(f"Downloading {feature_file_name} from {blob.path}")
         df_feature = pd.read_feather(BytesIO(content))
 
         return df_feature
