@@ -64,16 +64,20 @@ class BaseFeature(abc.ABC):
         """何も考えずにとりあえずこれを実行すれば BigQuery からデータを読み込んで変換し GCS にアップロードしてくれる
         """
         self._logger.info(f"Running with debugging={self.debugging}")
+
         with tempfile.TemporaryDirectory() as tempdir:
             files: List[str] = []
+
             if TESTING:
                 test_path = os.path.join(tempdir, f"{self.name}_test.ftr")
                 test_table = f"`{PROJECT_ID}.recsys2020.test`"
             else:
                 test_path = os.path.join(tempdir, f"{self.name}_val.ftr")
                 test_table = f"`{PROJECT_ID}.recsys2020.val`"
+
             train_path = os.path.join(tempdir, f"{self.name}_training.ftr")
             train_table = f"`{PROJECT_ID}.recsys2020.training`"
+
             self.read_and_save_features(
                 train_table, test_table, train_path, test_path,
             )
@@ -148,6 +152,8 @@ class BaseFeature(abc.ABC):
             blob.upload_from_filename(filename)
 
     def _download_from_gs(self, feather_file_name: str) -> pd.DataFrame:
+        """GCSにある特徴量ファイル(feather形式)を読み込む
+        """
         client = storage.Client(project=PROJECT_ID)
         bucket = client.get_bucket(GCS_BUCKET_NAME)
 
