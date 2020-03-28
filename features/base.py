@@ -146,3 +146,22 @@ class BaseFeature(abc.ABC):
             blob = storage.Blob(os.path.join(bucket_dir_name, basename), bucket)
             self._logger.info(f"Uploading {basename} to {blob.path}")
             blob.upload_from_filename(filename)
+
+    def _download_from_gs(self, feature_file_name: str) -> pd.DataFrame:
+        client = storage.Client(project=PROJECT_ID)
+        bucket = client.get_bucket(GCS_BUCKET_NAME)
+
+        if self.debugging:
+            bucket_dir_name = "features_debug"
+        else:
+            bucket_dir_name = "features"
+
+        blob = storage.Blob(
+            os.path.join(bucket_dir_name, feature_file_name),
+            bucket
+        )
+        content = blob.download_as_string()
+        print(f"Downloading {feature_file_name} to {blob.path}")
+        df_feature = pd.read_feather(BytesIO(content))
+
+        return df_feature
