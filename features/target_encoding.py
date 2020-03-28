@@ -3,7 +3,6 @@ import pandas as pd
 from base import BaseFeature
 from encoding_func import target_encoding
 from google.cloud import storage
-from io import BytesIO
 
 
 GCS_BUCKET_NAME = "recsys2020-challenge-wantedly"
@@ -21,32 +20,12 @@ class TargetEncoding(BaseFeature):
             "CASE WHEN like_engagement_timestamp IS NULL THEN 0 ELSE 1 END AS like_engagement",
         ]
 
-    def download_feather_from_gs(self, feature_class_name: str,
-                                 data_type: str = "training") -> pd.DataFrame:
-        if self.debugging:
-            bucket_dir_name = "features_debug"
-        else:
-            bucket_dir_name = "features"
-
-        client = storage.Client(project=PROJECT_ID)
-        bucket = client.get_bucket(GCS_BUCKET_NAME)
-        feature_file_name = f"{feature_class_name}_{data_type}.ftr"
-        blob = storage.Blob(
-            os.path.join(bucket_dir_name, feature_file_name),
-            bucket
-        )
-        content = blob.download_as_string()
-        print(f"Downloading {feature_file_name} to {blob.path}")
-        df_feature = pd.read_feather(BytesIO(content))
-        return df_feature
-
     def make_features(self, df_train_input, df_test_input):
         df_train_features = pd.DataFrame()
         df_test_features = pd.DataFrame()
 
-        folds_train = self.download_feather_from_gs(
-            data_type="training",
-            feature_class_name="StratifiedGroupKFold"
+        folds_train = self._download_from_gs(
+            feather_file_name="StratifiedGroupKFold_training.ftr"
         )
 
         category_columns = [
