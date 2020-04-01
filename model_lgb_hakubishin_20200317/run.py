@@ -118,13 +118,13 @@ def main():
         folds_col = [c for c in folds_train.columns if c.find(cat) != -1]
         assert len(folds_col) == 1, "The number of fold column must be one"
         folds = folds_train[folds_col]
-        n_fold = folds.max().values[0]
+        n_fold = folds.max().values[0] + 1
         folds_ids = []
 
         logger.debug(f"total pos: {y_train.sum()}")
         for i in range(n_fold):
-            trn_idx = folds[folds != i+1].dropna().index
-            val_idx = folds[folds == i+1].dropna().index
+            trn_idx = folds[folds != i].dropna().index
+            val_idx = folds[folds == i].dropna().index
             folds_ids.append((trn_idx, val_idx))
             logger.debug(f"{i+1}fold: n_trn={len(trn_idx)}, n_val={len(val_idx)}")
             logger.debug(f"{i+1}fold: trn_pos={y_train[trn_idx].sum()}, val_pos={y_train[val_idx].sum()}")
