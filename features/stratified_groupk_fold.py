@@ -58,7 +58,7 @@ class StratifiedGroupKFold(BaseFeature):
             for i_fold, (trn_idx, val_idx) in enumerate(split):
                 val_tweet_id = target_grp_by_max.iloc[val_idx].index
                 val_idx = df_train_input[df_train_input["tweet_id"].isin(val_tweet_id)].index
-                val_position[val_idx] = int(i_fold + 1)
+                val_position[val_idx] = i_fold
 
             df_train_features[target] = val_position
 
