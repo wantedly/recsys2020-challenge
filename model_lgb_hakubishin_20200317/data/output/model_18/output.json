@@ -1,0 +1,201 @@
+{
+    "model_dir_name": "model_lgb_hakubishin_20200317",
+    "test_data_type": "val",
+    "features": [
+        "LabelEncoding",
+        "CountEncoding",
+        "CommonNumericFeatures",
+        "CommonFlgFeatures",
+        "EngagedFollowFollowerRatio",
+        "EngagingFollowFollowerRatio",
+        "TargetEncoding",
+        "CountEncodingHashtags",
+        "CountEncodingPresentMedia",
+        "CountEncodingPresentDomains",
+        "CountEncodingPresentLinks",
+        "ElapsedTimeFromAccountCreated",
+        "EngagingUserFollowsEngagedUser"
+    ],
+    "target": [
+        "TargetCategories"
+    ],
+    "key": [
+        "KeyCategories"
+    ],
+    "folds": [
+        "StratifiedGroupKFold"
+    ],
+    "negative_down_sampling": {
+        "enable": true,
+        "bagging_size": 1,
+        "random_seed": 71
+    },
+    "random_sampling": {
+        "n_data": 100000,
+        "random_seed": 71
+    },
+    "model": {
+        "name": "lightgbm",
+        "model_params": {
+            "boosting_type": "gbdt",
+            "objective": "binary",
+            "metric": "binary",
+            "learning_rate": 0.1,
+            "max_depth": 8,
+            "min_child_samples": 50,
+            "subsample": 0.7,
+            "subsample_freq": 1,
+            "colsample_bytree": 0.7,
+            "min_child_weight": 0,
+            "seed": 71,
+            "bagging_seed": 71,
+            "feature_fraction_seed": 71,
+            "drop_seed": 71,
+            "verbose": -1
+        },
+        "train_params": {
+            "num_boost_round": 10000,
+            "early_stopping_rounds": 100,
+            "verbose_eval": 500
+        }
+    },
+    "dataset": {
+        "input_directory": "data/input/",
+        "intermediate_directory": "data/interim/",
+        "feature_directory": "data/features/",
+        "output_directory": "data/output/"
+    },
+    "args": {
+        "config": "model_lgb_hakubishin_20200317/configs/model_18.json",
+        "debug": false
+    },
+    "model_output_dir": "model_lgb_hakubishin_20200317/data/output/model_18",
+    "evals_result_reply_engagement": {
+        "n_data": 148075238,
+        "n_features": 51,
+        "best_iteration": 180.33333333333334,
+        "under_sampling_rate": {
+            "cv1": 0.02823139507729049,
+            "cv2": 0.028242915596821398,
+            "cv3": 0.028187964963736087
+        },
+        "oof_score": {
+            "ce": 0.10181219813925989,
+            "rce": 19.035807254344196,
+            "prauc": 0.1725469307299524
+        },
+        "cv_score": {
+            "cv1": {
+                "ce": 0.4972173444465932,
+                "rce": -295.628100264754,
+                "prauc": 0.17263429553039436
+            },
+            "cv2": {
+                "ce": 0.498425874941,
+                "rce": -296.836228624084,
+                "prauc": 0.1735282866675817
+            },
+            "cv3": {
+                "ce": 0.5043486917210562,
+                "rce": -300.3694127801107,
+                "prauc": 0.1729997733943675
+            }
+        }
+    },
+    "evals_result_retweet_engagement": {
+        "n_data": 148075238,
+        "n_features": 51,
+        "best_iteration": 175.33333333333334,
+        "under_sampling_rate": {
+            "cv1": 0.12766972281973993,
+            "cv2": 0.12739686768352124,
+            "cv3": 0.1274637509617362
+        },
+        "oof_score": {
+            "ce": 0.25130220397644604,
+            "rce": 28.794890878479674,
+            "prauc": 0.5376817311932629
+        },
+        "cv_score": {
+            "cv1": {
+                "ce": 0.4685951224183467,
+                "rce": -32.96842936362163,
+                "prauc": 0.5365189046430641
+            },
+            "cv2": {
+                "ce": 0.46727830295410144,
+                "rce": -32.26307475618171,
+                "prauc": 0.5383514142011311
+            },
+            "cv3": {
+                "ce": 0.4655066266837311,
+                "rce": -31.84275011094293,
+                "prauc": 0.5382410459674585
+            }
+        }
+    },
+    "evals_result_retweet_with_comment_engagement": {
+        "n_data": 148075238,
+        "n_features": 51,
+        "best_iteration": 224.0,
+        "under_sampling_rate": {
+            "cv1": 0.007853564590431933,
+            "cv2": 0.007849606707844433,
+            "cv3": 0.007849158595815411
+        },
+        "oof_score": {
+            "ce": 0.04020110892734714,
+            "rce": 11.796201428451337,
+            "prauc": 0.0553097463887582
+        },
+        "cv_score": {
+            "cv1": {
+                "ce": 0.5470507734227534,
+                "rce": -1100.9643992722426,
+                "prauc": 0.054830706660666265
+            },
+            "cv2": {
+                "ce": 0.5466046376596331,
+                "rce": -1098.9921562491968,
+                "prauc": 0.056361912659643104
+            },
+            "cv3": {
+                "ce": 0.5428970632294028,
+                "rce": -1090.7466136035255,
+                "prauc": 0.055709231904568175
+            }
+        }
+    },
+    "evals_result_like_engagement": {
+        "n_data": 148075238,
+        "n_features": 51,
+        "best_iteration": 206.33333333333334,
+        "under_sampling_rate": {
+            "cv1": 0.782354162575864,
+            "cv2": 0.7833077607553505,
+            "cv3": 0.7836406685641698
+        },
+        "oof_score": {
+            "ce": 0.49453813343698216,
+            "rce": 27.88156234273387,
+            "prauc": 0.8011242645233696
+        },
+        "cv_score": {
+            "cv1": {
+                "ce": 0.49895648453002256,
+                "rce": 27.249338634463726,
+                "prauc": 0.8013104694723444
+            },
+            "cv2": {
+                "ce": 0.49936540357628656,
+                "rce": 27.17421773941564,
+                "prauc": 0.801264080056362
+            },
+            "cv3": {
+                "ce": 0.4996771386309004,
+                "rce": 27.123286137858614,
+                "prauc": 0.8008398861673262
+            }
+        }
+    }
+}

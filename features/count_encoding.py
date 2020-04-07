@@ -7,6 +7,8 @@ class CountEncoding(BaseFeature):
     def import_columns(self):
         return [
             "language",
+            "engaging_user_id",
+            "engaged_user_id",
         ]
 
     def make_features(self, df_train_input, df_test_input):

@@ -1,0 +1,201 @@
+{
+    "model_dir_name": "model_lgb_hakubishin_20200317",
+    "test_data_type": "val",
+    "features": [
+        "LabelEncoding",
+        "CountEncoding",
+        "CommonNumericFeatures",
+        "CommonFlgFeatures",
+        "EngagedFollowFollowerRatio",
+        "EngagingFollowFollowerRatio",
+        "TargetEncoding",
+        "CountEncodingHashtags",
+        "CountEncodingPresentMedia",
+        "CountEncodingPresentDomains",
+        "CountEncodingPresentLinks",
+        "ElapsedTimeFromAccountCreated",
+        "EngagingUserFollowsEngagedUser"
+    ],
+    "target": [
+        "TargetCategories"
+    ],
+    "key": [
+        "KeyCategories"
+    ],
+    "folds": [
+        "StratifiedGroupKFold"
+    ],
+    "negative_down_sampling": {
+        "enable": true,
+        "bagging_size": 1,
+        "random_seed": 71
+    },
+    "random_sampling": {
+        "n_data": 100000,
+        "random_seed": 71
+    },
+    "model": {
+        "name": "lightgbm",
+        "model_params": {
+            "boosting_type": "gbdt",
+            "objective": "binary",
+            "metric": "binary",
+            "learning_rate": 0.1,
+            "max_depth": 8,
+            "min_child_samples": 50,
+            "subsample": 0.7,
+            "subsample_freq": 1,
+            "colsample_bytree": 0.7,
+            "min_child_weight": 0,
+            "seed": 71,
+            "bagging_seed": 71,
+            "feature_fraction_seed": 71,
+            "drop_seed": 71,
+            "verbose": -1
+        },
+        "train_params": {
+            "num_boost_round": 10000,
+            "early_stopping_rounds": 100,
+            "verbose_eval": 500
+        }
+    },
+    "dataset": {
+        "input_directory": "data/input/",
+        "intermediate_directory": "data/interim/",
+        "feature_directory": "data/features/",
+        "output_directory": "data/output/"
+    },
+    "args": {
+        "config": "model_lgb_hakubishin_20200317/configs/model_20.json",
+        "debug": false
+    },
+    "model_output_dir": "model_lgb_hakubishin_20200317/data/output/model_20",
+    "evals_result_reply_engagement": {
+        "n_data": 148075238,
+        "n_features": 52,
+        "best_iteration": 167.66666666666669,
+        "under_sampling_rate": {
+            "cv1": 0.02823139507729049,
+            "cv2": 0.028242915596821398,
+            "cv3": 0.028187964963736087
+        },
+        "oof_score": {
+            "ce": 0.10168608130959961,
+            "rce": 19.1360992379346,
+            "prauc": 0.1742481338295215
+        },
+        "cv_score": {
+            "cv1": {
+                "ce": 0.49666051708759656,
+                "rce": -295.1850414039243,
+                "prauc": 0.17394553763839946
+            },
+            "cv2": {
+                "ce": 0.4985317706158304,
+                "rce": -296.92054053953643,
+                "prauc": 0.17473588598273668
+            },
+            "cv3": {
+                "ce": 0.5039390533937628,
+                "rce": -300.04422772611355,
+                "prauc": 0.17418983183759018
+            }
+        }
+    },
+    "evals_result_retweet_engagement": {
+        "n_data": 148075238,
+        "n_features": 52,
+        "best_iteration": 202.0,
+        "under_sampling_rate": {
+            "cv1": 0.12766972281973993,
+            "cv2": 0.12739686768352124,
+            "cv3": 0.1274637509617362
+        },
+        "oof_score": {
+            "ce": 0.2509729063338047,
+            "rce": 28.888195569830224,
+            "prauc": 0.538697762704903
+        },
+        "cv_score": {
+            "cv1": {
+                "ce": 0.46778106823123056,
+                "rce": -32.73743356042358,
+                "prauc": 0.5378110912774252
+            },
+            "cv2": {
+                "ce": 0.4652656917482863,
+                "rce": -31.69340536497096,
+                "prauc": 0.5396317963453204
+            },
+            "cv3": {
+                "ce": 0.4644932976109859,
+                "rce": -31.555750777185064,
+                "prauc": 0.5387345872319573
+            }
+        }
+    },
+    "evals_result_retweet_with_comment_engagement": {
+        "n_data": 148075238,
+        "n_features": 52,
+        "best_iteration": 236.66666666666669,
+        "under_sampling_rate": {
+            "cv1": 0.007853564590431933,
+            "cv2": 0.007849606707844433,
+            "cv3": 0.007849158595815411
+        },
+        "oof_score": {
+            "ce": 0.040190751869773576,
+            "rce": 11.818925473742315,
+            "prauc": 0.055501281389386176
+        },
+        "cv_score": {
+            "cv1": {
+                "ce": 0.5461520508846238,
+                "rce": -1098.9913945246867,
+                "prauc": 0.055082460260403136
+            },
+            "cv2": {
+                "ce": 0.5468663345975575,
+                "rce": -1099.5661956083015,
+                "prauc": 0.05688073994431735
+            },
+            "cv3": {
+                "ce": 0.5432115922431437,
+                "rce": -1091.4364761637764,
+                "prauc": 0.054570273344950286
+            }
+        }
+    },
+    "evals_result_like_engagement": {
+        "n_data": 148075238,
+        "n_features": 52,
+        "best_iteration": 218.0,
+        "under_sampling_rate": {
+            "cv1": 0.782354162575864,
+            "cv2": 0.7833077607553505,
+            "cv3": 0.7836406685641698
+        },
+        "oof_score": {
+            "ce": 0.4936449034516043,
+            "rce": 28.01182196612505,
+            "prauc": 0.8019362633448107
+        },
+        "cv_score": {
+            "cv1": {
+                "ce": 0.498107740195006,
+                "rce": 27.373090331489713,
+                "prauc": 0.802463377324936
+            },
+            "cv2": {
+                "ce": 0.4988300363596742,
+                "rce": 27.252293905820522,
+                "prauc": 0.8016875663048286
+            },
+            "cv3": {
+                "ce": 0.49849737352873424,
+                "rce": 27.29535205228224,
+                "prauc": 0.8016716985435485
+            }
+        }
+    }
+}
