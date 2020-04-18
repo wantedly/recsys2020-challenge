@@ -79,7 +79,7 @@ class CountEncodingPresentMedia(BaseFeature):
         if TESTING:
             test_table = f"`{PROJECT_ID}.recsys2020.test`"
         else:
-            test_table = f"`{PROJECT_ID}.recsys2020.val`"
+            test_table = f"`{PROJECT_ID}.recsys2020.val_20200418`"
         count_present_media = self._read_present_media_count_from_bigquery(train_table, test_table)
         feature_names = ["mean_value", "max_value", "min_value", "std_value"]
         print(count_present_media.shape)

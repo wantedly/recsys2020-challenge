@@ -69,7 +69,7 @@ class CountEncodingInTweetidUnits(BaseFeature):
         if TESTING:
             test_table = f"`{PROJECT_ID}.recsys2020.test`"
         else:
-            test_table = f"`{PROJECT_ID}.recsys2020.val`"
+            test_table = f"`{PROJECT_ID}.recsys2020.val_20200418`"
         train_info = self._read_count_info_from_bigquery(train_table, test_table, train_table)
         test_info = self._read_count_info_from_bigquery(train_table, test_table, test_table)
         feature_names = ["n_tweet", "n_engagement_per_tweet"]

@@ -79,7 +79,7 @@ class CountEncodingHashtags(BaseFeature):
         if TESTING:
             test_table = f"`{PROJECT_ID}.recsys2020.test`"
         else:
-            test_table = f"`{PROJECT_ID}.recsys2020.val`"
+            test_table = f"`{PROJECT_ID}.recsys2020.val_20200418`"
         count_hashtags = self._read_hashtags_count_from_bigquery(train_table, test_table)
         feature_names = ["mean_value", "max_value", "min_value", "std_value"]
         print(count_hashtags.shape)

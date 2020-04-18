@@ -74,7 +74,7 @@ class Connected2ndEngagingToEngaged(BaseFeature):
         if TESTING:
             test_table = f"`{PROJECT_ID}.recsys2020.test`"
         else:
-            test_table = f"`{PROJECT_ID}.recsys2020.val`"
+            test_table = f"`{PROJECT_ID}.recsys2020.val_20200418`"
         train_2nd_connected = self._read_2nd_connected_count_from_bigquery(train_table, test_table, train_table)
         test_2nd_connected = self._read_2nd_connected_count_from_bigquery(train_table, test_table, test_table)
         feature_names = ["engaging_to_engaged_2nd", "engaging_to_engaged_1st_and_2nd"]
