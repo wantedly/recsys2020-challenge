@@ -37,7 +37,7 @@ class KeyCategories(BaseFeature):
                 test_table = f"`{PROJECT_ID}.recsys2020.test`"
             else:
                 test_path = os.path.join(tempdir, f"{self.name}_val.ftr")
-                test_table = f"`{PROJECT_ID}.recsys2020.val`"
+                test_table = f"`{PROJECT_ID}.recsys2020.val_20200418`"
             train_path = os.path.join(tempdir, f"{self.name}_training.ftr")
             train_table = f"`{PROJECT_ID}.recsys2020.training`"
             self.read_and_save_features(
