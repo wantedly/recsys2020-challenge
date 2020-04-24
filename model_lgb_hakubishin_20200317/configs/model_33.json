@@ -12,6 +12,7 @@
         "CommonFlgFeatures",
         "EngagedFollowFollowerRatio",
         "EngagingFollowFollowerRatio",
+        "TargetEncoding",
         "CountEncodingHashtags",
         "CountEncodingPresentMedia",
         "CountEncodingPresentDomains",
@@ -25,7 +26,8 @@
         "CountEncodingCrossing",
         "CountEncodingCrossing2",
         "AtSignFeatures",
-        "CountEncodingTextId"
+        "CountEncodingTextId",
+        "AggFollowFollowingCountOf1dConnectUsers"
     ],
     "target": [
         "TargetCategories"
@@ -44,28 +46,6 @@
     "random_sampling": {
         "n_data": 100000,
         "random_seed": 71
-    },
-    "adversarial_validation": {
-        "lgb_model_params": {
-            "objective": "binary",
-            "metric": "auc",
-            "boosting": "gbdt",
-            "max_depth": 8,
-            "learning_rate": 0.1,
-            "colsample_bytree": 0.7,
-            "subsample": 0.1,
-            "subsample_freq": 1,
-            "seed": 71,
-            "bagging_seed": 71,
-            "feature_fraction_seed": 71,
-            "drop_seed": 71,
-            "verbose": -1
-        },
-        "lgb_train_params": {
-            "num_boost_round": 1000,
-            "early_stopping_rounds": 100,
-            "verbose_eval": 500
-        }
     },
     "model": {
         "name": "lightgbm",
