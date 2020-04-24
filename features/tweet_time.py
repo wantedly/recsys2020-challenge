@@ -78,7 +78,7 @@ class TweetTime(BaseFeature):
         if TESTING:
             test_table = f"`{PROJECT_ID}.recsys2020.test`"
         else:
-            test_table = f"`{PROJECT_ID}.recsys2020.val`"
+            test_table = f"`{PROJECT_ID}.recsys2020.val_20200418`"
         tweet_time = self._read_activity_time_from_bigquery(train_table, test_table)
         feature_names = ["activity_ratio"]
         print(tweet_time.shape)
