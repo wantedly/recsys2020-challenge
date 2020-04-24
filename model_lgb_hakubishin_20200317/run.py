@@ -156,14 +156,11 @@ def main():
         sub.to_csv(model_output_dir/ sub_file_name, index=False, header=False)
         logger.info(f'Save submission file: {model_output_dir/ sub_file_name}')
 
-
-    # =========================================
-    # === Save files
-    # =========================================
-    logger.info('Save files')
-    save_path = model_output_dir / 'output.json'
-    json_dump(config, save_path)
-    logger.info(f'Save model log: {save_path}')
+        # Save files (override)
+        logger.info('Save files')
+        save_path = model_output_dir / 'output.json'
+        json_dump(config, save_path)
+        logger.info(f'Save model log: {save_path}')
 
 
     # =========================================
