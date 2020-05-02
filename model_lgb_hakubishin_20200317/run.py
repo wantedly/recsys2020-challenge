@@ -149,6 +149,11 @@ def main():
         config.update(evals_result)
         test_preds = runner.predict_cv(x_test)
 
+        # Save oof-pred file
+        oof_preds_file_name = f"{cat}_oof_pred"
+        np.save(model_output_dir / oof_preds_file_name, oof_preds)
+        logger.info(f'Save oof-pred file: {model_output_dir/ oof_preds_file_name}')
+
         # Make submission file
         sub = pd.concat([key_test, pd.Series(test_preds).rename("pred")], axis=1)
         sub = sub[["KeyCategories_tweet_id", "KeyCategories_engaging_user_id", "pred"]]
