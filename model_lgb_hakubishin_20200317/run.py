@@ -115,7 +115,8 @@ def main():
         y_train = y_train_set[f"TargetCategories_{cat}"].values
 
         # Get folds
-        folds_col = [c for c in folds_train.columns if c.find(cat) != -1]
+        folds_col = [c for c in folds_train.columns if c == "StratifiedGroupKFold_" + cat]
+        # folds_col = [c for c in folds_train.columns if c.find(cat) != -1]
         assert len(folds_col) == 1, "The number of fold column must be one"
         folds = folds_train[folds_col]
         n_fold = folds.max().values[0] + 1
