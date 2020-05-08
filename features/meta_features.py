@@ -30,7 +30,6 @@ class MetaFeatures(BaseFeature):
             oof_pred = np.load(oof_pred_path)
             df_train_features[target_col] = oof_pred
 
-            import pdb; pdb.set_trace()
             test_pred_path = model_outpput_path + f"{target_col}_submission_val_20200418.csv"
             test_pred = pd.read_csv(test_pred_path, header=None).iloc[:, 2]
             df_test_features[target_col] = test_pred
