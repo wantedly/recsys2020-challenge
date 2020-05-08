@@ -630,10 +630,6 @@ version = "1.51.0"
 [package.dependencies]
 protobuf = ">=3.6.0"
 
-[package.dependencies.grpcio]
-optional = true
-version = ">=1.0.0"
-
 [package.extras]
 grpc = ["grpcio (>=1.0.0)"]
 
@@ -1565,7 +1561,7 @@ python-versions = "*"
 version = "1.12.1"
 
 [metadata]
-content-hash = "fd5b05736c4b728bb223a89a5c57f89245877b99f11c94f30ffc08bcae0299a8"
+content-hash = "c056e5d66fa3fbc61701ffa3c7479166c42d9b03c14946ced6b34b8f06445249"
 python-versions = "3.7.3"
 
 [metadata.files]
