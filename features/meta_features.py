@@ -25,7 +25,7 @@ class MetaFeatures(BaseFeature):
         for target_col in target_columns:
             print(f'============= {target_col} =============')
 
-            model_outpput_path = "../model_lgb_hakubishin_20200317/data/output/model_44/"
+            model_outpput_path = "./model_lgb_hakubishin_20200317/data/output/model_44/"
             oof_pred_path = model_outpput_path + f"{target_col}_oof_pred.npy"
             oof_pred = np.load(oof_pred_path)
             df_train_features[target_col] = oof_pred
