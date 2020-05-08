@@ -41,7 +41,7 @@
         "random_seed": 71
     },
     "random_sampling": {
-        "n_data": 10000000,
+        "n_data": 100000,
         "random_seed": 71
     },
     "model": {
