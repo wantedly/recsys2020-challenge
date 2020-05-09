@@ -18,6 +18,15 @@ GCS_BUCKET_NAME = "recsys2020-challenge-wantedly"
 PROJECT_ID = "wantedly-individual-naomichi"
 
 
+def _pad_ids(ids_list: List[List[int]], max_length: int) -> Dict[str, torch.Tensor]:
+    input_ids = torch.zeros(len(ids_list), max_length).long()
+    attention_mask = torch.zeros(len(ids_list), max_length).float()
+    for i, ids in enumerate(ids_list):
+        input_ids[i, :len(ids)] = torch.tensor(ids)
+        attention_mask[i, :len(ids)] = 1.0
+    return dict(input_ids=input_ids, attention_mask=attention_mask)
+
+
 class PretrainedBertGAP(BaseFeature):
     def __init__(self, batch_size=64, **kwargs) -> None:
         super().__init__(**kwargs)
@@ -83,15 +92,12 @@ class PretrainedBertGAP(BaseFeature):
         for df in iterator:
             for start in range(0, len(df), self.batch_size):
                 tweet_ids = df.tweet_id.values[start : start + self.batch_size]
-                target_tokens = df.text_tokens.values[start : start + self.batch_size]
+                target_tokens = df.text_tokens.values[start : start + self.batch_size].tolist()
+                if not target_tokens:
+                    continue
                 pbar.update(len(target_tokens))
                 max_length = min(512, max(len(tgt) for tgt in target_tokens))
-                padded = tokenizer.batch_encode_plus(
-                    target_tokens,
-                    return_tensors="pt",
-                    pad_to_max_length=True,
-                    max_length=max_length,
-                )
+                padded = _pad_ids(target_tokens, max_length=max_length)
                 input_ids = padded["input_ids"].to(device)
                 attention_mask = padded["attention_mask"].to(device)
                 last_hidden_states = bert(input_ids, attention_mask=attention_mask)[0]
