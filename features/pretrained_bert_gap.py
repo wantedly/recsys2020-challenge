@@ -102,7 +102,7 @@ class PretrainedBertGAP(BaseFeature):
                 attention_mask = padded["attention_mask"].to(device)
                 last_hidden_states = bert(input_ids, attention_mask=attention_mask)[0]
                 gaps = last_hidden_states.mean(1).cpu().numpy().astype(np.float32)
-                embedded = {"gap_{}": gaps[:, i] for i in range(768)}
+                embedded = {f"gap_{i}": gaps[:, i] for i in range(768)}
                 embedded["tweet_id"] = tweet_ids
                 insert_data = pd.DataFrame(embedded)
                 bqclient.insert_rows_from_dataframe(output_table, insert_data, schema)
