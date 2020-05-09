@@ -1,13 +1,21 @@
+import os
+import tempfile
 import argparse
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Generator
 
 import numpy as np
 import pandas as pd
 import transformers
 import tqdm
 import torch
+from google.cloud import storage, bigquery, exceptions
+from google.cloud import bigquery_storage_v1beta1
 
 from base import BaseFeature
+
+TESTING = False
+GCS_BUCKET_NAME = "recsys2020-challenge-wantedly"
+PROJECT_ID = "wantedly-individual-naomichi"
 
 
 class PretrainedBertGAP(BaseFeature):
@@ -15,57 +23,106 @@ class PretrainedBertGAP(BaseFeature):
         super().__init__(**kwargs)
         self.batch_size = batch_size
 
-    def import_columns(self):
-        return ["text_tokens"]
+    def import_columns(self) -> List[str]:
+        ...
+
+    def make_features(
+        self, df_train_input: pd.DataFrame, df_test_input: pd.DataFrame
+    ) -> Tuple[pd.DataFrame, pd.DataFrame]:
+        ...
 
     @classmethod
     def add_feature_specific_arguments(cls, parser: argparse.ArgumentParser):
         parser.add_argument("--batch_size", type=int, default=64)
 
+    def run(self):
+        self._logger.info(f"Running with debugging={self.debugging}")
+        if TESTING:
+            test_table = f"`{PROJECT_ID}.recsys2020.test`"
+        else:
+            test_table = f"`{PROJECT_ID}.recsys2020.val_20200418`"
+        train_table = f"`{PROJECT_ID}.recsys2020.training`"
+        output_table_name = f"{PROJECT_ID}.recsys2020.pretrained_bert_gap"
+        if self.debugging:
+            output_table_name += "_debug"
+        self._extract_features(
+            train_table, test_table, output_table_name
+        )
+
     @torch.no_grad()
-    def make_features(self, df_train_input, df_test_input):
+    def _extract_features(
+        self, table_name: str, test_table_name: str, output_table_name: str
+    ):
+        bqclient = bigquery.Client(project=PROJECT_ID)
+        schema = [
+            bigquery.schema.SchemaField(name="tweet_id", field_type="STRING", mode="REQUIRED"),
+        ] + [
+            bigquery.schema.SchemaField(name=f"gap_{i}", field_type="FLOAT64", mode="REQUIRED")
+            for i in range(768)
+        ]
+        try:
+            output_table = bqclient.get_table(output_table_name)
+            if not self.debugging:
+                raise RuntimeError(f"Table {output_table_name} already exists.")
+        except exceptions.NotFound:
+            output_table = bigquery.Table(output_table_name, schema=schema)
+            bqclient.create_table(output_table)
+
+        total_rows, iterator = self._read_from_bigquery(bqclient, table_name, test_table_name)
+
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         tokenizer = transformers.BertTokenizer.from_pretrained(
             "bert-base-multilingual-cased", do_lowercase=False
         )
-        bert = transformers.BertModel.from_pretrained("bert-base-multilingual-cased").to(device)
+        bert = transformers.BertModel.from_pretrained(
+            "bert-base-multilingual-cased"
+        ).to(device)
         bert.eval()
-        train_tokens = df_train_input["text_tokens"].apply(
-            lambda x: ",".join(map(str, x))
-        )
-        test_tokens = df_test_input["text_tokens"].apply(
-            lambda x: ",".join(map(str, x))
-        )
 
-        unique_tokens = list(set(train_tokens.unique()).union(test_tokens.unique()))
-        embeddings = {}  # dict[str, np.ndarray]
-        for start in tqdm.trange(0, len(unique_tokens), self.batch_size):
-            target = unique_tokens[start : start + self.batch_size]
-            target_tokens = [[int(x) for x in tgt.split(",")] for tgt in target]
-            max_length = min(512, max(len(tgt) for tgt in target_tokens))
-            padded = tokenizer.batch_encode_plus(
-                target,
-                return_tensors="pt",
-                pad_to_max_length=True,
-                max_length=max_length,
+        pbar = tqdm.tqdm(desc="train", total=total_rows)
+        for df in iterator:
+            for start in range(0, len(df), self.batch_size):
+                tweet_ids = df.tweet_id.values[start : start + self.batch_size]
+                target_tokens = df.text_tokens.values[start : start + self.batch_size]
+                pbar.update(len(target_tokens))
+                max_length = min(512, max(len(tgt) for tgt in target_tokens))
+                padded = tokenizer.batch_encode_plus(
+                    target_tokens,
+                    return_tensors="pt",
+                    pad_to_max_length=True,
+                    max_length=max_length,
+                )
+                input_ids = padded["input_ids"].to(device)
+                attention_mask = padded["attention_mask"].to(device)
+                last_hidden_states = bert(input_ids, attention_mask=attention_mask)[0]
+                gaps = last_hidden_states.mean(1).cpu().numpy().astype(np.float32)
+                embedded = {"gap_{}": gaps[:, i] for i in range(768)}
+                embedded["tweet_id"] = tweet_ids
+                insert_data = pd.DataFrame(embedded)
+                bqclient.insert_rows_from_dataframe(output_table, insert_data, schema)
+
+    def _read_from_bigquery(
+        self, bqclient: bigquery.Client, table_name: str, test_table_name: str
+    ) -> Tuple[int, Generator]:
+        query = """
+            select tweet_id, any_value(text_tokens) as text_tokens
+            from (
+                select tweet_id, any_value(text_tokens) as text_tokens
+                from {}
+                group by tweet_id
+                union all
+                select tweet_id, any_value(text_tokens) as text_tokens
+                from {}
+                group by tweet_id
             )
-            input_ids = padded["input_ids"].to(device)
-            attention_mask = padded["attention_mask"].to(device)
-            last_hidden_states = bert(input_ids, attention_mask=attention_mask)[0]
-            for tgt, v in zip(target, last_hidden_states.mean(1).cpu().numpy()):
-                embeddings[tgt] = v
-
-        df_train_features = pd.DataFrame()
-        df_test_features = pd.DataFrame()
-
-        train_embeddings = np.stack(train_tokens.apply(lambda x: embeddings[x]).values, axis=0)
-        test_embeddings = np.stack(test_tokens.apply(lambda x: embeddings[x]).values, axis=0)
-
-        for i in range(768):
-            df_train_features[f"dim{i}"] = train_embeddings[:, i]
-            df_test_features[f"dim{i}"] = test_embeddings[:, i]
-
-        return df_train_features, df_test_features
+            group by tweet_id
+        """.format(
+            table_name, test_table_name
+        )
+        if self.debugging:
+            query += " limit 10000"
+        result = bqclient.query(query).result()
+        return result.total_rows, result.to_dataframe_iterable()
 
 
 if __name__ == "__main__":
