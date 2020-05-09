@@ -2,6 +2,8 @@ import os
 import tempfile
 import argparse
 from typing import List, Tuple, Dict, Generator
+import threading
+import queue
 
 import numpy as np
 import pandas as pd
@@ -70,7 +72,7 @@ class PretrainedBertGAP(BaseFeature):
             for i in range(768)
         ]
         try:
-            output_table = bqclient.get_table(output_table_name)
+            bqclient.get_table(output_table_name)
             if not self.debugging:
                 raise RuntimeError(f"Table {output_table_name} already exists.")
         except exceptions.NotFound:
@@ -78,6 +80,21 @@ class PretrainedBertGAP(BaseFeature):
             bqclient.create_table(output_table)
 
         total_rows, iterator = self._read_from_bigquery(bqclient, table_name, test_table_name)
+        num_workers = 8
+        insert_queue = queue.Queue(maxsize=8)
+
+        pbar = tqdm.tqdm(desc="train", total=total_rows)
+        def sender():
+            client = bigquery.Client(project=PROJECT_ID)
+            output_table = client.get_table(output_table_name)
+            while True:
+                item = insert_queue.get()
+                client.insert_rows_from_dataframe(output_table, item, schema)
+                pbar.update(len(item))
+                insert_queue.task_done()
+
+        for _ in range(num_workers):
+            threading.Thread(target=sender, daemon=True).start()
 
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         tokenizer = transformers.BertTokenizer.from_pretrained(
@@ -88,14 +105,12 @@ class PretrainedBertGAP(BaseFeature):
         ).to(device)
         bert.eval()
 
-        pbar = tqdm.tqdm(desc="train", total=total_rows)
         for df in iterator:
             for start in range(0, len(df), self.batch_size):
                 tweet_ids = df.tweet_id.values[start : start + self.batch_size]
                 target_tokens = df.text_tokens.values[start : start + self.batch_size].tolist()
                 if not target_tokens:
                     continue
-                pbar.update(len(target_tokens))
                 max_length = min(512, max(len(tgt) for tgt in target_tokens))
                 padded = _pad_ids(target_tokens, max_length=max_length)
                 input_ids = padded["input_ids"].to(device)
@@ -105,7 +120,8 @@ class PretrainedBertGAP(BaseFeature):
                 embedded = {f"gap_{i}": gaps[:, i] for i in range(768)}
                 embedded["tweet_id"] = tweet_ids
                 insert_data = pd.DataFrame(embedded)
-                bqclient.insert_rows_from_dataframe(output_table, insert_data, schema)
+                insert_queue.put(insert_data)
+        insert_queue.join()
 
     def _read_from_bigquery(
         self, bqclient: bigquery.Client, table_name: str, test_table_name: str
