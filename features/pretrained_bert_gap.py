@@ -105,12 +105,12 @@ class PretrainedBertGAP(BaseFeature):
         ).to(device)
         bert.eval()
 
-        for df in iterator:
-            for start in range(0, len(df), self.batch_size):
-                tweet_ids = df.tweet_id.values[start : start + self.batch_size]
-                target_tokens = df.text_tokens.values[start : start + self.batch_size].tolist()
-                if not target_tokens:
-                    continue
+        input_queue = queue.Queue(maxsize=128)
+
+        @torch.no_grad()
+        def embedder():
+            while True:
+                tweet_ids, target_tokens = input_queue.get()
                 max_length = min(512, max(len(tgt) for tgt in target_tokens))
                 padded = _pad_ids(target_tokens, max_length=max_length)
                 input_ids = padded["input_ids"].to(device)
@@ -121,6 +121,17 @@ class PretrainedBertGAP(BaseFeature):
                 embedded["tweet_id"] = tweet_ids
                 insert_data = pd.DataFrame(embedded)
                 insert_queue.put(insert_data)
+                input_queue.task_done()
+
+        threading.Thread(target=embedder, daemon=True).start()
+
+        for df in iterator:
+            for start in range(0, len(df), self.batch_size):
+                tweet_ids = df.tweet_id.values[start : start + self.batch_size]
+                target_tokens = df.text_tokens.values[start : start + self.batch_size].tolist()
+                input_queue.put((tweet_ids, target_tokens))
+
+        input_queue.join()
         insert_queue.join()
 
     def _read_from_bigquery(
