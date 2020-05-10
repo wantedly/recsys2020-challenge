@@ -24,7 +24,7 @@ def _pad_ids(ids_list: List[List[int]], max_length: int) -> Dict[str, torch.Tens
     input_ids = torch.zeros(len(ids_list), max_length).long()
     attention_mask = torch.zeros(len(ids_list), max_length).float()
     for i, ids in enumerate(ids_list):
-        input_ids[i, :len(ids)] = torch.tensor(ids)
+        input_ids[i, :len(ids)] = torch.tensor(ids[:max_length])
         attention_mask[i, :len(ids)] = 1.0
     return dict(input_ids=input_ids, attention_mask=attention_mask)
 
@@ -111,7 +111,7 @@ class PretrainedBertGAP(BaseFeature):
         def embedder():
             while True:
                 tweet_ids, target_tokens = input_queue.get()
-                max_length = min(512, max(len(tgt) for tgt in target_tokens))
+                max_length = min(256, max(len(tgt) for tgt in target_tokens))
                 padded = _pad_ids(target_tokens, max_length=max_length)
                 input_ids = padded["input_ids"].to(device)
                 attention_mask = padded["attention_mask"].to(device)
