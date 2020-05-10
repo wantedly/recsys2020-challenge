@@ -80,8 +80,8 @@ class PretrainedBertGAP(BaseFeature):
             bqclient.create_table(output_table)
 
         total_rows, iterator = self._read_from_bigquery(bqclient, table_name, test_table_name)
-        num_workers = 8
-        insert_queue = queue.Queue(maxsize=8)
+        num_workers = 32
+        insert_queue = queue.Queue(maxsize=num_workers)
 
         pbar = tqdm.tqdm(desc="train", total=total_rows)
         def sender():
@@ -110,9 +110,7 @@ class PretrainedBertGAP(BaseFeature):
         @torch.no_grad()
         def embedder():
             while True:
-                tweet_ids, target_tokens = input_queue.get()
-                max_length = min(256, max(len(tgt) for tgt in target_tokens))
-                padded = _pad_ids(target_tokens, max_length=max_length)
+                tweet_ids, padded = input_queue.get()
                 input_ids = padded["input_ids"].to(device)
                 attention_mask = padded["attention_mask"].to(device)
                 last_hidden_states = bert(input_ids, attention_mask=attention_mask)[0]
@@ -129,7 +127,9 @@ class PretrainedBertGAP(BaseFeature):
             for start in range(0, len(df), self.batch_size):
                 tweet_ids = df.tweet_id.values[start : start + self.batch_size]
                 target_tokens = df.text_tokens.values[start : start + self.batch_size].tolist()
-                input_queue.put((tweet_ids, target_tokens))
+                max_length = min(256, max(len(tgt) for tgt in target_tokens))
+                padded = _pad_ids(target_tokens, max_length=max_length)
+                input_queue.put((tweet_ids, padded))
 
         input_queue.join()
         insert_queue.join()
