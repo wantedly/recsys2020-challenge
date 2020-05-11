@@ -79,7 +79,7 @@ class PretrainedBertGAP(BaseFeature):
             output_table = bigquery.Table(output_table_name, schema=schema)
             bqclient.create_table(output_table)
 
-        total_rows, iterator = self._read_from_bigquery(bqclient, table_name, test_table_name)
+        total_rows, iterator = self._read_from_bigquery(bqclient)
         num_workers = 32
         insert_queue = queue.Queue(maxsize=num_workers)
 
@@ -135,27 +135,26 @@ class PretrainedBertGAP(BaseFeature):
         insert_queue.join()
 
     def _read_from_bigquery(
-        self, bqclient: bigquery.Client, table_name: str, test_table_name: str
+        self, bqclient: bigquery.Client
     ) -> Tuple[int, Generator]:
-        query = """
+        if TESTING:
+            raise RuntimeError("""テストデータ用の推論には未対応。先に tweet_id, text_tokens のペアでユニークをとったテーブルを作って、↓のテーブル名を書き換える必要がある""")
+        """
+        select tweet_id, any_value(text_tokens) as text_tokens
+        from (
             select tweet_id, any_value(text_tokens) as text_tokens
-            from (
-                select tweet_id, any_value(text_tokens) as text_tokens
-                from {}
-                group by tweet_id
-                union all
-                select tweet_id, any_value(text_tokens) as text_tokens
-                from {}
-                group by tweet_id
-            )
+            from `recsys2020.training`
             group by tweet_id
-        """.format(
-            table_name, test_table_name
+            union all
+            select tweet_id, any_value(text_tokens) as text_tokens
+            from `recsys2020.val_20200418`
+            group by tweet_id
         )
-        if self.debugging:
-            query += " limit 10000"
-        result = bqclient.query(query).result()
-        return result.total_rows, result.to_dataframe_iterable()
+        group by tweet_id
+        """
+        max_rows = 10000 if self.debugging else None
+        row_iterator = bqclient.list_rows(f"{PROJECT_ID}.recsys2020.tmp_unique_tweet_tokens_val_20200418", max_results=max_rows)
+        return row_iterator.total_rows, row_iterator.to_dataframe_iterable()
 
 
 if __name__ == "__main__":
