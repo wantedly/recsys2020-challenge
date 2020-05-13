@@ -128,3 +128,4 @@ dmypy.json
 # data format
 *csv
 *pkl
+*npy

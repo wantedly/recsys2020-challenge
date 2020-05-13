@@ -40,12 +40,15 @@ class Runner(object):
         self.n_fold = len(folds_ids)
 
         for i_fold, (trn_idx, val_idx) in enumerate(folds_ids):
+            print(f"{i_fold+1}fold")
+
             # Split arrays into train and valid subsets
             x_trn = x_train.iloc[trn_idx]
             y_trn = y_train[trn_idx]
             x_val = x_train.iloc[val_idx]
             y_val = y_train[val_idx]
-            print("original train size: ", len(x_trn))
+            print(f"original train size: {len(y_trn)}")
+            print(f"trn_pos={y_trn.sum()}, trn_neg={(y_trn == 0).sum()}")
 
             # Negative down sampling
             positive_data = x_trn[y_trn == 1]
@@ -60,7 +63,9 @@ class Runner(object):
             trn_idx = positive_data.index.union(negative_data.index).sort_values()
             x_trn = x_train.iloc[trn_idx]
             y_trn = y_train[trn_idx]
-            print("train size after negative sampling: ", len(x_trn))
+
+            print(f"train size after negative-under-sampling: {len(y_trn)}")
+            print(f"trn_pos={y_trn.sum()}, trn_neg={(y_trn == 0).sum()}")
 
             # random sampling
             frac = float(train_settings["random_sampling"]["n_data"] / len(x_trn))
@@ -71,7 +76,9 @@ class Runner(object):
                 ).index
                 x_trn = x_train.iloc[random_sampling_idx]
                 y_trn = y_train[random_sampling_idx]
-            print("train size after random sampling: ", len(x_trn))
+
+            print(f"train size after random-sampling: {len(y_trn)}")
+            print(f"trn_pos={y_trn.sum()}, trn_neg={(y_trn == 0).sum()}")
 
             # Training
             model, score, val_pred = self.train_one_fold(i_fold, x_trn, y_trn, x_val, y_val)

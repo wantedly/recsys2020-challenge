@@ -115,8 +115,7 @@ def main():
         y_train = y_train_set[f"TargetCategories_{cat}"].values
 
         # Get folds
-        folds_col = [c for c in folds_train.columns if c == "StratifiedGroupKFold_" + cat]
-        # folds_col = [c for c in folds_train.columns if c.find(cat) != -1]
+        folds_col = ["StratifiedGroupKFold_retweet_with_comment_engagement"]
         assert len(folds_col) == 1, "The number of fold column must be one"
         folds = folds_train[folds_col]
         n_fold = folds.max().values[0] + 1
@@ -149,6 +148,11 @@ def main():
         evals_result.pop("evals_result")
         config.update(evals_result)
         test_preds = runner.predict_cv(x_test)
+
+        # Save oof-pred file
+        oof_preds_file_name = f"{cat}_oof_pred"
+        np.save(model_output_dir / oof_preds_file_name, oof_preds)
+        logger.info(f'Save oof-pred file: {model_output_dir/ oof_preds_file_name}')
 
         # Make submission file
         sub = pd.concat([key_test, pd.Series(test_preds).rename("pred")], axis=1)
