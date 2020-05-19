@@ -1609,7 +1609,7 @@ select
 from {table_name} t
 left join user_surfacing_tweet_vectors on t.engaging_user_id = user_surfacing_tweet_vectors.user_id
 left join user_surfacing_tweet_vectors as engaged_user_surfacing_tweet_vectors on t.engaged_user_id = engaged_user_surfacing_tweet_vectors.user_id
-order by tweet_id, engaging_user_id
+order by t.tweet_id, t.engaging_user_id
 """
 
 

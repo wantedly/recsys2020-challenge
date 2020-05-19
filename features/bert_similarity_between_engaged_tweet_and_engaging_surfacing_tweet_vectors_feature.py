@@ -1609,7 +1609,7 @@ select
 from {table_name} t
 left join `recsys2020.pretrained_bert_gap` tweet_gap on t.tweet_id = tweet_gap.tweet_id
 left join user_surfacing_tweet_vectors on t.engaging_user_id = user_surfacing_tweet_vectors.user_id
-order by tweet_id, engaging_user_id
+order by t.tweet_id, t.engaging_user_id
 """
 
 
