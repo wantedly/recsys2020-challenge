@@ -836,8 +836,6 @@ user_surfacing_tweet_vectors as (
 )
 
 select
-  t.tweet_id,
-  t.engaging_user_id,
   1.0 / 768 * (
     (tweet_gap.gap_0 * user_surfacing_tweet_vectors.gap_0) +
     (tweet_gap.gap_1 * user_surfacing_tweet_vectors.gap_1) +
