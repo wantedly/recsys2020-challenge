@@ -67,7 +67,7 @@ def target_encoding_lower_limit(col: str, train: pd.DataFrame, test: pd.DataFram
     test_target_mean = train.groupby(col)[target].mean().rename("mean")
     test_target_size = train.groupby(col)[target].size().rename("size")
     test_target_info = pd.concat([test_target_mean, test_target_size], axis=1)
-    test_target_info[target] = test_target_info.swifter.apply(func_lower_limit, axis=1)
+    test_target_info[target] = test_target_info.apply(func_lower_limit, axis=1)
     test_target_info.loc[test_target_info["mean"]==0, target] = 0   # scipy bug https://github.com/scipy/scipy/issues/11026
 
     test[f"{col}_ta"] = np.nan
