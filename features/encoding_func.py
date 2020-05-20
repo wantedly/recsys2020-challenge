@@ -48,7 +48,6 @@ def target_encoding(col: str, train: pd.DataFrame, test: pd.DataFrame,
 def target_encoding_lower_limit(col: str, train: pd.DataFrame, test: pd.DataFrame,
                     target: str, folds_ids: List[Tuple[np.asarray]]):
     from scipy import stats
-    import swifter
 
     alpha = 0.90
     func_lower_limit = lambda x: stats.binom.interval(alpha=alpha, n=x["size"], p=x["mean"], loc=0)[0] / x["size"]
@@ -58,7 +57,7 @@ def target_encoding_lower_limit(col: str, train: pd.DataFrame, test: pd.DataFram
         target_mean = train.iloc[trn_idx].groupby(col)[target].mean().rename("mean")
         target_size = train.iloc[trn_idx].groupby(col)[target].size().rename("size")
         target_info = pd.concat([target_mean, target_size], axis=1)
-        target_info[target] = target_info.swifter.apply(func_lower_limit, axis=1)
+        target_info[target] = target_info.apply(func_lower_limit, axis=1)
         target_info.loc[target_info["mean"]==0, target] = 0   # scipy bug https://github.com/scipy/scipy/issues/11026
 
         train.set_index(col, inplace=True)
