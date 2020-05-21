@@ -1,16 +1,12 @@
-import os
 import pandas as pd
 from base import BaseFeature
 from encoding_func import target_encoding
-from google.cloud import storage
 
 
-class TargetEncoding(BaseFeature):
+class TargetEncodingCrossing2(BaseFeature):
     def import_columns(self):
         return [
-            "language",
-            "engaged_user_id",
-            "engaging_user_id",
+            "concat(engaging_user_id, '_', engaged_user_id) as engaging_user_id_engaged_user_id",
             "CASE WHEN reply_engagement_timestamp IS NULL THEN 0 ELSE 1 END AS reply_engagement",
             "CASE WHEN retweet_engagement_timestamp IS NULL THEN 0 ELSE 1 END AS retweet_engagement",
             "CASE WHEN retweet_with_comment_engagement_timestamp IS NULL THEN 0 ELSE 1 END AS retweet_with_comment_engagement",
@@ -26,9 +22,7 @@ class TargetEncoding(BaseFeature):
         )
 
         category_columns = [
-            "language",
-            "engaged_user_id",
-            "engaging_user_id",
+            "engaging_user_id_engaged_user_id",
         ]
 
         target_columns = [
@@ -62,8 +56,11 @@ class TargetEncoding(BaseFeature):
                 df_train_features[f"{target_col}__{cat_col}"] = train_result
                 df_test_features[f"{target_col}__{cat_col}"] = test_result
 
+        print(df_train_features.isnull().sum())
+        print(df_test_features.isnull().sum())
+
         return df_train_features, df_test_features
 
 
 if __name__ == "__main__":
-    TargetEncoding.main()
+    TargetEncodingCrossing2.main()

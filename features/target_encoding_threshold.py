@@ -3,9 +3,12 @@ import pandas as pd
 from base import BaseFeature
 from encoding_func import target_encoding
 from google.cloud import storage
+import numpy as np
 
 
-class TargetEncoding(BaseFeature):
+THREASHOLD = 10
+
+class TargetEncodingThreashold(BaseFeature):
     def import_columns(self):
         return [
             "language",
@@ -55,15 +58,23 @@ class TargetEncoding(BaseFeature):
                 print(f"{i+1}fold: n_trn={len(trn_idx)}, n_val={len(val_idx)}")
 
             for cat_col in category_columns:
+                count = df_train_input[cat_col].value_counts()
+                unseen_cat_list = count[count < THREASHOLD].index.tolist()
+                df_train_input_cp = df_train_input.copy()
+                df_train_input_cp.loc[df_train_input_cp[cat_col].isin(unseen_cat_list), target_col] = np.nan
+                print(target_col, cat_col, len(count), len(unseen_cat_list))
+
                 train_result, test_result = target_encoding(
-                    cat_col, df_train_input, df_test_input, target_col, folds_ids)
-                df_train_input.drop(columns=[f"{cat_col}_ta"], inplace=True)
-                df_test_input.drop(columns=[f"{cat_col}_ta"], inplace=True)
+                    cat_col, df_train_input_cp, df_test_input, target_col, folds_ids)
+                #df_train_input.drop(columns=[f"{cat_col}_ta"], inplace=True)
+                #df_test_input.drop(columns=[f"{cat_col}_ta"], inplace=True)
                 df_train_features[f"{target_col}__{cat_col}"] = train_result
                 df_test_features[f"{target_col}__{cat_col}"] = test_result
 
+        print(df_train_features.isnull().sum())
+        print(df_test_features.isnull().sum())
         return df_train_features, df_test_features
 
 
 if __name__ == "__main__":
-    TargetEncoding.main()
+    TargetEncodingThreashold.main()

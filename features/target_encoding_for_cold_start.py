@@ -5,12 +5,11 @@ from encoding_func import target_encoding
 from google.cloud import storage
 
 
-class TargetEncoding(BaseFeature):
+class TargetEncodingForColdStart(BaseFeature):
     def import_columns(self):
         return [
             "language",
             "engaged_user_id",
-            "engaging_user_id",
             "CASE WHEN reply_engagement_timestamp IS NULL THEN 0 ELSE 1 END AS reply_engagement",
             "CASE WHEN retweet_engagement_timestamp IS NULL THEN 0 ELSE 1 END AS retweet_engagement",
             "CASE WHEN retweet_with_comment_engagement_timestamp IS NULL THEN 0 ELSE 1 END AS retweet_with_comment_engagement",
@@ -22,13 +21,12 @@ class TargetEncoding(BaseFeature):
         df_test_features = pd.DataFrame()
 
         folds_train = self._download_from_gs(
-            feather_file_name="StratifiedGroupKFold_training.ftr"
+            feather_file_name="UsersGroupKFold_training.ftr"
         )
 
         category_columns = [
             "language",
             "engaged_user_id",
-            "engaging_user_id",
         ]
 
         target_columns = [
@@ -42,7 +40,7 @@ class TargetEncoding(BaseFeature):
             print(f'============= {target_col} =============')
 
             # Get folds
-            folds_col = ["StratifiedGroupKFold_retweet_with_comment_engagement"]
+            folds_col = ["UsersGroupKFold_val_position"]
             assert len(folds_col) == 1, "The number of fold column must be one"
             folds = folds_train[folds_col]
             n_fold = folds.max().values[0] + 1
@@ -66,4 +64,4 @@ class TargetEncoding(BaseFeature):
 
 
 if __name__ == "__main__":
-    TargetEncoding.main()
+    TargetEncodingForColdStart.main()

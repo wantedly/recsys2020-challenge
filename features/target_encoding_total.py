@@ -5,16 +5,13 @@ from encoding_func import target_encoding
 from google.cloud import storage
 
 
-class TargetEncoding(BaseFeature):
+class TargetEncodingTotal(BaseFeature):
     def import_columns(self):
         return [
             "language",
             "engaged_user_id",
             "engaging_user_id",
-            "CASE WHEN reply_engagement_timestamp IS NULL THEN 0 ELSE 1 END AS reply_engagement",
-            "CASE WHEN retweet_engagement_timestamp IS NULL THEN 0 ELSE 1 END AS retweet_engagement",
-            "CASE WHEN retweet_with_comment_engagement_timestamp IS NULL THEN 0 ELSE 1 END AS retweet_with_comment_engagement",
-            "CASE WHEN like_engagement_timestamp IS NULL THEN 0 ELSE 1 END AS like_engagement",
+            "CASE WHEN (like_engagement_timestamp IS NOT NULL) OR (retweet_engagement_timestamp IS NOT NULL) OR (retweet_with_comment_engagement_timestamp IS NOT NULL) OR (reply_engagement_timestamp IS NOT NULL) THEN 1 ELSE 0 END AS total_engagement",
         ]
 
     def make_features(self, df_train_input, df_test_input):
@@ -32,10 +29,7 @@ class TargetEncoding(BaseFeature):
         ]
 
         target_columns = [
-            "reply_engagement",
-            "retweet_engagement",
-            "retweet_with_comment_engagement",
-            "like_engagement",
+            "total_engagement",
         ]
 
         for target_col in target_columns:
@@ -66,4 +60,4 @@ class TargetEncoding(BaseFeature):
 
 
 if __name__ == "__main__":
-    TargetEncoding.main()
+    TargetEncodingTotal.main()

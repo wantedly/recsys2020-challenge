@@ -7,6 +7,7 @@ from src.utils import seed_everything, get_logger, json_dump, upload_to_gcs
 from src.feature_loader import FeatureLoader
 from src.runner import Runner
 from src.models.model_lightgbm import Model_LightGBM
+from multiprocessing import cpu_count
 
 
 seed_everything(71)
@@ -41,6 +42,7 @@ def main():
             'debug': args.debug
         }
     })
+    config["model"]["model_params"]["nthread"] = cpu_count()
 
     # Create a directory for model output
     model_no = pathlib.Path(args.config).stem
@@ -115,7 +117,7 @@ def main():
         y_train = y_train_set[f"TargetCategories_{cat}"].values
 
         # Get folds
-        folds_col = [c for c in folds_train.columns if c.find(cat) != -1]
+        folds_col = ["StratifiedGroupKFold_retweet_with_comment_engagement"]
         assert len(folds_col) == 1, "The number of fold column must be one"
         folds = folds_train[folds_col]
         n_fold = folds.max().values[0] + 1
@@ -149,6 +151,11 @@ def main():
         config.update(evals_result)
         test_preds = runner.predict_cv(x_test)
 
+        # Save oof-pred file
+        oof_preds_file_name = f"{cat}_oof_pred"
+        np.save(model_output_dir / oof_preds_file_name, oof_preds)
+        logger.info(f'Save oof-pred file: {model_output_dir/ oof_preds_file_name}')
+
         # Make submission file
         sub = pd.concat([key_test, pd.Series(test_preds).rename("pred")], axis=1)
         sub = sub[["KeyCategories_tweet_id", "KeyCategories_engaging_user_id", "pred"]]
@@ -161,7 +168,6 @@ def main():
         save_path = model_output_dir / 'output.json'
         json_dump(config, save_path)
         logger.info(f'Save model log: {save_path}')
-
 
     # =========================================
     # === Upload to GCS

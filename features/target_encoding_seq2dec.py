@@ -5,16 +5,15 @@ from encoding_func import target_encoding
 from google.cloud import storage
 
 
-class TargetEncoding(BaseFeature):
+class TargetEncodingSeq2Dec(BaseFeature):
     def import_columns(self):
         return [
-            "language",
-            "engaged_user_id",
             "engaging_user_id",
-            "CASE WHEN reply_engagement_timestamp IS NULL THEN 0 ELSE 1 END AS reply_engagement",
-            "CASE WHEN retweet_engagement_timestamp IS NULL THEN 0 ELSE 1 END AS retweet_engagement",
-            "CASE WHEN retweet_with_comment_engagement_timestamp IS NULL THEN 0 ELSE 1 END AS retweet_with_comment_engagement",
-            "CASE WHEN like_engagement_timestamp IS NULL THEN 0 ELSE 1 END AS like_engagement",
+            "IF(like_engagement_timestamp is null, 0, 1)\
+             +IF(lag(IF(like_engagement_timestamp is null, 0, 1)) over(partition by engaging_user_id order by timestamp) IS NOT NULL, 0.1*lag(IF(like_engagement_timestamp is null, 0, 1)) over(partition by engaging_user_id order by timestamp), 0)\
+             +IF(lag(IF(like_engagement_timestamp is null, 0, 1), 2) over(partition by engaging_user_id order by timestamp) IS NOT NULL, 0.01*lag(IF(like_engagement_timestamp is null, 0, 1), 2) over(partition by engaging_user_id order by timestamp), 0)\
+             +IF(lag(IF(like_engagement_timestamp is null, 0, 1), 3) over(partition by engaging_user_id order by timestamp) IS NOT NULL, 0.001*lag(IF(like_engagement_timestamp is null, 0, 1), 3) over(partition by engaging_user_id order by timestamp), 0)\
+             +IF(lag(IF(like_engagement_timestamp is null, 0, 1), 4) over(partition by engaging_user_id order by timestamp) IS NOT NULL, 0.0001*lag(IF(like_engagement_timestamp is null, 0, 1), 4) over(partition by engaging_user_id order by timestamp), 0) AS like_engagement"
         ]
 
     def make_features(self, df_train_input, df_test_input):
@@ -26,15 +25,10 @@ class TargetEncoding(BaseFeature):
         )
 
         category_columns = [
-            "language",
-            "engaged_user_id",
             "engaging_user_id",
         ]
 
         target_columns = [
-            "reply_engagement",
-            "retweet_engagement",
-            "retweet_with_comment_engagement",
             "like_engagement",
         ]
 
@@ -66,4 +60,4 @@ class TargetEncoding(BaseFeature):
 
 
 if __name__ == "__main__":
-    TargetEncoding.main()
+    TargetEncodingSeq2Dec.main()
