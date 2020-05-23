@@ -31,10 +31,6 @@ class BaseFeature(abc.ABC):
         handler.setLevel(INFO)
         self._logger.addHandler(handler)
 
-        self.testing = TESTING
-        self.gcs_bucket_name = GCS_BUCKET_NAME
-        self.project_id = PROJECT_ID
-
     @abc.abstractmethod
     def import_columns(self) -> List[str]:
         """この特徴量を作るのに必要なカラムを指定する
@@ -71,14 +67,14 @@ class BaseFeature(abc.ABC):
         self._logger.info(f"Running with debugging={self.debugging}")
         with tempfile.TemporaryDirectory() as tempdir:
             files: List[str] = []
-            if self.testing:
+            if TESTING:
                 test_path = os.path.join(tempdir, f"{self.name}_test.ftr")
-                test_table = f"`{self.project_id}.recsys2020.test`"
+                test_table = f"`{PROJECT_ID}.recsys2020.test`"
             else:
                 test_path = os.path.join(tempdir, f"{self.name}_val_20200418.ftr")
-                test_table = f"`{self.project_id}.recsys2020.val_20200418`"
+                test_table = f"`{PROJECT_ID}.recsys2020.val_20200418`"
             train_path = os.path.join(tempdir, f"{self.name}_training.ftr")
-            train_table = f"`{self.project_id}.recsys2020.training`"
+            train_table = f"`{PROJECT_ID}.recsys2020.training`"
             self.read_and_save_features(
                 train_table, test_table, train_path, test_path,
             )
@@ -128,7 +124,7 @@ class BaseFeature(abc.ABC):
         if self.debugging:
             query += " limit 10000"
 
-        bqclient = bigquery.Client(project=self.project_id)
+        bqclient = bigquery.Client(project=PROJECT_ID)
         bqstorageclient = bigquery_storage_v1beta1.BigQueryStorageClient()
         df = (
             bqclient.query(query)
@@ -138,8 +134,8 @@ class BaseFeature(abc.ABC):
         return df
 
     def _upload_to_gs(self, files: List[str]):
-        client = storage.Client(project=self.project_id)
-        bucket = client.get_bucket(self.gcs_bucket_name)
+        client = storage.Client(project=PROJECT_ID)
+        bucket = client.get_bucket(GCS_BUCKET_NAME)
 
         if self.debugging:
             bucket_dir_name = "features_debug"
@@ -155,8 +151,8 @@ class BaseFeature(abc.ABC):
     def _download_from_gs(self, feather_file_name: str) -> pd.DataFrame:
         """GCSにある特徴量ファイル(feather形式)を読み込む
         """
-        client = storage.Client(project=self.project_id)
-        bucket = client.get_bucket(self.gcs_bucket_name)
+        client = storage.Client(project=PROJECT_ID)
+        bucket = client.get_bucket(GCS_BUCKET_NAME)
 
         if self.debugging:
             bucket_dir_name = "features_debug"
