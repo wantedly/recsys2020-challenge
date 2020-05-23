@@ -85,7 +85,6 @@ class BaseFeature(abc.ABC):
                 test_path = os.path.join(tempdir, f"{self.name}_test.ftr")
             else:
                 test_path = os.path.join(tempdir, f"{self.name}_val_20200418.ftr")
-
             train_path = os.path.join(tempdir, f"{self.name}_training.ftr")
 
             self.read_and_save_features(
