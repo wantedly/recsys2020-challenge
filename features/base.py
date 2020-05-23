@@ -34,10 +34,16 @@ class BaseFeature(abc.ABC):
         self.TESTING = TESTING
         self.GCS_BUCKET_NAME = GCS_BUCKET_NAME
         self.PROJECT_ID = PROJECT_ID
-        self.train_table = None
-        self.test_table = None
-        self.train_text = None
-        self.test_text = None
+
+        self.train_table = f"`{PROJECT_ID}.recsys2020.training`"
+        self.train_text = f"`{PROJECT_ID}.recsys2020.texts_training`"
+
+        if TESTING:
+            self.test_table = f"`{PROJECT_ID}.recsys2020.test`"
+            self.test_text = f"`{PROJECT_ID}.recsys2020.texts_test`"
+        else:
+            self.test_table = f"`{PROJECT_ID}.recsys2020.val_20200418`"
+            self.test_text = f"`{PROJECT_ID}.recsys2020.texts_val_20200418`"
 
     @abc.abstractmethod
     def import_columns(self) -> List[str]:
@@ -77,16 +83,10 @@ class BaseFeature(abc.ABC):
             files: List[str] = []
             if TESTING:
                 test_path = os.path.join(tempdir, f"{self.name}_test.ftr")
-                self.test_table = f"`{PROJECT_ID}.recsys2020.test`"
-                self.test_text = f"`{PROJECT_ID}.recsys2020.texts_test`"
             else:
                 test_path = os.path.join(tempdir, f"{self.name}_val_20200418.ftr")
-                self.test_table = f"`{PROJECT_ID}.recsys2020.val_20200418`"
-                self.test_text = f"`{PROJECT_ID}.recsys2020.texts_val_20200418`"
 
             train_path = os.path.join(tempdir, f"{self.name}_training.ftr")
-            self.train_table = f"`{PROJECT_ID}.recsys2020.training`"
-            self.train_text = f"`{PROJECT_ID}.recsys2020.texts_training`"
 
             self.read_and_save_features(
                 self.train_table, self.test_table, train_path, test_path,
