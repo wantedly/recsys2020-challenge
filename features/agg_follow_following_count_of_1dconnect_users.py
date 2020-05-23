@@ -86,10 +86,12 @@ class AggFollowFollowingCountOf1dConnectUsers(BaseFeature):
 
     def make_features(self, df_train_input, df_test_input):
         # read unnested present_media
-        df_train_features = self._read_features_from_bigquery
-            self.train_table, self.test_table, self.train_table)
+        df_train_features = self._read_features_from_bigquery(
+            self.train_table, self.test_table, self.train_table
+        )
         df_test_features = self._read_features_from_bigquery(
-            self.train_table, self.test_table, self.test_table)
+            self.train_table, self.test_table, self.test_table
+        )
 
         print(df_train_features.isnull().sum())
         print(df_test_features.isnull().sum())
