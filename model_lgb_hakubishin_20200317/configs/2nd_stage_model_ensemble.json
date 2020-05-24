@@ -9,5 +9,11 @@
         "2nd_stage_model_1",
         "2nd_stage_model_2",
         "2nd_stage_model_3"
-    ]
+    ],
+    "dataset": {
+        "input_directory": "data/input/",
+        "intermediate_directory": "data/interim/",
+        "feature_directory": "data/features/",
+        "output_directory": "data/output/"
+    }
 }
