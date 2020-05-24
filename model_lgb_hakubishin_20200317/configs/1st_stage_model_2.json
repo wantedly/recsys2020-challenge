@@ -43,11 +43,11 @@
     "negative_down_sampling": {
         "enable": true,
         "bagging_size": 1,
-        "random_seed": 11
+        "random_seed": 12
     },
     "random_sampling": {
         "n_data": 20000000,
-        "random_seed": 11
+        "random_seed": 12
     },
     "model": {
         "name": "lightgbm",
@@ -62,10 +62,10 @@
             "subsample_freq": 1,
             "colsample_bytree": 0.7,
             "min_child_weight": 0,
-            "seed": 11,
-            "bagging_seed": 11,
-            "feature_fraction_seed": 11,
-            "drop_seed": 11,
+            "seed": 12,
+            "bagging_seed": 12,
+            "feature_fraction_seed": 12,
+            "drop_seed": 12,
             "verbose": -1
         },
         "train_params": {

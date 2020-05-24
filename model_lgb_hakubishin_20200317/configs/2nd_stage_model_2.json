@@ -12,7 +12,6 @@
         "CommonFlgFeatures",
         "EngagedFollowFollowerRatio",
         "EngagingFollowFollowerRatio",
-        "TargetEncoding",
         "CountEncodingHashtags",
         "CountEncodingPresentMedia",
         "CountEncodingPresentDomains",
@@ -26,7 +25,17 @@
         "CountEncodingCrossing",
         "CountEncodingCrossing2",
         "AtSignFeatures",
-        "CountEncodingTextId"
+        "CountEncodingTextId",
+        "BertSimilarityBetweenEngagingAndEngagedTweetsVectorsFeature",
+        "BertSimilarityBetweenTweetAndTweetsUserVectorsFeature",
+        "BertSimilarityBetweenTweetAndEngagingSurfacingTweetVectorsFeature",
+        "BertSimilarityBetweenEngagedAndEngagingSurfacingTweetVectorsFeature",
+        "TargetEncoding",
+        "TargetEncodingCrossing",
+        "TargetEncodingCrossing2",
+        "TargetEncodingHashtags",
+        "TargetEncodingPresentMedia",
+        "LikeGraph"
     ],
     "target": [
         "TargetCategories"
@@ -43,7 +52,7 @@
         "random_seed": 22
     },
     "random_sampling": {
-        "n_data": 100000,
+        "n_data": 20000000,
         "random_seed": 22
     },
     "model": {
