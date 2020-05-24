@@ -8,22 +8,19 @@ import tempfile
 import os
 
 
-TESTING = False
-GCS_BUCKET_NAME = "recsys2020-challenge-wantedly"
-PROJECT_ID = "wantedly-individual-naomichi"
-
 FOLD = 3
 RANDOM_STATE = 71
 SHUFFLE = True
+
 
 class StratifiedGroupKFold(BaseFeature):
     def import_columns(self):
         return [
             "tweet_id",
-            "CASE WHEN reply_engagement_timestamp IS NULL THEN 0 ELSE 1 END AS reply_engagement",
-            "CASE WHEN retweet_engagement_timestamp IS NULL THEN 0 ELSE 1 END AS retweet_engagement",
+            # "CASE WHEN reply_engagement_timestamp IS NULL THEN 0 ELSE 1 END AS reply_engagement",
+            # "CASE WHEN retweet_engagement_timestamp IS NULL THEN 0 ELSE 1 END AS retweet_engagement",
             "CASE WHEN retweet_with_comment_engagement_timestamp IS NULL THEN 0 ELSE 1 END AS retweet_with_comment_engagement",
-            "CASE WHEN like_engagement_timestamp IS NULL THEN 0 ELSE 1 END AS like_engagement",
+            # "CASE WHEN like_engagement_timestamp IS NULL THEN 0 ELSE 1 END AS like_engagement",
         ]
 
     def make_features(self, df_train_input, df_test_input):
@@ -31,10 +28,10 @@ class StratifiedGroupKFold(BaseFeature):
         df_test_features = pd.DataFrame()
 
         target_columns = [
-            "reply_engagement",
-            "retweet_engagement",
+            # "reply_engagement",
+            # "retweet_engagement",
             "retweet_with_comment_engagement",
-            "like_engagement",
+            # "like_engagement",
         ]
         df_train_input = reduce_mem_usage(df_train_input)
 
@@ -58,9 +55,10 @@ class StratifiedGroupKFold(BaseFeature):
             for i_fold, (trn_idx, val_idx) in enumerate(split):
                 val_tweet_id = target_grp_by_max.iloc[val_idx].index
                 val_idx = df_train_input[df_train_input["tweet_id"].isin(val_tweet_id)].index
-                val_position[val_idx] = int(i_fold + 1)
+                val_position[val_idx] = i_fold
 
             df_train_features[target] = val_position
+            print(df_train_features[target].value_counts().sort_index())
 
         return df_train_features, df_test_features
 
@@ -70,16 +68,13 @@ class StratifiedGroupKFold(BaseFeature):
         self._logger.info(f"Running with debugging={self.debugging}")
         with tempfile.TemporaryDirectory() as tempdir:
             files: List[str] = []
-            if TESTING:
+            if self.TESTING:
                 test_path = os.path.join(tempdir, f"{self.name}_test.ftr")
-                test_table = f"`{PROJECT_ID}.recsys2020.test`"
             else:
                 test_path = os.path.join(tempdir, f"{self.name}_val.ftr")
-                test_table = f"`{PROJECT_ID}.recsys2020.val`"
             train_path = os.path.join(tempdir, f"{self.name}_training.ftr")
-            train_table = f"`{PROJECT_ID}.recsys2020.training`"
             self.read_and_save_features(
-                train_table, test_table, train_path, test_path,
+                self.train_table, self.test_table, train_path, test_path,
             )
             self._upload_to_gs([train_path])
 

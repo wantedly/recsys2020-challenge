@@ -5,9 +5,6 @@ from encoding_func import target_encoding
 from google.cloud import storage
 
 
-GCS_BUCKET_NAME = "recsys2020-challenge-wantedly"
-PROJECT_ID = "wantedly-individual-naomichi"
-
 class TargetEncoding(BaseFeature):
     def import_columns(self):
         return [
@@ -45,15 +42,15 @@ class TargetEncoding(BaseFeature):
             print(f'============= {target_col} =============')
 
             # Get folds
-            folds_col = [c for c in folds_train.columns if c.find(target_col) != -1]
+            folds_col = ["StratifiedGroupKFold_retweet_with_comment_engagement"]
             assert len(folds_col) == 1, "The number of fold column must be one"
             folds = folds_train[folds_col]
-            n_fold = folds.max().values[0]
+            n_fold = folds.max().values[0] + 1
             folds_ids = []
 
             for i in range(n_fold):
-                trn_idx = folds[folds != i+1].dropna().index
-                val_idx = folds[folds == i+1].dropna().index
+                trn_idx = folds[folds != i].dropna().index
+                val_idx = folds[folds == i].dropna().index
                 folds_ids.append((trn_idx, val_idx))
                 print(f"{i+1}fold: n_trn={len(trn_idx)}, n_val={len(val_idx)}")
 

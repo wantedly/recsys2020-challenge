@@ -1,0 +1,211 @@
+{
+    "model_dir_name": "model_lgb_hakubishin_20200317",
+    "test_data_type": "val_20200418",
+    "features": [
+        "LabelEncoding",
+        "CountEncoding",
+        "CommonNumericFeatures",
+        "CommonFlgFeatures",
+        "EngagedFollowFollowerRatio",
+        "EngagingFollowFollowerRatio",
+        "TargetEncoding",
+        "CountEncodingHashtags",
+        "CountEncodingPresentMedia",
+        "CountEncodingPresentDomains",
+        "CountEncodingPresentLinks",
+        "ElapsedTimeFromAccountCreated",
+        "EngagingUserFollowsEngagedUser",
+        "Connected2ndEngagingToEngaged",
+        "Connected2ndEngagedToEngaging",
+        "CountEncodingInTweetidUnits",
+        "CountEncodingTweetType",
+        "CountEncodingCrossing",
+        "CountEncodingCrossing2",
+        "AtSignFeatures",
+        "CountEncodingTextId",
+        "TargetEncodingHashtags"
+    ],
+    "target": [
+        "TargetCategories"
+    ],
+    "key": [
+        "KeyCategories"
+    ],
+    "folds": [
+        "StratifiedGroupKFold"
+    ],
+    "negative_down_sampling": {
+        "enable": true,
+        "bagging_size": 1,
+        "random_seed": 71
+    },
+    "random_sampling": {
+        "n_data": 100000,
+        "random_seed": 71
+    },
+    "model": {
+        "name": "lightgbm",
+        "model_params": {
+            "boosting_type": "gbdt",
+            "objective": "binary",
+            "metric": "binary",
+            "learning_rate": 0.1,
+            "max_depth": 8,
+            "min_child_samples": 50,
+            "subsample": 0.7,
+            "subsample_freq": 1,
+            "colsample_bytree": 0.7,
+            "min_child_weight": 0,
+            "seed": 71,
+            "bagging_seed": 71,
+            "feature_fraction_seed": 71,
+            "drop_seed": 71,
+            "verbose": -1,
+            "nthread": 64
+        },
+        "train_params": {
+            "num_boost_round": 10000,
+            "early_stopping_rounds": 100,
+            "verbose_eval": 500
+        }
+    },
+    "dataset": {
+        "input_directory": "data/input/",
+        "intermediate_directory": "data/interim/",
+        "feature_directory": "data/features/",
+        "output_directory": "data/output/"
+    },
+    "args": {
+        "config": "model_lgb_hakubishin_20200317/configs/model_69.json",
+        "debug": false
+    },
+    "model_output_dir": "model_lgb_hakubishin_20200317/data/output/model_69",
+    "evals_result_retweet_with_comment_engagement": {
+        "n_data": 148075238,
+        "n_features": 89,
+        "best_iteration": 246.0,
+        "under_sampling_rate": {
+            "cv1": 0.007853564590431933,
+            "cv2": 0.007849606707844433,
+            "cv3": 0.007849158595815411
+        },
+        "oof_score": {
+            "ce": 0.03897155714037232,
+            "rce": 14.493916517545314,
+            "prauc": 0.06618859997391266
+        },
+        "cv_score": {
+            "cv1": {
+                "ce": 0.5128302334023643,
+                "rce": -1025.8385566905365,
+                "prauc": 0.06771071689139775
+            },
+            "cv2": {
+                "ce": 0.5169371120097999,
+                "rce": -1033.9156309167831,
+                "prauc": 0.06717882204212172
+            },
+            "cv3": {
+                "ce": 0.5141233216184672,
+                "rce": -1027.6366104288595,
+                "prauc": 0.0656644093301271
+            }
+        }
+    },
+    "evals_result_retweet_engagement": {
+        "n_data": 148075238,
+        "n_features": 89,
+        "best_iteration": 230.66666666666669,
+        "under_sampling_rate": {
+            "cv1": 0.1274633921181075,
+            "cv2": 0.1274435721544817,
+            "cv3": 0.1276230002488568
+        },
+        "oof_score": {
+            "ce": 0.239592903359345,
+            "rce": 32.11265735638733,
+            "prauc": 0.567332279644433
+        },
+        "cv_score": {
+            "cv1": {
+                "ce": 0.4391999621325314,
+                "rce": -24.391762726272926,
+                "prauc": 0.5666705515405127
+            },
+            "cv2": {
+                "ce": 0.4417118869124239,
+                "rce": -25.080402453681305,
+                "prauc": 0.5674339988242048
+            },
+            "cv3": {
+                "ce": 0.43953329944943814,
+                "rce": -24.669031463253745,
+                "prauc": 0.5683150023308522
+            }
+        }
+    },
+    "evals_result_reply_engagement": {
+        "n_data": 148075238,
+        "n_features": 89,
+        "best_iteration": 221.33333333333334,
+        "under_sampling_rate": {
+            "cv1": 0.028214937741778176,
+            "cv2": 0.028247128310269116,
+            "cv3": 0.028200241060292296
+        },
+        "oof_score": {
+            "ce": 0.10055595690034858,
+            "rce": 20.034808942365267,
+            "prauc": 0.18361301369429026
+        },
+        "cv_score": {
+            "cv1": {
+                "ce": 0.4849083567024974,
+                "rce": -285.49376639071806,
+                "prauc": 0.1820497398903795
+            },
+            "cv2": {
+                "ce": 0.48666084750980554,
+                "rce": -287.5558984834372,
+                "prauc": 0.18575184873844544
+            },
+            "cv3": {
+                "ce": 0.49173407060148394,
+                "rce": -290.6108543808488,
+                "prauc": 0.18459673369470062
+            }
+        }
+    },
+    "evals_result_like_engagement": {
+        "n_data": 148075238,
+        "n_features": 89,
+        "best_iteration": 254.66666666666669,
+        "under_sampling_rate": {
+            "cv1": 0.7827284954955966,
+            "cv2": 0.7827193242858438,
+            "cv3": 0.7838550912105878
+        },
+        "oof_score": {
+            "ce": 0.4772302368751422,
+            "rce": 30.405570856492947,
+            "prauc": 0.8158026496033697
+        },
+        "cv_score": {
+            "cv1": {
+                "ce": 0.482511216966093,
+                "rce": 29.64130505075837,
+                "prauc": 0.8150982610104471
+            },
+            "cv2": {
+                "ce": 0.48249205420125496,
+                "rce": 29.64425083200689,
+                "prauc": 0.815916887716438
+            },
+            "cv3": {
+                "ce": 0.4811197841757029,
+                "rce": 29.826420817599864,
+                "prauc": 0.8164842623059732
+            }
+        }
+    }
+}
