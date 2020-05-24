@@ -3,6 +3,11 @@ import numpy as np
 import pandas as pd
 from base import BaseFeature
 from google.cloud import storage
+from utils import download_from_gcs
+from io import BytesIO
+
+
+MODEL = "2nd_stage_model_ensemble"
 
 
 class MetaFeatures(BaseFeature):
@@ -25,15 +30,25 @@ class MetaFeatures(BaseFeature):
         for target_col in target_columns:
             print(f'============= {target_col} =============')
 
-            model_outpput_path = "./model_lgb_hakubishin_20200317/data/output/model_44/"
-            oof_pred_path = model_outpput_path + f"{target_col}_oof_pred.npy"
-            oof_pred = np.load(oof_pred_path)
-            df_train_features[target_col] = oof_pred
+            oof_file_name = f"{target_col}_oof_pred.npy"
+            oof_pred = download_from_gcs(
+                bucket_dir_name=f"model_lgb_hakubishin_20200317/{MODEL}",
+                file_name=oof_file_name
+            )
+            oof_pred_value = np.load(BytesIO(oof_pred))
+            df_train_features[target_col] = oof_pred_value
 
-            test_pred_path = model_outpput_path + f"{target_col}_submission_val_20200418.csv"
-            test_pred = pd.read_csv(test_pred_path, header=None).iloc[:, 2]
-            df_test_features[target_col] = test_pred
-
+            if self.TESTING:
+                test_file_name = f"{target_col}_submission_test.csv"
+            else:
+                test_file_name = f"{target_col}_submission_val_20200418.csv"
+            test_pred = download_from_gcs(
+                bucket_dir_name=f"model_lgb_hakubishin_20200317/{MODEL}",
+                file_name=test_file_name
+            )
+            test_pred = pd.read_csv(BytesIO(test_pred), header=None)
+            test_pred_value = test_pred.iloc[:, 2].values
+            df_test_features[target_col] = test_pred_value
 
         print(df_train_features.shape)
         print(df_test_features.shape)
