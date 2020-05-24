@@ -3,7 +3,7 @@ from typing import List, Tuple
 from google.cloud import bigquery, bigquery_storage_v1beta1
 import pandas as pd
 
-from base import BaseFeature, TESTING, PROJECT_ID, reduce_mem_usage
+from base import BaseFeature, reduce_mem_usage
 
 
 class BertSimilarityBetweenEngagingAndEngagedTweetsVectorsFeature(BaseFeature):
@@ -44,7 +44,7 @@ class BertSimilarityBetweenEngagingAndEngagedTweetsVectorsFeature(BaseFeature):
         if self.debugging:
             query += " limit 10000"
 
-        bqclient = bigquery.Client(project=PROJECT_ID)
+        bqclient = bigquery.Client(project=self.PROJECT_ID)
         bqstorageclient = bigquery_storage_v1beta1.BigQueryStorageClient()
         df = (
             bqclient.query(query)
