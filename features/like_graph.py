@@ -15,7 +15,7 @@ class LikeGraph(BaseFeature):
         return ["engaged_user_id", "engaging_user_id", "engagee_follows_engager", "like_engagement_timestamp is not null as liked"]
 
     def make_features(self, df_train_input, df_test_input):
-        df_folds = self._download_from_gs("StratifiedGroupKFold_training.ftr")["StratifiedGroupKFold_like_engagement"]
+        df_folds = self._download_from_gs("StratifiedGroupKFold_training.ftr")["StratifiedGroupKFold_retweet_with_comment_engagement"]
         self._logger.info("Constructing graph...")
         self._make_graph(df_train_input, df_test_input)
 
