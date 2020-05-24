@@ -17,10 +17,10 @@ class StratifiedGroupKFold(BaseFeature):
     def import_columns(self):
         return [
             "tweet_id",
-            "CASE WHEN reply_engagement_timestamp IS NULL THEN 0 ELSE 1 END AS reply_engagement",
-            "CASE WHEN retweet_engagement_timestamp IS NULL THEN 0 ELSE 1 END AS retweet_engagement",
+            # "CASE WHEN reply_engagement_timestamp IS NULL THEN 0 ELSE 1 END AS reply_engagement",
+            # "CASE WHEN retweet_engagement_timestamp IS NULL THEN 0 ELSE 1 END AS retweet_engagement",
             "CASE WHEN retweet_with_comment_engagement_timestamp IS NULL THEN 0 ELSE 1 END AS retweet_with_comment_engagement",
-            "CASE WHEN like_engagement_timestamp IS NULL THEN 0 ELSE 1 END AS like_engagement",
+            # "CASE WHEN like_engagement_timestamp IS NULL THEN 0 ELSE 1 END AS like_engagement",
         ]
 
     def make_features(self, df_train_input, df_test_input):
@@ -28,10 +28,10 @@ class StratifiedGroupKFold(BaseFeature):
         df_test_features = pd.DataFrame()
 
         target_columns = [
-            "reply_engagement",
-            "retweet_engagement",
+            # "reply_engagement",
+            # "retweet_engagement",
             "retweet_with_comment_engagement",
-            "like_engagement",
+            # "like_engagement",
         ]
         df_train_input = reduce_mem_usage(df_train_input)
 
@@ -58,6 +58,7 @@ class StratifiedGroupKFold(BaseFeature):
                 val_position[val_idx] = i_fold
 
             df_train_features[target] = val_position
+            print(df_train_features[target].value_counts().sort_index())
 
         return df_train_features, df_test_features
 
