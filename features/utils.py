@@ -1,5 +1,29 @@
-import numpy as np
 import pandas as pd
+import os
+import json
+import random
+import codecs
+import logging
+import numpy as np
+from sklearn.externals import joblib
+from typing import List
+from google.cloud import storage, bigquery
+
+
+def download_from_gcs(bucket_dir_name: str, file_name: str):
+    GCS_BUCKET_NAME = "recsys2020-challenge-wantedly"
+    PROJECT_ID = "wantedly-individual-naomichi"
+    client = storage.Client(project=PROJECT_ID)
+    bucket = client.get_bucket(GCS_BUCKET_NAME)
+
+    blob = storage.Blob(
+        os.path.join(bucket_dir_name, file_name),
+        bucket
+    )
+    content = blob.download_as_string()
+    print(f"Downloading {file_name} from {blob.path}")
+
+    return content
 
 
 def reduce_mem_usage(df):
