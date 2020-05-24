@@ -11,9 +11,6 @@ from sklearn.decomposition import LatentDirichletAllocation, TruncatedSVD, NMF
 from sklearn.pipeline import make_pipeline, make_union
 
 
-TESTING = False
-GCS_BUCKET_NAME = "recsys2020-challenge-wantedly"
-PROJECT_ID = "wantedly-individual-naomichi"
 N_COMPONENTS = 15
 RANDOM_SEED = 71
 
@@ -46,7 +43,7 @@ class TextJPFeatureCountDecomp(BaseFeature):
         if self.debugging:
             query += " limit 100000"
 
-        bqclient = bigquery.Client(project=PROJECT_ID)
+        bqclient = bigquery.Client(project=self.PROJECT_ID)
         bqstorageclient = bigquery_storage_v1beta1.BigQueryStorageClient()
         df = (
             bqclient.query(query)
@@ -57,16 +54,7 @@ class TextJPFeatureCountDecomp(BaseFeature):
 
     def make_features(self, df_train_input, df_test_input):
         # read features
-        train_table = f"`{PROJECT_ID}.recsys2020.training`"
-        train_text = f"`{PROJECT_ID}.recsys2020.texts_training`"
-        if TESTING:
-            test_table = f"`{PROJECT_ID}.recsys2020.test`"
-            test_text = f"`{PROJECT_ID}.recsys2020.texts_test`"
-        else:
-            test_table = f"`{PROJECT_ID}.recsys2020.val_20200418`"
-            test_text = f"`{PROJECT_ID}.recsys2020.texts_val_20200418`"
-
-        df_text = self._read_text_from_bigquery(train_text, test_text)
+        df_text = self._read_text_from_bigquery(self.train_text, self.test_text)
 
         tk = Tokenizer()
 

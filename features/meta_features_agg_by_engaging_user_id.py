@@ -5,7 +5,6 @@ from base import BaseFeature
 from google.cloud import storage
 from agg_func import GroupbyTransformer, DiffGroupbyTransformer, RatioGroupbyTransformer
 
-TESTING = False
 
 stats_list = ['mean', 'std', 'sum', 'max']
 stats_diff_list = ['mean']
@@ -44,7 +43,7 @@ class MetaFeaturesAggByEngagingUserId(BaseFeature):
         meta_features_train = self._download_from_gs(
             feather_file_name="MetaFeatures_training.ftr"
         )
-        if TESTING:
+        if self.TESTING:
             meta_features_test = self._download_from_gs(
                 feather_file_name="MetaFeatures_test.ftr"
             )

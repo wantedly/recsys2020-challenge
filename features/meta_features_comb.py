@@ -5,8 +5,6 @@ from base import BaseFeature
 from google.cloud import storage
 from itertools import combinations
 
-TESTING = False
-
 
 class MetaFeaturesComb(BaseFeature):
     def import_columns(self):
@@ -21,7 +19,7 @@ class MetaFeaturesComb(BaseFeature):
         meta_features_train = self._download_from_gs(
             feather_file_name="MetaFeatures_training.ftr"
         )
-        if TESTING:
+        if self.TESTING:
             meta_features_test = self._download_from_gs(
                 feather_file_name="MetaFeatures_test.ftr"
             )

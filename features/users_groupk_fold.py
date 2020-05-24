@@ -8,13 +8,10 @@ import tempfile
 import os
 
 
-TESTING = False
-GCS_BUCKET_NAME = "recsys2020-challenge-wantedly"
-PROJECT_ID = "wantedly-individual-naomichi"
-
 FOLD = 3
 RANDOM_STATE = 71
 SHUFFLE = True
+
 
 class UsersGroupKFold(BaseFeature):
     def import_columns(self):
@@ -65,16 +62,13 @@ class UsersGroupKFold(BaseFeature):
         self._logger.info(f"Running with debugging={self.debugging}")
         with tempfile.TemporaryDirectory() as tempdir:
             files: List[str] = []
-            if TESTING:
+            if self.TESTING:
                 test_path = os.path.join(tempdir, f"{self.name}_test.ftr")
-                test_table = f"`{PROJECT_ID}.recsys2020.test`"
             else:
                 test_path = os.path.join(tempdir, f"{self.name}_val.ftr")
-                test_table = f"`{PROJECT_ID}.recsys2020.val`"
             train_path = os.path.join(tempdir, f"{self.name}_training.ftr")
-            train_table = f"`{PROJECT_ID}.recsys2020.training`"
             self.read_and_save_features(
-                train_table, test_table, train_path, test_path,
+                self.train_table, self.test_table, train_path, test_path,
             )
             self._upload_to_gs([train_path])
 
