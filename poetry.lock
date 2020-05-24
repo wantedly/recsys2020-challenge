@@ -273,12 +273,26 @@ version = "0.10.0"
 six = "*"
 
 [[package]]
-category = "dev"
+category = "main"
 description = "Decorators for Humans"
 name = "decorator"
 optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*"
 version = "4.4.2"
+
+[[package]]
+category = "main"
+description = "Deep Graph Library"
+name = "dgl"
+optional = false
+python-versions = "*"
+version = "0.4.3.post2"
+
+[package.dependencies]
+networkx = ">=2.1"
+numpy = ">=1.14.0"
+requests = ">=2.19.0"
+scipy = ">=1.1.0"
 
 [[package]]
 category = "main"
@@ -884,6 +898,30 @@ name = "mypy-extensions"
 optional = false
 python-versions = "*"
 version = "0.4.3"
+
+[[package]]
+category = "main"
+description = "Python package for creating and manipulating graphs and networks"
+name = "networkx"
+optional = false
+python-versions = ">=3.5"
+version = "2.4"
+
+[package.dependencies]
+decorator = ">=4.3.0"
+
+[package.extras]
+all = ["numpy", "scipy", "pandas", "matplotlib", "pygraphviz", "pydot", "pyyaml", "gdal", "lxml", "pytest"]
+gdal = ["gdal"]
+lxml = ["lxml"]
+matplotlib = ["matplotlib"]
+numpy = ["numpy"]
+pandas = ["pandas"]
+pydot = ["pydot"]
+pygraphviz = ["pygraphviz"]
+pytest = ["pytest"]
+pyyaml = ["pyyaml"]
+scipy = ["scipy"]
 
 [[package]]
 category = "main"
@@ -1527,7 +1565,7 @@ python-versions = "*"
 version = "1.11.2"
 
 [metadata]
-content-hash = "f85b951224e11397edd99b9214be5ddce1f4a90f31db1e183dabea027ee139fe"
+content-hash = "ca0583f798e125500fb9ffd9933d9993510e0e8c511dec6e1d5f481dd4941f5d"
 python-versions = "3.7.3"
 
 [metadata.files]
@@ -1623,6 +1661,16 @@ cycler = [
 decorator = [
     {file = "decorator-4.4.2-py2.py3-none-any.whl", hash = "sha256:41fa54c2a0cc4ba648be4fd43cff00aedf5b9465c9bf18d64325bc225f08f760"},
     {file = "decorator-4.4.2.tar.gz", hash = "sha256:e3a62f0520172440ca0dcc823749319382e377f37f140a0b99ef45fecb84bfe7"},
+]
+dgl = [
+    {file = "dgl-0.4.3.post2-cp35-cp35m-macosx_10_6_x86_64.whl", hash = "sha256:2e51ece8d029540dd687dc4371a05f69df926f0ff5b40c0b1c739d6f049ffb4b"},
+    {file = "dgl-0.4.3.post2-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:0fdafab254382d2d65664140680e3f25304fd5ab3b043211059d51b52b04a26c"},
+    {file = "dgl-0.4.3.post2-cp36-cp36m-macosx_10_13_x86_64.whl", hash = "sha256:31ccdc19d61bd1aa996819e9c722ecc2bd755fb062815a91a527034000adf7f5"},
+    {file = "dgl-0.4.3.post2-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:040dd48afe1500d0ad574a631dee172fd1d6e53120110ed5a0d2a2b0afeb968d"},
+    {file = "dgl-0.4.3.post2-cp37-cp37m-macosx_10_13_x86_64.whl", hash = "sha256:5a1cee5abaaac193c960675cf072c0890a354650c292aead6ec722ae41c2f7d9"},
+    {file = "dgl-0.4.3.post2-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:afc85d9996480f405b4d89f84e7890f7ad52a2fe73ce51cf2e6b3d09ec6284df"},
+    {file = "dgl-0.4.3.post2-cp38-cp38-macosx_10_13_x86_64.whl", hash = "sha256:33bee0a0c2617c37c787f3907553080a22715c12d12b38d7a3dd1380d30befc5"},
+    {file = "dgl-0.4.3.post2-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:9703196955e495781b4eb30097a78a84a48218156809dd80368a34cebb91c13f"},
 ]
 dill = [
     {file = "dill-0.3.1.1.tar.gz", hash = "sha256:42d8ef819367516592a825746a18073ced42ca169ab1f5f4044134703e7a049c"},
@@ -1965,6 +2013,10 @@ mypy = [
 mypy-extensions = [
     {file = "mypy_extensions-0.4.3-py2.py3-none-any.whl", hash = "sha256:090fedd75945a69ae91ce1303b5824f428daf5a028d2f6ab8a299250a846f15d"},
     {file = "mypy_extensions-0.4.3.tar.gz", hash = "sha256:2d82818f5bb3e369420cb3c4060a7970edba416647068eb4c5343488a6c604a8"},
+]
+networkx = [
+    {file = "networkx-2.4-py3-none-any.whl", hash = "sha256:cdfbf698749a5014bf2ed9db4a07a5295df1d3a53bf80bf3cbd61edf9df05fa1"},
+    {file = "networkx-2.4.tar.gz", hash = "sha256:f8f4ff0b6f96e4f9b16af6b84622597b5334bf9cae8cf9b2e42e7985d5c95c64"},
 ]
 numpy = [
     {file = "numpy-1.18.1-cp35-cp35m-macosx_10_6_intel.whl", hash = "sha256:20b26aaa5b3da029942cdcce719b363dbe58696ad182aff0e5dcb1687ec946dc"},
