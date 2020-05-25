@@ -24,17 +24,17 @@
 # ================================================
 # === 1st stageモデルの作成 & メタ特徴量の作成
 # ================================================
-python -u model_lgb_hakubishin_20200317/run.py --config model_lgb_hakubishin_20200317/configs/1st_stage_model_1.json --debug
-python -u model_lgb_hakubishin_20200317/run.py --config model_lgb_hakubishin_20200317/configs/1st_stage_model_2.json --debug
-python -u model_lgb_hakubishin_20200317/run.py --config model_lgb_hakubishin_20200317/configs/1st_stage_model_3.json --debug
-python -u model_lgb_hakubishin_20200317/ensemble.py --config model_lgb_hakubishin_20200317/configs/1st_stage_model_ensemble.json --debug
+python -u model_lgb_hakubishin_20200317/run.py --config model_lgb_hakubishin_20200317/configs/1st_stage_model_1.json
+python -u model_lgb_hakubishin_20200317/run.py --config model_lgb_hakubishin_20200317/configs/1st_stage_model_2.json
+python -u model_lgb_hakubishin_20200317/run.py --config model_lgb_hakubishin_20200317/configs/1st_stage_model_3.json
+python -u model_lgb_hakubishin_20200317/ensemble.py --config model_lgb_hakubishin_20200317/configs/1st_stage_model_ensemble.json
 
 ./create_meta_features.sh
 
 # ================================================
 # === 2nd stageモデルの作成
 # ================================================
-python -u model_lgb_hakubishin_20200317/run.py --config model_lgb_hakubishin_20200317/configs/2nd_stage_model_1.json --debug
-python -u model_lgb_hakubishin_20200317/run.py --config model_lgb_hakubishin_20200317/configs/2nd_stage_model_2.json --debug
-python -u model_lgb_hakubishin_20200317/run.py --config model_lgb_hakubishin_20200317/configs/2nd_stage_model_3.json --debug
-python -u model_lgb_hakubishin_20200317/ensemble.py --config model_lgb_hakubishin_20200317/configs/2nd_stage_model_ensemble.json --debug
+python -u model_lgb_hakubishin_20200317/run.py --config model_lgb_hakubishin_20200317/configs/2nd_stage_model_1.json
+python -u model_lgb_hakubishin_20200317/run.py --config model_lgb_hakubishin_20200317/configs/2nd_stage_model_2.json
+python -u model_lgb_hakubishin_20200317/run.py --config model_lgb_hakubishin_20200317/configs/2nd_stage_model_3.json
+python -u model_lgb_hakubishin_20200317/ensemble.py --config model_lgb_hakubishin_20200317/configs/2nd_stage_model_ensemble.json
