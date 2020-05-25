@@ -78,15 +78,30 @@ def get_similarity_between_tweet_and_engaging_user_using_tweets_vector(
         project_id, testing, input_tables
     )
 
-    query = "select (\n"
-    query += " + ".join((f"f1.gap_{i} * f2.gap_{i}" for i in range(768)))
+    query = "with a as (\n"
+    query += "select tweet_id, engaging_user_id, (\n"
+    query += " + ".join((f"f1.gap_{i} * f2.gap_{i}" for i in range(768 // 2)))
     query += f") as {output_column_name}\n"
     query += f"from {target_table} as t\n"
     query += f"left join {tweet_vector_table} as f1 on t.tweet_id = f1.tweet_id\n"
     query += (
         f"left join {user_feature_table} as f2 on t.engaging_user_id = f2.user_id\n"
     )
-    query += "order by t.tweet_id, t.engaging_user_id"
+    query += "order by t.tweet_id, t.engaging_user_id\n"
+    query += "), "
+    query += "b as (\n"
+    query += "select tweet_id, engaging_user_id, (\n"
+    query += " + ".join((f"f1.gap_{i} * f2.gap_{i}" for i in range(768 // 2, 768)))
+    query += f") as {output_column_name}\n"
+    query += f"from {target_table} as t\n"
+    query += f"left join {tweet_vector_table} as f1 on t.tweet_id = f1.tweet_id\n"
+    query += (
+        f"left join {user_feature_table} as f2 on t.engaging_user_id = f2.user_id\n"
+    )
+    query += "order by t.tweet_id, t.engaging_user_id\n"
+    query += ")\n"
+    query += f"select a.{output_column_name} + b.{output_column_name}\n"
+    query += f"from a inner join b on a.tweet_id = b.tweet_id and a.engaging_user_id = b.engaging_user_id order by a.tweet_id, a.engaging_user_id"
 
     return query
 
@@ -99,15 +114,31 @@ def get_similarity_between_engaged_and_engaging_user_using_tweets_vector(
         project_id, testing, input_tables
     )
 
-    query = "select (\n"
-    query += " + ".join((f"f1.gap_{i} * f2.gap_{i}" for i in range(768)))
+    query = "with a as (\n"
+    query += "select tweet_id, engaging_user_id, (\n"
+    query += " + ".join((f"f1.gap_{i} * f2.gap_{i}" for i in range(768 // 2)))
     query += f") as {output_column_name}\n"
     query += f"from {target_table} as t\n"
     query += f"left join {user_feature_table} as f1 on t.engaged_user_id = f1.user_id\n"
     query += (
         f"left join {user_feature_table} as f2 on t.engaging_user_id = f2.user_id\n"
     )
-    query += "order by t.tweet_id, t.engaging_user_id"
+    query += "order by t.tweet_id, t.engaging_user_id\n"
+    query += "), "
+    query += "b as (\n"
+    query += "select tweet_id, engaging_user_id, (\n"
+    query += " + ".join((f"f1.gap_{i} * f2.gap_{i}" for i in range(768 // 2, 768)))
+    query += f") as {output_column_name}\n"
+    query += f"from {target_table} as t\n"
+    query += f"left join {user_feature_table} as f1 on t.engaged_user_id = f1.user_id\n"
+    query += (
+        f"left join {user_feature_table} as f2 on t.engaging_user_id = f2.user_id\n"
+    )
+    query += "order by t.tweet_id, t.engaging_user_id\n"
+    query += ")\n"
+    query += f"select a.{output_column_name} + b.{output_column_name}\n"
+    query += f"from a inner join b on a.tweet_id = b.tweet_id and a.engaging_user_id = b.engaging_user_id order by a.tweet_id, a.engaging_user_id"
+
 
     return query
 
@@ -123,15 +154,30 @@ def get_similarity_between_tweet_and_engaging_user_using_surfacing_tweets_vector
         project_id, testing, input_tables
     )
 
-    query = "select (\n"
-    query += " + ".join((f"f1.gap_{i} * f2.gap_{i}" for i in range(768)))
+    query = "with a as (\n"
+    query += "select tweet_id, engaging_user_id, (\n"
+    query += " + ".join((f"f1.gap_{i} * f2.gap_{i}" for i in range(768 // 2)))
     query += f") as {output_column_name}\n"
     query += f"from {target_table} as t\n"
     query += f"left join {tweet_vector_table} as f1 on t.tweet_id = f1.tweet_id\n"
     query += (
         f"left join {user_feature_table} as f2 on t.engaging_user_id = f2.user_id\n"
     )
-    query += "order by t.tweet_id, t.engaging_user_id"
+    query += "order by t.tweet_id, t.engaging_user_id\n"
+    query += "), "
+    query += "b as (\n"
+    query += "select tweet_id, engaging_user_id, (\n"
+    query += " + ".join((f"f1.gap_{i} * f2.gap_{i}" for i in range(768 // 2, 768)))
+    query += f") as {output_column_name}\n"
+    query += f"from {target_table} as t\n"
+    query += f"left join {tweet_vector_table} as f1 on t.tweet_id = f1.tweet_id\n"
+    query += (
+        f"left join {user_feature_table} as f2 on t.engaging_user_id = f2.user_id\n"
+    )
+    query += "order by t.tweet_id, t.engaging_user_id\n"
+    query += ")\n"
+    query += f"select a.{output_column_name} + b.{output_column_name}\n"
+    query += f"from a inner join b on a.tweet_id = b.tweet_id and a.engaging_user_id = b.engaging_user_id order by a.tweet_id, a.engaging_user_id"
 
     return query
 
@@ -146,14 +192,29 @@ def get_similarity_between_engaged_and_engaging_user_using_surfacing_tweets_vect
         project_id, testing, input_tables
     )
 
-    query = "select (\n"
-    query += " + ".join((f"f1.gap_{i} * f2.gap_{i}" for i in range(768)))
+    query = "with a as (\n"
+    query += "select tweet_id, engaging_user_id, (\n"
+    query += " + ".join((f"f1.gap_{i} * f2.gap_{i}" for i in range(768 // 2)))
     query += f") as {output_column_name}\n"
     query += f"from {target_table} as t\n"
     query += f"left join {user_feature_table} as f1 on t.engaged_user_id = f1.user_id\n"
     query += (
         f"left join {user_feature_table} as f2 on t.engaging_user_id = f2.user_id\n"
     )
-    query += "order by t.tweet_id, t.engaging_user_id"
+    query += "order by t.tweet_id, t.engaging_user_id\n"
+    query += "), "
+    query += "b as (\n"
+    query += "select tweet_id, engaging_user_id, (\n"
+    query += " + ".join((f"f1.gap_{i} * f2.gap_{i}" for i in range(768 // 2, 768)))
+    query += f") as {output_column_name}\n"
+    query += f"from {target_table} as t\n"
+    query += f"left join {user_feature_table} as f1 on t.engaged_user_id = f1.user_id\n"
+    query += (
+        f"left join {user_feature_table} as f2 on t.engaging_user_id = f2.user_id\n"
+    )
+    query += "order by t.tweet_id, t.engaging_user_id\n"
+    query += ")\n"
+    query += f"select a.{output_column_name} + b.{output_column_name}\n"
+    query += f"from a inner join b on a.tweet_id = b.tweet_id and a.engaging_user_id = b.engaging_user_id order by a.tweet_id, a.engaging_user_id"
 
     return query
