@@ -29,7 +29,18 @@
         "BertSimilarityBetweenEngagingAndEngagedTweetsVectorsFeature",
         "BertSimilarityBetweenTweetAndTweetsUserVectorsFeature",
         "BertSimilarityBetweenTweetAndEngagingSurfacingTweetVectorsFeature",
-        "BertSimilarityBetweenEngagedAndEngagingSurfacingTweetVectorsFeature"
+        "BertSimilarityBetweenEngagedAndEngagingSurfacingTweetVectorsFeature",
+        "SentenceCount",
+        "TweetUrlFeatures",
+        "CountEncodingReciprocalPair",
+        "MultilingualFeatures",
+        "FFFeatures2",
+        "CountEncodingEngagingHashtags",
+        "CountEncodingEngagingPresentMedia",
+        "CountEncodingEngagingPresentDomains",
+        "CountEncodingEngagingPresentLinks",
+        "CountEngagingTweetWithinN",
+        "CountEngagingTweetWithinNDifference"
     ],
     "target": [
         "TargetCategories"
