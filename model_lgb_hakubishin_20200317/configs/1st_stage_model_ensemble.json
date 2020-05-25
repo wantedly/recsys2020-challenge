@@ -3,7 +3,7 @@
         "model_lgb_hakubishin_20200317"
     ,
     "test_data_type":
-        "val_20200418"
+        "test"
     ,
     "models": [
         "1st_stage_model_1",
