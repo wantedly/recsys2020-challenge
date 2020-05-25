@@ -166,7 +166,7 @@ def get_similarity_between_tweet_and_engaging_user_using_surfacing_tweets_vector
     query += "order by t.tweet_id, t.engaging_user_id\n"
     query += "), "
     query += "b as (\n"
-    query += "select tweet_id, engaging_user_id, (\n"
+    query += "select t.tweet_id, t.engaging_user_id, (\n"
     query += " + ".join((f"f1.gap_{i} * f2.gap_{i}" for i in range(768 // 2, 768)))
     query += f") as {output_column_name}\n"
     query += f"from {target_table} as t\n"
