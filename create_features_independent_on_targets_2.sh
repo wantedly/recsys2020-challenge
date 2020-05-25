@@ -1,9 +1,7 @@
-python -u features/count_encoding_hashtags.py --debug
-python -u features/count_encoding_present_media.py --debug
-python -u features/count_encoding_present_domains.py --debug
-python -u features/count_encoding_present_links.py --debug
-python -u features/connected_2nd_engaged_to_engaging.py --debug
-python -u features/connected_2nd_engaging_to_engaged.py --debug
-python -u features/count_encoding_in_tweetid_units.py --debug
-python -u features/count_encoding_tweet_type.py --debug
-python -u features/count_encoding_crossing.py --debug
+python -u features/count_encoding_hashtags.py
+python -u features/count_encoding_present_media.py
+python -u features/count_encoding_present_domains.py
+python -u features/count_encoding_present_links.py
+python -u features/count_encoding_engaging_present_links.py
+python -u features/count_engaging_tweet_within_n.py
+python -u features/count_engaging_tweet_within_n_difference.py

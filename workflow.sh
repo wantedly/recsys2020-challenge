@@ -14,6 +14,7 @@
 ./create_features_independent_on_targets_1.sh
 ./create_features_independent_on_targets_2.sh
 ./create_features_independent_on_targets_3.sh
+./create_features_independent_on_targets_4.sh
 
 # ================================================
 # === targetに依存した特徴量の作成
