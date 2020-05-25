@@ -6,11 +6,6 @@ from google.cloud import storage, bigquery
 from google.cloud import bigquery_storage_v1beta1
 
 
-TESTING = False
-GCS_BUCKET_NAME = "recsys2020-challenge-wantedly"
-PROJECT_ID = "wantedly-individual-naomichi"
-
-
 class CountEncodingEngagingPresentMedia(BaseFeature):
     def import_columns(self):
         return [
@@ -111,7 +106,7 @@ class CountEncodingEngagingPresentMedia(BaseFeature):
         if self.debugging:
             query += " limit 10000"
 
-        bqclient = bigquery.Client(project=PROJECT_ID)
+        bqclient = bigquery.Client(project=self.PROJECT_ID)
         bqstorageclient = bigquery_storage_v1beta1.BigQueryStorageClient()
         df = (
             bqclient.query(query)
@@ -122,14 +117,8 @@ class CountEncodingEngagingPresentMedia(BaseFeature):
 
     def make_features(self, df_train_input, df_test_input):
         # read features
-        train_table = f"`{PROJECT_ID}.recsys2020.training`"
-        if TESTING:
-            test_table = f"`{PROJECT_ID}.recsys2020.test`"
-        else:
-            test_table = f"`{PROJECT_ID}.recsys2020.val_20200418`"
-
-        df_train_features = self._read_features_from_bigquery(train_table, test_table, train_table)
-        df_test_features = self._read_features_from_bigquery(train_table, test_table, test_table)
+        df_train_features = self._read_features_from_bigquery(self.train_table, self.test_table, self.train_table)
+        df_test_features = self._read_features_from_bigquery(self.train_table, self.test_table, self.test_table)
         print(df_train_features.shape)
         print(df_test_features.shape)
 

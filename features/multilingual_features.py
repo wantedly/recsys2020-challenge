@@ -6,11 +6,6 @@ from google.cloud import storage, bigquery
 from google.cloud import bigquery_storage_v1beta1
 
 
-TESTING = False
-GCS_BUCKET_NAME = "recsys2020-challenge-wantedly"
-PROJECT_ID = "wantedly-individual-naomichi"
-
-
 class MultilingualFeatures(BaseFeature):
     def import_columns(self):
         return [
@@ -91,7 +86,7 @@ class MultilingualFeatures(BaseFeature):
         if self.debugging:
             query += " limit 10000"
 
-        bqclient = bigquery.Client(project=PROJECT_ID)
+        bqclient = bigquery.Client(project=self.PROJECT_ID)
         bqstorageclient = bigquery_storage_v1beta1.BigQueryStorageClient()
         df = (
             bqclient.query(query)
@@ -101,24 +96,21 @@ class MultilingualFeatures(BaseFeature):
         return df
 
     def make_features(self, df_train_input, df_test_input):
-        train_table = f"`{PROJECT_ID}.recsys2020.training`"
         label_train = self._download_from_gs(
             feather_file_name="LabelEncoding_training.ftr"
         )
 
-        if TESTING:
-            test_table = f"`{PROJECT_ID}.recsys2020.test`"
+        if self.TESTING:
             label_test = self._download_from_gs(
                 feather_file_name="LabelEncoding_test.ftr"
             )
         else:
-            test_table = f"`{PROJECT_ID}.recsys2020.val_20200418`"
             label_test = self._download_from_gs(
                 feather_file_name="LabelEncoding_val_20200418.ftr"
             )
 
-        df_train_features = self._read_features_from_bigquery(train_table, test_table, train_table)
-        df_test_features = self._read_features_from_bigquery(train_table, test_table, test_table)
+        df_train_features = self._read_features_from_bigquery(self.train_table, self.test_table, self.train_table)
+        df_test_features = self._read_features_from_bigquery(self.train_table, self.test_table, self.test_table)
 
         label_keys = ["language", "LabelEncoding_language"]
 
