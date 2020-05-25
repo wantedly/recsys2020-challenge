@@ -12,7 +12,7 @@ from google.cloud import bigquery_storage_v1beta1
 from io import BytesIO
 
 
-TESTING = False
+TESTING = True
 GCS_BUCKET_NAME = "recsys2020-challenge-wantedly"
 PROJECT_ID = "wantedly-individual-naomichi"
 
