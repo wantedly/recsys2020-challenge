@@ -24,7 +24,10 @@
         "CountEncodingInTweetidUnits",
         "CountEncodingTweetType",
         "CountEncodingCrossing",
-        "CountEncodingCrossing2"
+        "CountEncodingCrossing2",
+        "AtSignFeatures",
+        "CountEncodingTextId",
+        "FFFeatures2"
     ],
     "target": [
         "TargetCategories"

@@ -24,7 +24,8 @@
         "CountEncodingInTweetidUnits",
         "CountEncodingTweetType",
         "CountEncodingCrossing",
-        "CountEncodingCrossing2"
+        "CountEncodingCrossing2",
+        "SentenceCount"
     ],
     "target": [
         "TargetCategories"
@@ -41,7 +42,7 @@
         "random_seed": 71
     },
     "random_sampling": {
-        "n_data": 100000,
+        "n_data": 10000000,
         "random_seed": 71
     },
     "model": {

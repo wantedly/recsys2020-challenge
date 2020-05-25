@@ -24,7 +24,19 @@
         "CountEncodingInTweetidUnits",
         "CountEncodingTweetType",
         "CountEncodingCrossing",
-        "CountEncodingCrossing2"
+        "CountEncodingCrossing2",
+        "AtSignFeatures",
+        "CountEncodingTextId",
+        "SentenceCount",
+        "TweetUrlFeatures",
+        "CountEncodingReciprocalPair",
+        "MultilingualFeatures",
+        "FFFeatures2",
+        "CountEncodingEngagingHashtags",
+        "CountEncodingEngagingPresentMedia",
+        "CountEncodingEngagingPresentDomains",
+        "CountEncodingEngagingPresentLinks",
+        "CountEngagingTweetWithinN"
     ],
     "target": [
         "TargetCategories"

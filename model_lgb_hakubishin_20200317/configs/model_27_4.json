@@ -24,7 +24,9 @@
         "CountEncodingInTweetidUnits",
         "CountEncodingTweetType",
         "CountEncodingCrossing",
-        "CountEncodingCrossing2"
+        "CountEncodingCrossing2",
+        "TweetUrlFeatures",
+        "MultilingualFeatures2"
     ],
     "target": [
         "TargetCategories"
