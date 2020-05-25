@@ -21,7 +21,7 @@ apache-beam = {extras = ["gcp"], version = "^2.19.0"}
 pyarrow = "0.15.1"
 google-cloud-bigquery-storage = {version = "^0.8.0", allow-prereleases = true}
 lightgbm = "^2.3.1"
-mecab-python3 = "^0.996.5"
+networkx = "^2.4"
 
 [tool.poetry.dev-dependencies]
 ipython = "^7.13.0"

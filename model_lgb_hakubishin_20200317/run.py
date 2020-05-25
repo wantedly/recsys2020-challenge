@@ -7,6 +7,7 @@ from src.utils import seed_everything, get_logger, json_dump, upload_to_gcs
 from src.feature_loader import FeatureLoader
 from src.runner import Runner
 from src.models.model_lightgbm import Model_LightGBM
+from multiprocessing import cpu_count
 
 
 seed_everything(71)
@@ -41,6 +42,7 @@ def main():
             'debug': args.debug
         }
     })
+    config["model"]["model_params"]["nthread"] = cpu_count()
 
     # Create a directory for model output
     model_no = pathlib.Path(args.config).stem
@@ -166,7 +168,6 @@ def main():
         save_path = model_output_dir / 'output.json'
         json_dump(config, save_path)
         logger.info(f'Save model log: {save_path}')
-
 
     # =========================================
     # === Upload to GCS

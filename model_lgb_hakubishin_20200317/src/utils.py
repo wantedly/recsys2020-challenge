@@ -9,6 +9,22 @@ from typing import List
 from google.cloud import storage, bigquery
 
 
+def download_from_gcs(bucket_dir_name: str, file_name: str):
+    GCS_BUCKET_NAME = "recsys2020-challenge-wantedly"
+    PROJECT_ID = "wantedly-individual-naomichi"
+    client = storage.Client(project=PROJECT_ID)
+    bucket = client.get_bucket(GCS_BUCKET_NAME)
+
+    blob = storage.Blob(
+        os.path.join(bucket_dir_name, file_name),
+        bucket
+    )
+    content = blob.download_as_string()
+    print(f"Downloading {file_name} from {blob.path}")
+
+    return content
+
+
 def upload_to_gcs(bucket_dir_name: str, files: List[str]):
     GCS_BUCKET_NAME = "recsys2020-challenge-wantedly"
     PROJECT_ID = "wantedly-individual-naomichi"
