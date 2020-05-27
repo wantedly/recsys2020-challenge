@@ -117,7 +117,7 @@ def main():
         y_train = y_train_set[f"TargetCategories_{cat}"].values
 
         # Get folds
-        folds_col = ["StratifiedGroupKFold_retweet_with_comment_engagement"]
+        folds_col = list(folds_train.columns[0])
         assert len(folds_col) == 1, "The number of fold column must be one"
         folds = folds_train[folds_col]
         n_fold = folds.max().values[0] + 1
