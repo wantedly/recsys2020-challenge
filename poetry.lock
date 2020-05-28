@@ -282,20 +282,6 @@ version = "4.4.2"
 
 [[package]]
 category = "main"
-description = "Deep Graph Library"
-name = "dgl"
-optional = false
-python-versions = "*"
-version = "0.4.3.post2"
-
-[package.dependencies]
-networkx = ">=2.1"
-numpy = ">=1.14.0"
-requests = ">=2.19.0"
-scipy = ">=1.1.0"
-
-[[package]]
-category = "main"
 description = "serialize all of python"
 name = "dill"
 optional = false
@@ -1315,6 +1301,20 @@ numpy = ">=1.13.3"
 
 [[package]]
 category = "main"
+description = "seaborn: statistical data visualization"
+name = "seaborn"
+optional = false
+python-versions = ">=3.6"
+version = "0.10.1"
+
+[package.dependencies]
+matplotlib = ">=2.1.2"
+numpy = ">=1.13.3"
+pandas = ">=0.22.0"
+scipy = ">=1.0.1"
+
+[[package]]
+category = "main"
 description = "SentencePiece python wrapper"
 name = "sentencepiece"
 optional = false
@@ -1565,7 +1565,7 @@ python-versions = "*"
 version = "1.11.2"
 
 [metadata]
-content-hash = "ca0583f798e125500fb9ffd9933d9993510e0e8c511dec6e1d5f481dd4941f5d"
+content-hash = "e040767bf00550a8bf913ef644688e74336dec3c763b3a9e363cbef9d5a38fb8"
 python-versions = "3.7.3"
 
 [metadata.files]
@@ -1661,16 +1661,6 @@ cycler = [
 decorator = [
     {file = "decorator-4.4.2-py2.py3-none-any.whl", hash = "sha256:41fa54c2a0cc4ba648be4fd43cff00aedf5b9465c9bf18d64325bc225f08f760"},
     {file = "decorator-4.4.2.tar.gz", hash = "sha256:e3a62f0520172440ca0dcc823749319382e377f37f140a0b99ef45fecb84bfe7"},
-]
-dgl = [
-    {file = "dgl-0.4.3.post2-cp35-cp35m-macosx_10_6_x86_64.whl", hash = "sha256:2e51ece8d029540dd687dc4371a05f69df926f0ff5b40c0b1c739d6f049ffb4b"},
-    {file = "dgl-0.4.3.post2-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:0fdafab254382d2d65664140680e3f25304fd5ab3b043211059d51b52b04a26c"},
-    {file = "dgl-0.4.3.post2-cp36-cp36m-macosx_10_13_x86_64.whl", hash = "sha256:31ccdc19d61bd1aa996819e9c722ecc2bd755fb062815a91a527034000adf7f5"},
-    {file = "dgl-0.4.3.post2-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:040dd48afe1500d0ad574a631dee172fd1d6e53120110ed5a0d2a2b0afeb968d"},
-    {file = "dgl-0.4.3.post2-cp37-cp37m-macosx_10_13_x86_64.whl", hash = "sha256:5a1cee5abaaac193c960675cf072c0890a354650c292aead6ec722ae41c2f7d9"},
-    {file = "dgl-0.4.3.post2-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:afc85d9996480f405b4d89f84e7890f7ad52a2fe73ce51cf2e6b3d09ec6284df"},
-    {file = "dgl-0.4.3.post2-cp38-cp38-macosx_10_13_x86_64.whl", hash = "sha256:33bee0a0c2617c37c787f3907553080a22715c12d12b38d7a3dd1380d30befc5"},
-    {file = "dgl-0.4.3.post2-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:9703196955e495781b4eb30097a78a84a48218156809dd80368a34cebb91c13f"},
 ]
 dill = [
     {file = "dill-0.3.1.1.tar.gz", hash = "sha256:42d8ef819367516592a825746a18073ced42ca169ab1f5f4044134703e7a049c"},
@@ -2345,6 +2335,10 @@ scipy = [
     {file = "scipy-1.4.1-cp38-cp38-win32.whl", hash = "sha256:cc971a82ea1170e677443108703a2ec9ff0f70752258d0e9f5433d00dda01f59"},
     {file = "scipy-1.4.1-cp38-cp38-win_amd64.whl", hash = "sha256:2cce3f9847a1a51019e8c5b47620da93950e58ebc611f13e0d11f4980ca5fecb"},
     {file = "scipy-1.4.1.tar.gz", hash = "sha256:dee1bbf3a6c8f73b6b218cb28eed8dd13347ea2f87d572ce19b289d6fd3fbc59"},
+]
+seaborn = [
+    {file = "seaborn-0.10.1-py3-none-any.whl", hash = "sha256:c901ce494541fb4714cfa7db79d0232dc3f4c4dfd3f273bacf17816084df5b53"},
+    {file = "seaborn-0.10.1.tar.gz", hash = "sha256:2d1a0c9d6bd1bc3cadb0364b8f06540f51322a670cf8438d0fde1c1c7317adc0"},
 ]
 sentencepiece = [
     {file = "sentencepiece-0.1.85-cp27-cp27m-macosx_10_6_x86_64.whl", hash = "sha256:0f72c4151791de7242e7184a9b7ef12503cef42e9a5a0c1b3510f2c68874e810"},
