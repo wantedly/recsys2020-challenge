@@ -150,76 +150,76 @@ def main():
         }
     })
 
-    # =========================================
-    # === Train model and predict
-    # =========================================
-    logger.info('Train model and predict')
+    # # =========================================
+    # # === Train model and predict
+    # # =========================================
+    # logger.info('Train model and predict')
 
-    # Modeling
-    target_columns = [
-        "reply_engagement",
-        "retweet_engagement",
-        "retweet_with_comment_engagement",
-        "like_engagement",
-    ]
-    for cat in target_columns:
-        logger.info(f'============= {cat} =============')
+    # # Modeling
+    # target_columns = [
+    #     "reply_engagement",
+    #     "retweet_engagement",
+    #     "retweet_with_comment_engagement",
+    #     "like_engagement",
+    # ]
+    # for cat in target_columns:
+    #     logger.info(f'============= {cat} =============')
 
-        # Get target values
-        y_train = y_train_set[f"TargetCategories_{cat}"].values
+    #     # Get target values
+    #     y_train = y_train_set[f"TargetCategories_{cat}"].values
 
-        # Get folds
-        folds_col = ["StratifiedGroupKFold_retweet_with_comment_engagement"]
-        assert len(folds_col) == 1, "The number of fold column must be one"
-        folds = folds_train[folds_col]
-        n_fold = folds.max().values[0] + 1
-        folds_ids = []
+    #     # Get folds
+    #     folds_col = ["StratifiedGroupKFold_retweet_with_comment_engagement"]
+    #     assert len(folds_col) == 1, "The number of fold column must be one"
+    #     folds = folds_train[folds_col]
+    #     n_fold = folds.max().values[0] + 1
+    #     folds_ids = []
 
-        logger.debug(f"total pos: {y_train.sum()}")
-        for i in range(n_fold):
-            trn_idx = folds[folds != i].dropna().index
-            val_idx = folds[folds == i].dropna().index
-            folds_ids.append((trn_idx, val_idx))
-            logger.debug(f"{i+1}fold: n_trn={len(trn_idx)}, n_val={len(val_idx)}")
-            logger.debug(f"{i+1}fold: trn_pos={y_train[trn_idx].sum()}, val_pos={y_train[val_idx].sum()}")
+    #     logger.debug(f"total pos: {y_train.sum()}")
+    #     for i in range(n_fold):
+    #         trn_idx = folds[folds != i].dropna().index
+    #         val_idx = folds[folds == i].dropna().index
+    #         folds_ids.append((trn_idx, val_idx))
+    #         logger.debug(f"{i+1}fold: n_trn={len(trn_idx)}, n_val={len(val_idx)}")
+    #         logger.debug(f"{i+1}fold: trn_pos={y_train[trn_idx].sum()}, val_pos={y_train[val_idx].sum()}")
 
-        # Train and predict
-        model_cls = model_map[config['model']['name']]
-        model_params = config['model']
-        runner = Runner(
-            model_cls, model_params, model_output_dir, f'Train_{model_cls.__name__}_{cat}'
-        )
-        oof_preds, evals_result, importances = runner.train_cv(
-            x_train, y_train, folds_ids, config)
+    #     # Train and predict
+    #     model_cls = model_map[config['model']['name']]
+    #     model_params = config['model']
+    #     runner = Runner(
+    #         model_cls, model_params, model_output_dir, f'Train_{model_cls.__name__}_{cat}'
+    #     )
+    #     oof_preds, evals_result, importances = runner.train_cv(
+    #         x_train, y_train, folds_ids, config)
 
-        # Save importance
-        importances.mean(axis=1).sort_values(ascending=False).reset_index().rename(
-            columns={'index': 'feature_name', 0: 'imp'}).to_csv(
-            model_output_dir / f'feature_importances_{cat}.csv', header=True, index=False
-        )
+    #     # Save importance
+    #     importances.mean(axis=1).sort_values(ascending=False).reset_index().rename(
+    #         columns={'index': 'feature_name', 0: 'imp'}).to_csv(
+    #         model_output_dir / f'feature_importances_{cat}.csv', header=True, index=False
+    #     )
 
-        evals_result[f"evals_result_{cat}"] = evals_result["evals_result"]
-        evals_result.pop("evals_result")
-        config.update(evals_result)
-        test_preds = runner.predict_cv(x_test)
+    #     evals_result[f"evals_result_{cat}"] = evals_result["evals_result"]
+    #     evals_result.pop("evals_result")
+    #     config.update(evals_result)
+    #     test_preds = runner.predict_cv(x_test)
 
-        # Save oof-pred file
-        oof_preds_file_name = f"{cat}_oof_pred"
-        np.save(model_output_dir / oof_preds_file_name, oof_preds)
-        logger.info(f'Save oof-pred file: {model_output_dir/ oof_preds_file_name}')
+    #     # Save oof-pred file
+    #     oof_preds_file_name = f"{cat}_oof_pred"
+    #     np.save(model_output_dir / oof_preds_file_name, oof_preds)
+    #     logger.info(f'Save oof-pred file: {model_output_dir/ oof_preds_file_name}')
 
-        # Make submission file
-        sub = pd.concat([key_test, pd.Series(test_preds).rename("pred")], axis=1)
-        sub = sub[["KeyCategories_tweet_id", "KeyCategories_engaging_user_id", "pred"]]
-        sub_file_name = f"{cat}_submission_{config['test_data_type']}.csv"
-        sub.to_csv(model_output_dir/ sub_file_name, index=False, header=False)
-        logger.info(f'Save submission file: {model_output_dir/ sub_file_name}')
+    #     # Make submission file
+    #     sub = pd.concat([key_test, pd.Series(test_preds).rename("pred")], axis=1)
+    #     sub = sub[["KeyCategories_tweet_id", "KeyCategories_engaging_user_id", "pred"]]
+    #     sub_file_name = f"{cat}_submission_{config['test_data_type']}.csv"
+    #     sub.to_csv(model_output_dir/ sub_file_name, index=False, header=False)
+    #     logger.info(f'Save submission file: {model_output_dir/ sub_file_name}')
 
-        # Save files (override)
-        logger.info('Save files')
-        save_path = model_output_dir / 'output.json'
-        json_dump(config, save_path)
-        logger.info(f'Save model log: {save_path}')
+    #     # Save files (override)
+    #     logger.info('Save files')
+    #     save_path = model_output_dir / 'output.json'
+    #     json_dump(config, save_path)
+    #     logger.info(f'Save model log: {save_path}')
 
     # =========================================
     # === Upload to GCS
