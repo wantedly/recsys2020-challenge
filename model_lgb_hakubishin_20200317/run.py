@@ -9,6 +9,11 @@ from src.runner import Runner
 from src.models.model_lightgbm import Model_LightGBM
 from multiprocessing import cpu_count
 
+import lightgbm as lgb
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 seed_everything(71)
 
@@ -97,6 +102,53 @@ def main():
     logger.debug(f'x_test: {x_test.shape}')
     logger.debug(f'key_test: {key_test.shape}')
 
+    # =========================================
+    # === Adversarial Validation
+    # =========================================
+    logger.info("adversarial validation")
+    train_adv = x_train
+    test_adv = x_test
+    train_adv['target'] = 0
+    test_adv['target'] = 1
+    train_test_adv = pd.concat([train_adv, test_adv], axis=0, sort=False).reset_index(drop=True)
+    target = train_test_adv['target'].values
+
+    train_set, val_set = train_test_split(train_test_adv, test_size=0.33, random_state=71, shuffle=True)
+    x_train_adv = train_set[feature_name]
+    y_train_adv = train_set['target']
+    x_val_adv = val_set[feature_name]
+    y_val_adv = val_set['target']
+    logger.debug(f'the number of train set: {len(x_train_adv)}')
+    logger.debug(f'the number of valid set: {len(x_val_adv)}')
+
+    train_lgb = lgb.Dataset(x_train_adv, label=y_train_adv)
+    val_lgb = lgb.Dataset(x_val_adv, label=y_val_adv)
+    lgb_model_params = config["adversarial_validation"]["lgb_model_params"]
+    lgb_train_params = config["adversarial_validation"]["lgb_train_params"]
+    clf = lgb.train(
+        lgb_model_params,
+        train_lgb,
+        valid_sets=[train_lgb, val_lgb],
+        valid_names=['train', 'valid'],
+        **lgb_train_params
+    )
+
+    feature_imp = pd.DataFrame(
+        sorted(zip(clf.feature_importance(importance_type='gain'), feature_name)), columns=['value', 'feature']
+    )
+    feature_imp.to_csv(model_output_dir / f'feature_importances_adversarial_validatio.csv', header=True, index=False)
+    plt.figure(figsize=(20, 10))
+    sns.barplot(x='value', y='feature', data=feature_imp.sort_values(by='value', ascending=False).head(20))
+    plt.title('LightGBM Features')
+    plt.tight_layout()
+    plt.savefig(model_output_dir / "feature_importance_adv.png")
+
+    config.update({
+        'adversarial_validation_result': {
+            'score': clf.best_score,
+            'feature_importances': feature_imp.set_index("feature").sort_values(by="value", ascending=False).head(20).to_dict()["value"]
+        }
+    })
 
     # =========================================
     # === Train model and predict
