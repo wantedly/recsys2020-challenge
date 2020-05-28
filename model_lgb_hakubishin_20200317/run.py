@@ -14,6 +14,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.model_selection import train_test_split
 
 seed_everything(71)
 
@@ -105,6 +106,7 @@ def main():
     # =========================================
     # === Adversarial Validation
     # =========================================
+    feature_name = x_test.columns
     logger.info("adversarial validation")
     train_adv = x_train
     test_adv = x_test
