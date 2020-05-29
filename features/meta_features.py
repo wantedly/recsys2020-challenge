@@ -7,7 +7,7 @@ from utils import download_from_gcs
 from io import BytesIO
 
 
-MODEL = "1st_stage_model_ensemble"
+MODEL = "model_44_test"
 
 
 class MetaFeatures(BaseFeature):
