@@ -103,6 +103,11 @@ def main():
         "CountEncoding_engaging_user_id",
         "CountEncodingTweetType_ratio_retweet_tweet",
         "CountEngagingTweetWithinNDifference_diff_8hours_divided_by_max_abs",
+        "BertSimilarityBetweenTweetAndEngagingSurfacingTweetVectorsFeature_f0_",
+        "CountEngagingTweetWithinN_cnt_within_8hours_earlier",
+        "TweetUrlFeatures_engaged_engaging_avg_n_url",
+        "CountEngagingTweetWithinN_cnt_within_24hours_earlier",
+        "TweetUrlFeatures_engaging_engaged_only_url_rate",
     ]
 
     x_train.drop(drop_features, axis=1, inplace=True)
