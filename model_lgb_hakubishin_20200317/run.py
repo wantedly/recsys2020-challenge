@@ -97,6 +97,17 @@ def main():
         data_type="training", debugging=args.debug
         ).load_features(config["folds"])
 
+    drop_features = [
+        "FFFeatures2_engaging_sum_engaging_following_count",
+        "CountEncodingHashtags_max_value",
+        "CountEncoding_engaging_user_id",
+        "CountEncodingTweetType_ratio_retweet_tweet",
+        "CountEngagingTweetWithinNDifference_diff_8hours_divided_by_max_abs",
+    ]
+
+    x_train.drop(drop_features, axis=1, inplace=True)
+    x_test.drop(drop_features, axis=1, inplace=True)
+
     logger.debug(f'test_data_type: {config["test_data_type"]}')
     logger.debug(f'y_train_set: {y_train_set.shape}')
     logger.debug(f'x_train: {x_train.shape}')
