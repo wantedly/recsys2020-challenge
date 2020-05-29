@@ -110,8 +110,8 @@ def main():
         "TweetUrlFeatures_engaging_engaged_only_url_rate",
     ]
 
-    x_train.drop(drop_features, axis=1, inplace=True)
-    x_test.drop(drop_features, axis=1, inplace=True)
+    #  x_train.drop(drop_features, axis=1, inplace=True)
+    #  x_test.drop(drop_features, axis=1, inplace=True)
 
     logger.debug(f'test_data_type: {config["test_data_type"]}')
     logger.debug(f'y_train_set: {y_train_set.shape}')
