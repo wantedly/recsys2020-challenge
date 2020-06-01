@@ -27,14 +27,13 @@ class Runner(object):
         model = self.build_model(i_fold)
         model.train(x_trn, y_trn, x_val, y_val)
         val_preds = model.predict(x_val)
-        scores = calc_metrics(y_val, val_preds)
 
-        return model, scores, val_preds
+        return model, val_preds
 
-    def train_cv(self, x_train: pd.DataFrame, y_train: Union[pd.Series, np.array],
+    def train_cv(self, x_train: pd.DataFrame, y_train: Union[pd.Series, np.array], x_test: pd.DataFrame,
             folds_ids: List[Tuple[np.array]], train_settings: dict) -> Tuple[np.array, dict]:
         oof_preds = np.zeros(len(x_train))
-        importances = pd.DataFrame(index=x_train.columns)
+        preds_list = []
         cv_score_list = []
         best_iteration = 0
         self.n_fold = len(folds_ids)
@@ -54,7 +53,14 @@ class Runner(object):
             positive_idx_of_trn_idx = np.where(y_trn == 1)[0]  # trn_idx の何番目が positive か
             negative_idx_of_trn_idx = np.where(y_trn == 0)[0]  # trn_idx の何番目が negative か
 
-            for _ in range(N_MODELS):
+            positive_ratio = float(y_trn.sum()) / len(trn_idx)
+            under_sampling_rate = positive_ratio / (1 - positive_ratio)
+            self.under_sampling_rate.append(under_sampling_rate)
+
+            n_models = train_settings["n_models"]
+
+            for i_model in range(n_models):
+                np.random.seed(train_settings["random_sampling"]["random_seed"])
                 positive_sampling_keys = np.random.random(len(positive_idx_of_trn_idx))
                 negative_sampling_keys = np.random.random(len(negative_idx_of_trn_idx))
                 required_data_size = train_settings["random_sampling"]["n_data"] // 2
@@ -66,32 +72,34 @@ class Runner(object):
                 # x_train の何番目を採用するか
                 resampled_trn_idx = trn_idx[resampled_idx_of_trn_idx]
                 resampled_x_trn = x_train.iloc[resampled_trn_idx]
-                resampled_y_trn = y_train.iloc[resampled_trn_idx]
+                resampled_y_trn = y_train[resampled_trn_idx]
 
                 print(f"train size after random-sampling: {len(resampled_y_trn)}")
                 print(f"trn_pos={resampled_y_trn.sum()}, trn_neg={(resampled_y_trn == 0).sum()}")
 
                 # Training
-                model, score, val_pred = self.train_one_fold(i_fold, resampled_x_trn, resampled_y_trn, x_val, y_val)
-                # val_pred = val_pred / (val_pred + ((1 - val_pred) / under_sampling_rate))
-                oof_preds[val_idx] += val_pred
-                # cv_score_list.append(score)
-                # best_iteration += model.get_best_iteration() / len(folds_ids)
+                model, val_pred = self.train_one_fold(i_fold, resampled_x_trn, resampled_y_trn, x_val, y_val)
+                val_pred = val_pred / (val_pred + ((1 - val_pred) / under_sampling_rate))
+                oof_preds[val_idx] += val_pred / n_models
+                best_iteration += model.get_best_iteration() / len(folds_ids) / n_models
 
-                # Get feature importances
-                importances_tmp = pd.DataFrame(
-                    model.get_feature_importance(),
-                    columns=[f'imp_{i_fold}'], index=x_train.columns
-                )
-                importances = importances.join(importances_tmp, how='inner')
+                # Predict
+                y_pred = model.predict(x_test)
+                y_pred = y_pred / (y_pred + ((1 - y_pred) / under_sampling_rate))
+                preds_list.append(y_pred)
 
                 # Save model
                 model.save_model()
 
-        oof_preds /= N_MODELS
+            # done calculation for one-fold
+            score = calc_metrics(y_val, oof_preds[val_idx])
+            cv_score_list.append(score)
+
         # Calculate OOF-Score
         oof_score = calc_metrics(y_train, oof_preds)
         print(f"oof: {oof_score}")
+
+        pred_avg = np.mean(preds_list, axis=0)
 
         # Summary
         evals_result = {"evals_result": {
@@ -102,7 +110,7 @@ class Runner(object):
             "oof_score": oof_score,
             "cv_score": {f"cv{i+1}": cv_score for i, cv_score in enumerate(cv_score_list)},
         }}
-        return oof_preds, evals_result, importances
+        return oof_preds, pred_avg, evals_result
 
     def predict_cv(self, x: pd.DataFrame) -> np.array:
         preds_list = []
