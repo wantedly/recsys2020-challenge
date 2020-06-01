@@ -38,6 +38,7 @@ class Runner(object):
         best_iteration = 0
         self.n_fold = len(folds_ids)
         n_models = train_settings["n_models"]
+        np.random.seed(train_settings["random_sampling"]["random_seed"])
 
         for i_fold, (trn_idx, val_idx) in enumerate(folds_ids):
             print(f"{i_fold+1}fold")
@@ -58,7 +59,6 @@ class Runner(object):
             self.under_sampling_rate.append(under_sampling_rate)
 
             for i_model in range(n_models):
-                np.random.seed(train_settings["random_sampling"]["random_seed"])
                 positive_sampling_keys = np.random.random(len(positive_idx_of_trn_idx))
                 negative_sampling_keys = np.random.random(len(negative_idx_of_trn_idx))
                 required_data_size = train_settings["random_sampling"]["n_data"] // 2
