@@ -62,6 +62,11 @@ class Runner(object):
                 positive_sampling_keys = np.random.random(len(positive_idx_of_trn_idx))
                 negative_sampling_keys = np.random.random(len(negative_idx_of_trn_idx))
                 required_data_size = train_settings["random_sampling"]["n_data"] // 2
+
+                if required_data_size > len(positive_idx_of_trn_idx):
+                    # required_data_sizeがpositiveサンプル数より大きかった場合
+                    required_data_size = len(positive_idx_of_trn_idx)
+
                 # 乱数が (欲しいデータ数) / (今のデータ数) より小さいものをサンプリング
                 resampled_pos_idx_of_trn_idx = positive_idx_of_trn_idx[positive_sampling_keys < required_data_size / len(positive_idx_of_trn_idx)]
                 resampled_neg_idx_of_trn_idx = negative_idx_of_trn_idx[negative_sampling_keys < required_data_size / len(negative_idx_of_trn_idx)]
