@@ -39,11 +39,11 @@ class Runner(object):
         best_iteration = 0
         self.n_fold = len(folds_ids)
 
+        N_MODELS = 10
         for i_fold, (trn_idx, val_idx) in enumerate(folds_ids):
             print(f"{i_fold+1}fold")
 
             # Split arrays into train and valid subsets
-            x_trn = x_train.iloc[trn_idx]
             y_trn = y_train[trn_idx]
             x_val = x_train.iloc[val_idx]
             y_val = y_train[val_idx]
@@ -51,52 +51,44 @@ class Runner(object):
             print(f"trn_pos={y_trn.sum()}, trn_neg={(y_trn == 0).sum()}")
 
             # Negative down sampling
-            positive_data = x_trn[y_trn == 1]
-            positive_ratio = float(len(positive_data)) / len(x_trn)
-            under_sampling_rate = positive_ratio / (1 - positive_ratio)
-            self.under_sampling_rate.append(under_sampling_rate)
+            positive_idx_of_trn_idx = np.where(y_trn == 1)[0]  # trn_idx の何番目が positive か
+            negative_idx_of_trn_idx = np.where(y_trn == 0)[0]  # trn_idx の何番目が negative か
 
-            negative_data = x_trn[y_trn == 0].sample(
-                frac=under_sampling_rate,
-                random_state=train_settings["negative_down_sampling"]["random_seed"]
-            )
-            trn_idx = positive_data.index.union(negative_data.index).sort_values()
-            x_trn = x_train.iloc[trn_idx]
-            y_trn = y_train[trn_idx]
+            for _ in range(N_MODELS):
+                positive_sampling_keys = np.random.random(len(positive_idx_of_trn_idx))
+                negative_sampling_keys = np.random.random(len(negative_idx_of_trn_idx))
+                required_data_size = train_settings["random_sampling"]["n_data"] // 2
+                # 乱数が (欲しいデータ数) / (今のデータ数) より小さいものをサンプリング
+                resampled_pos_idx_of_trn_idx = positive_idx_of_trn_idx[positive_sampling_keys < required_data_size / len(positive_idx_of_trn_idx)]
+                resampled_neg_idx_of_trn_idx = negative_idx_of_trn_idx[negative_sampling_keys < required_data_size / len(negative_idx_of_trn_idx)]
+                # trn_idx の何番目を採用するか
+                resampled_idx_of_trn_idx = np.concatenate([resampled_pos_idx_of_trn_idx, resampled_neg_idx_of_trn_idx])
+                # x_train の何番目を採用するか
+                resampled_trn_idx = trn_idx[resampled_idx_of_trn_idx]
+                resampled_x_trn = x_train.iloc[resampled_trn_idx]
+                resampled_y_trn = y_train.iloc[resampled_trn_idx]
 
-            print(f"train size after negative-under-sampling: {len(y_trn)}")
-            print(f"trn_pos={y_trn.sum()}, trn_neg={(y_trn == 0).sum()}")
+                print(f"train size after random-sampling: {len(resampled_y_trn)}")
+                print(f"trn_pos={resampled_y_trn.sum()}, trn_neg={(resampled_y_trn == 0).sum()}")
 
-            # random sampling
-            frac = float(train_settings["random_sampling"]["n_data"] / len(x_trn))
-            if frac < 1:
-                random_sampling_idx = x_trn.sample(
-                    frac=frac,
-                    random_state=train_settings["random_sampling"]["random_seed"]
-                ).index
-                x_trn = x_train.iloc[random_sampling_idx]
-                y_trn = y_train[random_sampling_idx]
+                # Training
+                model, score, val_pred = self.train_one_fold(i_fold, resampled_x_trn, resampled_y_trn, x_val, y_val)
+                # val_pred = val_pred / (val_pred + ((1 - val_pred) / under_sampling_rate))
+                oof_preds[val_idx] += val_pred
+                # cv_score_list.append(score)
+                # best_iteration += model.get_best_iteration() / len(folds_ids)
 
-            print(f"train size after random-sampling: {len(y_trn)}")
-            print(f"trn_pos={y_trn.sum()}, trn_neg={(y_trn == 0).sum()}")
+                # Get feature importances
+                importances_tmp = pd.DataFrame(
+                    model.get_feature_importance(),
+                    columns=[f'imp_{i_fold}'], index=x_train.columns
+                )
+                importances = importances.join(importances_tmp, how='inner')
 
-            # Training
-            model, score, val_pred = self.train_one_fold(i_fold, x_trn, y_trn, x_val, y_val)
-            val_pred = val_pred / (val_pred + ((1 - val_pred) / under_sampling_rate))
-            oof_preds[val_idx] = val_pred
-            cv_score_list.append(score)
-            best_iteration += model.get_best_iteration() / len(folds_ids)
+                # Save model
+                model.save_model()
 
-            # Get feature importances
-            importances_tmp = pd.DataFrame(
-                model.get_feature_importance(),
-                columns=[f'imp_{i_fold}'], index=x_train.columns
-            )
-            importances = importances.join(importances_tmp, how='inner')
-
-            # Save model
-            model.save_model()
-
+        oof_preds /= N_MODELS
         # Calculate OOF-Score
         oof_score = calc_metrics(y_train, oof_preds)
         print(f"oof: {oof_score}")
