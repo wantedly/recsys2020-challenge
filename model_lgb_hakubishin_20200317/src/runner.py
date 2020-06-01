@@ -37,8 +37,8 @@ class Runner(object):
         cv_score_list = []
         best_iteration = 0
         self.n_fold = len(folds_ids)
+        n_models = train_settings["n_models"]
 
-        N_MODELS = 10
         for i_fold, (trn_idx, val_idx) in enumerate(folds_ids):
             print(f"{i_fold+1}fold")
 
@@ -56,8 +56,6 @@ class Runner(object):
             positive_ratio = float(y_trn.sum()) / len(trn_idx)
             under_sampling_rate = positive_ratio / (1 - positive_ratio)
             self.under_sampling_rate.append(under_sampling_rate)
-
-            n_models = train_settings["n_models"]
 
             for i_model in range(n_models):
                 np.random.seed(train_settings["random_sampling"]["random_seed"])
