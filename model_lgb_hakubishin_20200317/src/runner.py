@@ -59,6 +59,12 @@ class Runner(object):
             self.under_sampling_rate.append(under_sampling_rate)
 
             for i_model in range(n_models):
+                randint = np.random.randint(10000000)
+                train_settings["model"]["model_params"]["seed"] = randint
+                train_settings["model"]["model_params"]["bagging_seed"] = randint
+                train_settings["model"]["model_params"]["feature_fraction_seed"] = randint
+                train_settings["model"]["model_params"]["drop_seed"] = randint
+
                 positive_sampling_keys = np.random.random(len(positive_idx_of_trn_idx))
                 negative_sampling_keys = np.random.random(len(negative_idx_of_trn_idx))
                 required_data_size = train_settings["random_sampling"]["n_data"] // 2
