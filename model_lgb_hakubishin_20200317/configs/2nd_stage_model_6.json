@@ -64,11 +64,11 @@
     "negative_down_sampling": {
         "enable": true,
         "bagging_size": 1,
-        "random_seed": 23
+        "random_seed": 26
     },
     "random_sampling": {
         "n_data": 100000,
-        "random_seed": 23
+        "random_seed": 26
     },
     "n_models": 20,
     "model": {
@@ -83,10 +83,10 @@
             "subsample_freq": 1,
             "colsample_bytree": 0.7,
             "min_child_weight": 0,
-            "seed": 23,
-            "bagging_seed": 23,
-            "feature_fraction_seed": 23,
-            "drop_seed": 23,
+            "seed": 26,
+            "bagging_seed": 26,
+            "feature_fraction_seed": 26,
+            "drop_seed": 26,
             "verbose": -1
         },
         "train_params": {
