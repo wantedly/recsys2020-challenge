@@ -4,6 +4,8 @@ import argparse
 import numpy as np
 import pandas as pd
 from src.utils import seed_everything, get_logger, json_dump, upload_to_gcs, download_from_gcs
+from src.metrics import calc_metrics
+from src.feature_loader import FeatureLoader
 from io import BytesIO
 
 
@@ -51,7 +53,7 @@ def main():
     # =========================================
     # === Loading model-outputs
     # =========================================
-    
+
     target_columns = [
         "reply_engagement",
         "retweet_engagement",
@@ -61,6 +63,12 @@ def main():
 
     models = config["models"]
     test_data_type = config["test_data_type"]
+
+    y_train_set = FeatureLoader(
+        data_type="training", debugging=args.debug
+    ).load_features(config["target"])
+
+    oof_ensemble_scores = {}
 
     for target_col in target_columns:
         print(f'============= {target_col} =============')
@@ -97,6 +105,14 @@ def main():
         print(f"oof mean: {np.mean(oof_ensemble_value)}, oof shape: {oof_ensemble_value.shape}")
         print(f"test mean: {np.mean(test_ensemble_value)}, test shape: {test_ensemble_value.shape}")
 
+        # Calc oof-score
+        y_train = y_train_set[f"TargetCategories_{target_col}"].values
+        print(f"y_train shape: {y_train.shape}")
+
+        oof_ensemble_score = calc_metrics(y_train, oof_ensemble_value)
+        print(f"{target_col} oof_ensemble_score: {oof_ensemble_score}")
+        oof_ensemble_scores[target_col] = oof_ensemble_score
+
         # Save oof-pred file
         oof_preds_file_name = f"{target_col}_oof_pred"
         np.save(model_output_dir / oof_preds_file_name, oof_ensemble_value)
@@ -107,6 +123,8 @@ def main():
         sub_file_name = f"{target_col}_submission_{test_data_type}.csv"
         test_pred.to_csv(model_output_dir/ sub_file_name, index=False, header=False)
         logger.info(f'Save submission file: {model_output_dir/ sub_file_name}')
+
+    config.update({"oof_ensemble_scores": oof_ensemble_scores})
 
     # =========================================
     # === Save files
@@ -132,4 +150,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
