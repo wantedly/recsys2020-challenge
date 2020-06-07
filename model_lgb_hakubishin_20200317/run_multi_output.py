@@ -97,6 +97,53 @@ def main():
     logger.debug(f'x_test: {x_test.shape}')
     logger.debug(f'key_test: {key_test.shape}')
 
+    # =========================================
+    # === Feature processing
+    # =========================================
+    def rank_gauss(x):
+        from scipy.special import erfinv
+        N = x.shape[0]
+        temp = x.argsort()
+        rank_x = temp.argsort() / N
+        rank_x -= rank_x.mean()
+        rank_x *= 2
+        efi_x = erfinv(rank_x)
+        efi_x -= efi_x.mean()
+        return efi_x
+
+    x_total = x_train.append(x_test).reset_index(drop=True)
+
+    # one-hot encoding
+    x_total = pd.get_dummies(x_total, columns=["LabelEncoding"])
+
+    # fillna
+    x_total = x_total.fillna(x_total.mean())
+    logger.debug(f"the number of na: {x_total.isnull().sum().sum()}")
+
+    # normalize
+    not_numeric_feature_classes = [
+        "LabelEncoding",
+        "CommonFlgFeatures",
+        "EngagingUserFollowsEngagedUser",
+        "Connected2ndEngagingToEngaged",
+        "Connected2ndEngagedToEngaging"
+    ]
+    not_numeric_features = []
+    for not_numeric in not_numeric_feature_classes:
+        not_numeric_features += [c for c in x_total.columns if c.find(not_numeric + "_") != -1]
+    logger.debug(f"not_numeric_features: {len(not_numeric_features)}")
+
+    numeric_features = [c for c in x_total.columns if c not in not_numeric_features]
+    logger.debug(f"numeric_features: {len(numeric_features)}")
+
+    for numeric in numeric_features:
+        x_total[numeric] = rank_gauss(x_total[numeric].values)
+
+    x_train = x_total.iloc[:len(y_train_set)]
+    x_test = x_total.iloc[len(y_train_set):].reset_index(drop=True)
+    logger.debug(f'number of features in train: {x_train.shape}')
+    logger.debug(f'number of features in test: {x_test.shape}')
+
 
     # =========================================
     # === Train model and predict
