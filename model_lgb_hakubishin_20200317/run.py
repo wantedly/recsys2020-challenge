@@ -137,19 +137,12 @@ def main():
         runner = Runner(
             model_cls, model_params, model_output_dir, f'Train_{model_cls.__name__}_{cat}'
         )
-        oof_preds, evals_result, importances = runner.train_cv(
-            x_train, y_train, folds_ids, config)
-
-        # Save importance
-        importances.mean(axis=1).sort_values(ascending=False).reset_index().rename(
-            columns={'index': 'feature_name', 0: 'imp'}).to_csv(
-            model_output_dir / f'feature_importances_{cat}.csv', header=True, index=False
-        )
+        oof_preds, test_preds, evals_result = runner.train_cv(
+            x_train, y_train, x_test, folds_ids, config)
 
         evals_result[f"evals_result_{cat}"] = evals_result["evals_result"]
         evals_result.pop("evals_result")
         config.update(evals_result)
-        test_preds = runner.predict_cv(x_test)
 
         # Save oof-pred file
         oof_preds_file_name = f"{cat}_oof_pred"
