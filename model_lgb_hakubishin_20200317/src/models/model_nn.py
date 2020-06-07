@@ -39,6 +39,7 @@ def build_model(n_features: int, config: Config):
 
 class Model_NN(Base_Model):
     def train(self, x_trn, y_trn, x_val, y_val):
+        self.num_fe = len(x_trn.columns)
         validation_flg = x_val is not None
 
         # Setting model parameters
@@ -65,6 +66,12 @@ class Model_NN(Base_Model):
 
     def predict(self, x):
         return self.model.predict(np.asarray(x))
+
+    def get_feature_importance(self):
+        return np.zeros(self.num_fe)
+
+    def get_best_iteration(self):
+        return 0
 
     def save_model(self):
         model_path = self.model_output_dir / f"{self.run_fold_name}.h5"
