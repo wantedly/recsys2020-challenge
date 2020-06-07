@@ -22,7 +22,13 @@ def build_model(n_features: int, config: Config):
         x = tf.keras.layers.BatchNormalization()(x)
         x = tf.keras.layers.LeakyReLU()(x)
     outputs = []
-    for category in ["retweet", "reply", "like", "rt_with_comment"]:
+    target_columns = [
+        "reply_engagement",
+        "retweet_engagement",
+        "retweet_with_comment_engagement",
+        "like_engagement",
+    ]
+    for category in target_columns:
         outputs.append(tf.keras.layers.Dense(1, activation="sigmoid", name=category)(x))
     model = tf.keras.Model(features, outputs)
     model.compile(
