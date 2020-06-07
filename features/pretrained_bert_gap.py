@@ -48,10 +48,7 @@ class PretrainedBertGAP(BaseFeature):
 
     def run(self):
         self._logger.info(f"Running with debugging={self.debugging}")
-        if TESTING:
-            test_table = f"`{PROJECT_ID}.recsys2020.test`"
-        else:
-            test_table = f"`{PROJECT_ID}.recsys2020.val_20200418`"
+        test_table = f"`{PROJECT_ID}.recsys2020.test`"
         train_table = f"`{PROJECT_ID}.recsys2020.training`"
         output_table_name = f"{PROJECT_ID}.recsys2020.pretrained_bert_gap"
         if self.debugging:
@@ -73,8 +70,8 @@ class PretrainedBertGAP(BaseFeature):
         ]
         try:
             bqclient.get_table(output_table_name)
-            if not self.debugging:
-                raise RuntimeError(f"Table {output_table_name} already exists.")
+            # if not self.debugging:
+            #     raise RuntimeError(f"Table {output_table_name} already exists.")
         except exceptions.NotFound:
             output_table = bigquery.Table(output_table_name, schema=schema)
             bqclient.create_table(output_table)
@@ -143,17 +140,13 @@ class PretrainedBertGAP(BaseFeature):
         select tweet_id, any_value(text_tokens) as text_tokens
         from (
             select tweet_id, any_value(text_tokens) as text_tokens
-            from `recsys2020.training`
-            group by tweet_id
-            union all
-            select tweet_id, any_value(text_tokens) as text_tokens
-            from `recsys2020.val_20200418`
+            from `recsys2020.test`
             group by tweet_id
         )
         group by tweet_id
         """
         max_rows = 10000 if self.debugging else None
-        row_iterator = bqclient.list_rows(f"{PROJECT_ID}.recsys2020.tmp_unique_tweet_tokens_val_20200418", max_results=max_rows)
+        row_iterator = bqclient.list_rows(f"{PROJECT_ID}.recsys2020.tmp_text_tokens_for_test", max_results=max_rows)
         return row_iterator.total_rows, row_iterator.to_dataframe_iterable()
 
 
