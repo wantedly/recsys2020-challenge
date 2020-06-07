@@ -11,7 +11,7 @@ from src.utils import Pkl
 
 @dataclasses.dataclass
 class Config:
-    hidden_dims: List[int] = [128, 64, 32]
+    hidden_dims: List[int]
 
 
 def build_model(n_features: int, config: Config):
