@@ -115,12 +115,13 @@ def main():
 
     x_total = x_train.append(x_test).reset_index(drop=True)
 
-    # add na flg
-    for col in x_total.columns:
-        x_total[f"NAFlg_{col}"] = x_total[col].isnull().astype(int)
+    # # add na flg
+    # for col in x_total.columns:
+    #     x_total[f"NAFlg_{col}"] = x_total[col].isnull().astype(int)
 
     # one-hot encoding
-    x_total = pd.get_dummies(x_total, columns=["LabelEncoding"])
+    label_encoding_cols = [c for c in x_total.columns if c.find("LabelEncoding_") != -1]
+    x_total = pd.get_dummies(x_total, columns=label_encoding_cols)
 
     # fillna
     x_total = x_total.fillna(x_total.mean())
