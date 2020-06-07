@@ -7,6 +7,7 @@ from src.utils import seed_everything, get_logger, json_dump, upload_to_gcs
 from src.feature_loader import FeatureLoader
 from src.runner import Runner
 from src.models.model_lightgbm import Model_LightGBM
+from src.models.model_nn import Model_NN
 from multiprocessing import cpu_count
 
 
@@ -14,6 +15,7 @@ seed_everything(71)
 
 model_map = {
     'lightgbm': Model_LightGBM,
+    'nn': Model_NN,
 }
 
 
