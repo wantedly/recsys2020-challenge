@@ -41,11 +41,6 @@ class Model_NN(Base_Model):
     def train(self, x_trn, y_trn, x_val, y_val):
         validation_flg = x_val is not None
 
-        # Setting datasets
-        d_trn = lgb.Dataset(x_trn, label=y_trn)
-        if validation_flg:
-            d_val = lgb.Dataset(x_val, label=y_val, reference=d_trn)
-
         # Setting model parameters
         model_params = self.params["model_params"]
         config = Config(hidden_dims=model_params["hidden_dims"],)
