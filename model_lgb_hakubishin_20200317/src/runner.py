@@ -47,8 +47,7 @@ class Runner(object):
                 data_type="test", debugging=False,
                 ).download_pred_from_gs(train_settings["pseudo_labeling"]["model_name"], target)
 
-            #test_idx_for_train = pd.Series(y_test_pred)[pd.Series(y_test_pred) >= train_settings["pseudo_labeling"]["threshold"]].index
-            test_idx_for_train = pd.Index([1,2,3])
+            test_idx_for_train = pd.Series(y_test_pred)[pd.Series(y_test_pred) >= train_settings["pseudo_labeling"]["threshold"]].index
             x_test_for_train = x_test.loc[test_idx_for_train].reset_index(drop=True)
             y_test_for_train = np.ones(len(test_idx_for_train))
             print("Get Pseudo label:", x_test_for_train.shape, y_test_for_train.shape)
