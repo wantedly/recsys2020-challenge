@@ -31,6 +31,28 @@ class FeatureLoader(object):
         df_feature = pd.read_feather(BytesIO(content))
         return df_feature
 
+    def download_pred_from_gs(self, model_name: str, target: str) -> np.array:
+        if self.data_type == "training":
+            file_name = f"{target}_oof.npy"
+        elif self.data_type == "test":
+            file_name = f"{target}_submission_test.csv"
+
+        bucket_dir_name = "model_lgb_hakubishin_20200317/" + model_name 
+        blob = storage.Blob(
+            os.path.join(bucket_dir_name, file_name),
+            self.bucket
+        )
+        content = blob.download_as_string()
+        print(f"Downloading {file_name} to {blob.path}")
+
+        if self.data_type == "training":
+            pred = np.load(BytesIO(content))
+        elif self.data_type == "test":
+            pred = pd.read_csv(BytesIO(content), header=None)
+            pred = pred.iloc[:, 2].values
+
+        return pred
+
     def load_features(self, download_features_list):
         df_features_list = [] 
         for feature_class_name in download_features_list:
