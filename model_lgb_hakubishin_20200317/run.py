@@ -138,7 +138,7 @@ def main():
             model_cls, model_params, model_output_dir, f'Train_{model_cls.__name__}_{cat}'
         )
         oof_preds, test_preds, evals_result = runner.train_cv(
-            x_train, y_train, x_test, folds_ids, config)
+            x_train, y_train, x_test, folds_ids, config, cat)
 
         evals_result[f"evals_result_{cat}"] = evals_result["evals_result"]
         evals_result.pop("evals_result")
