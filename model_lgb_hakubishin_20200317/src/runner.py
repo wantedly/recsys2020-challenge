@@ -47,6 +47,11 @@ class Runner(object):
         print(f"remove cols: {remove_features}")
         print(f"original features: {len(x_train.columns)}, after removed: {len(remain_features)}")
 
+	# Set params
+        if target == "like_engagement":
+            train_settings["model"]["model_params"]["subsample"] = 0.5
+            train_settings["model"]["model_params"]["subsample_for_bin"] = 1000000
+
         for i_fold, (trn_idx, val_idx) in enumerate(folds_ids):
             print(f"{i_fold+1}fold")
 
