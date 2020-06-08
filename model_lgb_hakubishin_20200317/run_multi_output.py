@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from src.utils import seed_everything, get_logger, json_dump, upload_to_gcs
 from src.feature_loader import FeatureLoader
-from src.runner import Runner
+from src.runner_multi import RunnerMulti
 from src.models.model_lightgbm import Model_LightGBM
 from src.models.model_nn import Model_NN
 from multiprocessing import cpu_count
@@ -186,7 +186,7 @@ def main():
     # Train and predict
     model_cls = model_map[config['model']['name']]
     model_params = config['model']
-    runner = Runner(
+    runner = RunnerMulti(
         model_cls, model_params, model_output_dir, f'Train_{model_cls.__name__}'
     )
     oof_preds, test_preds, evals_result = runner.train_cv(
