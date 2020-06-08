@@ -131,26 +131,6 @@ def main():
             logger.debug(f"{i+1}fold: n_trn={len(trn_idx)}, n_val={len(val_idx)}")
             logger.debug(f"{i+1}fold: trn_pos={y_train[trn_idx].sum()}, val_pos={y_train[val_idx].sum()}")
 
-        import pdb; pdb.set_trace()
-        # Get pseudo label
-        if config["pseudo_labeling"]["enabled"]:
-            y_test_pred = FeatureLoader(
-                data_type="test", debugging=args.debug
-                ).download_pred_from_gs(config["pseudo_labeling"]["model_name"], cat)
-
-            test_idx_for_train = pd.Series(y_test_pred)[pd.Series(y_test_pred) >= config["pseudo_labeling"]["threshold"]].index
-            x_test_for_train = x_test.loc[test_idx_for_train].reset_index(drop=True)
-            y_test_for_train = np.ones(len(test_idx_for_train))
-            print(x_test_for_train.shape, y_test_for_train.shape)
-
-            x_train = pd.concat([x_train, x_test_for_train], axis=0).reset_index(drop=True)
-            y_train = np.concatenate([y_train, y_test_for_train])
-            psuedo_idx = np.asarray(x_train.index[len(y_train_set):])
-            folds_ids_psuedo = []
-            for trn, val in folds_ids:
-                folds_ids_psuedo.append((trn.union(psuedo_idx), val))
-            folds_ids = folds_ids_psuedo
-
         # Train and predict
         model_cls = model_map[config['model']['name']]
         model_params = config['model']
@@ -158,7 +138,7 @@ def main():
             model_cls, model_params, model_output_dir, f'Train_{model_cls.__name__}_{cat}'
         )
         oof_preds, test_preds, evals_result = runner.train_cv(
-            x_train, y_train, x_test, folds_ids, config)
+            x_train, y_train, x_test, folds_ids, config, cat)
 
         evals_result[f"evals_result_{cat}"] = evals_result["evals_result"]
         evals_result.pop("evals_result")
