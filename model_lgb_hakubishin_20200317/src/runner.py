@@ -4,6 +4,7 @@ import pandas as pd
 from typing import Union, List, Tuple, Callable
 from .metrics import calc_metrics
 from .models.model import Base_Model
+from src.feature_loader import FeatureLoader
 
 
 class Runner(object):
@@ -31,7 +32,7 @@ class Runner(object):
         return model, val_preds
 
     def train_cv(self, x_train: pd.DataFrame, y_train: Union[pd.Series, np.array], x_test: pd.DataFrame,
-            folds_ids: List[Tuple[np.array]], train_settings: dict) -> Tuple[np.array, dict]:
+            folds_ids: List[Tuple[np.array]], train_settings: dict, target: str) -> Tuple[np.array, dict]:
         oof_preds = np.zeros(len(x_train))
         preds_list = []
         cv_score_list = []
@@ -39,6 +40,24 @@ class Runner(object):
         self.n_fold = len(folds_ids)
         n_models = train_settings["n_models"]
         np.random.seed(train_settings["random_sampling"]["random_seed"])
+
+        # Get pseudo label
+        if train_settings["pseudo_labeling"]["enabled"]:
+            y_test_pred = FeatureLoader(
+                data_type="test", debugging=False,
+                ).download_pred_from_gs(train_settings["pseudo_labeling"]["model_name"], target)
+
+            #test_idx_for_train = pd.Series(y_test_pred)[pd.Series(y_test_pred) >= train_settings["pseudo_labeling"]["threshold"]].index
+            test_idx_for_train = pd.Index([1,2,3])
+            x_test_for_train = x_test.loc[test_idx_for_train].reset_index(drop=True)
+            y_test_for_train = np.ones(len(test_idx_for_train))
+            print("Get Pseudo label:", x_test_for_train.shape, y_test_for_train.shape)
+
+            original_train_size = len(y_train)
+            x_train = pd.concat([x_train, x_test_for_train], axis=0).reset_index(drop=True)
+            y_train = np.concatenate([y_train, y_test_for_train])
+            pseudo_idx = np.asarray(x_train.index[original_train_size:])
+            n_pseudo = len(pseudo_idx)
 
         for i_fold, (trn_idx, val_idx) in enumerate(folds_ids):
             print(f"{i_fold+1}fold")
@@ -74,12 +93,18 @@ class Runner(object):
                     required_data_size = len(positive_idx_of_trn_idx)
 
                 # 乱数が (欲しいデータ数) / (今のデータ数) より小さいものをサンプリング
-                resampled_pos_idx_of_trn_idx = positive_idx_of_trn_idx[positive_sampling_keys < required_data_size / len(positive_idx_of_trn_idx)]
-                resampled_neg_idx_of_trn_idx = negative_idx_of_trn_idx[negative_sampling_keys < required_data_size / len(negative_idx_of_trn_idx)]
+                if train_settings["pseudo_labeling"]["enabled"]:
+                    resampled_pos_idx_of_trn_idx = positive_idx_of_trn_idx[positive_sampling_keys < required_data_size / len(positive_idx_of_trn_idx)]
+                    resampled_neg_idx_of_trn_idx = negative_idx_of_trn_idx[negative_sampling_keys < (required_data_size + n_pseudo) / len(negative_idx_of_trn_idx)]
+                else:
+                    resampled_pos_idx_of_trn_idx = positive_idx_of_trn_idx[positive_sampling_keys < required_data_size / len(positive_idx_of_trn_idx)]
+                    resampled_neg_idx_of_trn_idx = negative_idx_of_trn_idx[negative_sampling_keys < required_data_size / len(negative_idx_of_trn_idx)]
+
                 # trn_idx の何番目を採用するか
                 resampled_idx_of_trn_idx = np.concatenate([resampled_pos_idx_of_trn_idx, resampled_neg_idx_of_trn_idx])
                 # x_train の何番目を採用するか
                 resampled_trn_idx = trn_idx[resampled_idx_of_trn_idx]
+                resampled_trn_idx = np.concatenate([resampled_trn_idx, pseudo_idx])
                 resampled_x_trn = x_train.iloc[resampled_trn_idx]
                 resampled_y_trn = y_train[resampled_trn_idx]
 
