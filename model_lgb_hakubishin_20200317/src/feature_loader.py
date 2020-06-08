@@ -2,6 +2,7 @@ import os
 import pandas as pd
 from google.cloud import storage
 from io import BytesIO
+import numpy as np
 
 
 PROJECT_ID = "wantedly-individual-naomichi"
