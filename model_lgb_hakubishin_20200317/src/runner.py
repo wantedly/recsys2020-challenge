@@ -50,6 +50,9 @@ class Runner(object):
 	# Set params
         if target == "like_engagement":
             train_settings["model"]["model_params"]["subsample"] = 0.5
+            train_settings["model"]["model_params"]["subsample_for_bin"] = 5000000
+        else:
+            train_settings["model"]["model_params"]["subsample"] = 0.9
             train_settings["model"]["model_params"]["subsample_for_bin"] = 1000000
 
         for i_fold, (trn_idx, val_idx) in enumerate(folds_ids):
