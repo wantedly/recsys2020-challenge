@@ -50,7 +50,7 @@ class Runner(object):
 	# Set params
         if target == "like_engagement":
             train_settings["model"]["model_params"]["subsample"] = 0.5
-            train_settings["model"]["model_params"]["subsample_for_bin"] = 5000000
+            train_settings["model"]["model_params"]["subsample_for_bin"] = int(0.1 * y_train.sum())
         else:
             train_settings["model"]["model_params"]["subsample"] = 0.9
             train_settings["model"]["model_params"]["subsample_for_bin"] = 1000000

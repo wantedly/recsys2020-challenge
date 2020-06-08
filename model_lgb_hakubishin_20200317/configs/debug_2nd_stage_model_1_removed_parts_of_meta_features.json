@@ -91,7 +91,7 @@
             "verbose": -1
         },
         "train_params": {
-            "num_boost_round": 100000,
+            "num_boost_round": 10000,
             "early_stopping_rounds": 100,
             "verbose_eval": 500
         }
