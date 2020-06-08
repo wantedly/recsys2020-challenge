@@ -131,15 +131,16 @@ def main():
             logger.debug(f"{i+1}fold: n_trn={len(trn_idx)}, n_val={len(val_idx)}")
             logger.debug(f"{i+1}fold: trn_pos={y_train[trn_idx].sum()}, val_pos={y_train[val_idx].sum()}")
 
+        import pdb; pdb.set_trace()
         # Get pseudo label
         if config["pseudo_labeling"]["enabled"]:
-            y_test_pseudo = FeatureLoader(
-                data_type=config["test_data_type"], debugging=args.debug
+            y_test_pred = FeatureLoader(
+                data_type="test", debugging=args.debug
                 ).download_pred_from_gs(config["pseudo_labeling"]["model_name"], cat)
 
-            test_idx_for_train = pd.Series(y_test_pseudo)[pd.Series(y_test_pseudo) >= config["pseudo_labeling"]["threshold"]].index
+            test_idx_for_train = pd.Series(y_test_pred)[pd.Series(y_test_pred) >= config["pseudo_labeling"]["threshold"]].index
             x_test_for_train = x_test.loc[test_idx_for_train].reset_index(drop=True)
-            y_test_for_train = y_test[test_idx_for_train]
+            y_test_for_train = np.ones(len(test_idx_for_train))
             print(x_test_for_train.shape, y_test_for_train.shape)
 
             x_train = pd.concat([x_train, x_test_for_train], axis=0).reset_index(drop=True)
