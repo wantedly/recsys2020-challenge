@@ -51,6 +51,7 @@ def build_model(
             bce_pos = tf.cast(y_true == 1, tf.float32) * class_weight[1] * bce
             weighted_bce = bce_neg + bce_pos # (batch_size, 1)
             return tf.reduce_sum(weighted_bce)  # tf.keras.losses.BinaryCrossentropy は Reduction = SUM_OVER_BATCH_SIZE
+        return loss_fn
 
     loss_fns = [weighted_binary_crossentropy(w) for w in class_weights]
 
@@ -60,11 +61,6 @@ def build_model(
         metrics=[
             tf.keras.metrics.AUC(name="PRAUC", curve="PR"),
             tf.keras.metrics.BinaryCrossentropy(name="BCE"),
-        ],
-        callbacks=[
-            tf.keras.callbacks.EarlyStopping(
-                patience=10, monitor="val_PRAUC", mode="max"
-            )
         ],
     )
     return model
@@ -94,6 +90,8 @@ class Model_NN(Base_Model):
             )
             biases.append(np.log(pos / neg))
 
+        print(class_weights, y_trn.shape)
+
         self.model = build_model(x_trn.shape[-1], config, class_weights, biases)
 
         # Training
@@ -104,6 +102,11 @@ class Model_NN(Base_Model):
                 batch_size=model_params["batch_size"],
                 epochs=model_params["epochs"],
                 validation_data=(np.asarray(x_val), np.asarray(y_val)),
+                callbacks=[
+                    tf.keras.callbacks.EarlyStopping(
+                        patience=10, monitor="val_PRAUC", mode="max"
+                    )
+                ],
             )
         else:
             self.model.fit(
@@ -111,6 +114,11 @@ class Model_NN(Base_Model):
                 np.asarray(y_trn),
                 batch_size=model_params["batch_size"],
                 epochs=model_params["epochs"],
+                callbacks=[
+                    tf.keras.callbacks.EarlyStopping(
+                        patience=10, monitor="val_PRAUC", mode="max"
+                    )
+                ],
             )
 
     def predict(self, x):
