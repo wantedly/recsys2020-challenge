@@ -98,10 +98,10 @@ class Model_NN(Base_Model):
         if validation_flg:
             self.model.fit(
                 np.asarray(x_trn),
-                np.asarray(y_trn),
+                [y_trn[:, i] for i in range(4)],
                 batch_size=model_params["batch_size"],
                 epochs=model_params["epochs"],
-                validation_data=(np.asarray(x_val), np.asarray(y_val)),
+                validation_data=(np.asarray(x_val), [y_val[:, i] for i in range(4)]),
                 callbacks=[
                     tf.keras.callbacks.EarlyStopping(
                         patience=10, monitor="val_PRAUC", mode="max"
@@ -111,7 +111,7 @@ class Model_NN(Base_Model):
         else:
             self.model.fit(
                 np.asarray(x_trn),
-                np.asarray(y_trn),
+                [y_trn[:, i] for i in range(4)],
                 batch_size=model_params["batch_size"],
                 epochs=model_params["epochs"],
                 callbacks=[
