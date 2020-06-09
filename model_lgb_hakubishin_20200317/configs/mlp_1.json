@@ -32,7 +32,7 @@
         "model_params": {
           "hidden_dims": [128, 64, 32],
           "batch_size": 1024,
-          "epochs": 50
+          "epochs": 5
         }
     },
     "dataset": {
