@@ -40,14 +40,7 @@ class Runner(object):
         n_models = train_settings["n_models"]
         np.random.seed(train_settings["random_sampling"]["random_seed"])
 
-        # Get remove features name
-        remove_features = [c for c in x_train.columns if c.find("MetaFeatures") != -1]
-        remove_features = [c for c in remove_features if c.find(target) != -1]
-        remain_features = [c for c in x_train.columns if c not in remove_features]
-        print(f"remove cols: {remove_features}")
-        print(f"original features: {len(x_train.columns)}, after removed: {len(remain_features)}")
-
-	# Set params
+	    # Set params
         if target == "like_engagement":
             train_settings["model"]["model_params"]["subsample"] = 0.5
             train_settings["model"]["model_params"]["subsample_for_bin"] = int(0.1 * y_train.sum())
@@ -60,7 +53,7 @@ class Runner(object):
 
             # Split arrays into train and valid subsets
             y_trn = y_train[trn_idx]
-            x_val = x_train.iloc[val_idx][remain_features]
+            x_val = x_train.iloc[val_idx]
             y_val = y_train[val_idx]
             print(f"original train size: {len(y_trn)}")
             print(f"trn_pos={y_trn.sum()}, trn_neg={(y_trn == 0).sum()}")
@@ -95,7 +88,7 @@ class Runner(object):
                 resampled_idx_of_trn_idx = np.concatenate([resampled_pos_idx_of_trn_idx, resampled_neg_idx_of_trn_idx])
                 # x_train の何番目を採用するか
                 resampled_trn_idx = trn_idx[resampled_idx_of_trn_idx]
-                resampled_x_trn = x_train.iloc[resampled_trn_idx][remain_features]
+                resampled_x_trn = x_train.iloc[resampled_trn_idx]
                 resampled_y_trn = y_train[resampled_trn_idx]
 
                 print(f"train size after random-sampling: {len(resampled_y_trn)}")
@@ -108,7 +101,7 @@ class Runner(object):
                 best_iteration += model.get_best_iteration() / len(folds_ids) / n_models
 
                 # Predict
-                y_pred = model.predict(x_test[remain_features])
+                y_pred = model.predict(x_test)
                 y_pred = y_pred / (y_pred + ((1 - y_pred) / under_sampling_rate))
                 preds_list.append(y_pred)
 
