@@ -68,14 +68,6 @@ def main():
     logger.info(f'keys: {config["key"]}')
     logger.info(f'folds: {config["folds"]}')
 
-    # features
-    x_train = FeatureLoader(
-        data_type="training", debugging=args.debug
-        ).load_features(config["features"])
-    x_test = FeatureLoader(
-        data_type=config["test_data_type"], debugging=args.debug
-        ).load_features(config["features"])
-
     # targets
     y_train_set = FeatureLoader(
         data_type="training", debugging=args.debug
@@ -93,8 +85,6 @@ def main():
 
     logger.debug(f'test_data_type: {config["test_data_type"]}')
     logger.debug(f'y_train_set: {y_train_set.shape}')
-    logger.debug(f'x_train: {x_train.shape}')
-    logger.debug(f'x_test: {x_test.shape}')
     logger.debug(f'key_test: {key_test.shape}')
 
 
@@ -130,6 +120,27 @@ def main():
             folds_ids.append((trn_idx, val_idx))
             logger.debug(f"{i+1}fold: n_trn={len(trn_idx)}, n_val={len(val_idx)}")
             logger.debug(f"{i+1}fold: trn_pos={y_train[trn_idx].sum()}, val_pos={y_train[val_idx].sum()}")
+
+        # load features
+        x_train = FeatureLoader(
+            data_type="training", debugging=args.debug
+            ).load_features(config["features"])
+        x_test = FeatureLoader(
+            data_type=config["test_data_type"], debugging=args.debug
+            ).load_features(config["features"])
+
+        # Get remove features name
+        remove_features = [c for c in x_train.columns if c.find("MetaFeatures") != -1]
+        remove_features = [c for c in remove_features if c.find(cat) != -1]
+        print(f"remove cols: {remove_features}")
+        print(f"original features: {len(x_train.columns)}, removed features: {len(remove_features)}")
+
+        logger.debug(f'x_train: {x_train.shape}')
+        logger.debug(f'x_test: {x_test.shape}')
+        x_train.drop(columns=remove_features, inplace=True)
+        x_test.drop(columns=remove_features, inplace=True)
+        logger.debug(f'x_train: {x_train.shape}')
+        logger.debug(f'x_test: {x_test.shape}')
 
         # Train and predict
         model_cls = model_map[config['model']['name']]
