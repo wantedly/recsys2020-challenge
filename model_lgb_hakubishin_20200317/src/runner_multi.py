@@ -53,24 +53,28 @@ class RunnerMulti(object):
             print(f"trn_pos={y_trn.sum()}, trn_neg={(y_trn == 0).sum()}")
 
             # Training
-            model, val_pred = self.train_one_fold(i_fold, x_trn, y_trn, x_val, y_val)
-            oof_preds[val_idx] += val_pred
+            model, val_preds = self.train_one_fold(i_fold, x_trn, y_trn, x_val, y_val)
+            val_preds = np.concatenate(val_preds, axis=1)  # (N, 4)
+            oof_preds[val_idx] += val_preds
             best_iteration += model.get_best_iteration() / len(folds_ids) / n_models
 
             # Predict
             y_pred = model.predict(x_test)
-            preds_list.append(y_pred)
+            preds_list.append(np.concatenate(y_pred, axis=1))
 
             # Save model
             model.save_model()
 
             # done calculation for one-fold
-            score = calc_metrics(y_val, oof_preds[val_idx])
+            score = [calc_metrics(y_val[:, i], oof_preds[val_idx][:, i]) for i in range(4)]
             cv_score_list.append(score)
 
         # Calculate OOF-Score
-        oof_score = calc_metrics(y_train, oof_preds)
-        print(f"oof: {oof_score}")
+        oof_scores = []
+        for i in range(4):
+            oof_score = calc_metrics(y_train[:, i], oof_preds[:, i])
+            oof_scores.append(oof_score)
+            print(f"oof: {oof_score}")
 
         pred_avg = np.mean(preds_list, axis=0)
 
@@ -80,7 +84,7 @@ class RunnerMulti(object):
             "n_features": len(x_train.columns),
             "best_iteration": best_iteration,
             "under_sampling_rate": {f"cv{i+1}": rate for i, rate in enumerate(self.under_sampling_rate)},
-            "oof_score": oof_score,
+            "oof_score": oof_scores,
             "cv_score": {f"cv{i+1}": cv_score for i, cv_score in enumerate(cv_score_list)},
         }}
         return oof_preds, pred_avg, evals_result

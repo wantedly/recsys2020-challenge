@@ -93,6 +93,7 @@ class Model_NN(Base_Model):
         print(class_weights, y_trn.shape)
 
         self.model = build_model(x_trn.shape[-1], config, class_weights, biases)
+        self.model.summary()
 
         # Training
         if validation_flg:
