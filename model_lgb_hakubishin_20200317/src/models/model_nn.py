@@ -104,7 +104,7 @@ class Model_NN(Base_Model):
                 validation_data=(np.asarray(x_val), [y_val[:, i] for i in range(4)]),
                 callbacks=[
                     tf.keras.callbacks.EarlyStopping(
-                        patience=10, monitor="val_PRAUC", mode="max"
+                        patience=10, monitor="val_like_engagement_PRAUC", mode="max"
                     )
                 ],
             )
@@ -116,7 +116,7 @@ class Model_NN(Base_Model):
                 epochs=model_params["epochs"],
                 callbacks=[
                     tf.keras.callbacks.EarlyStopping(
-                        patience=10, monitor="val_PRAUC", mode="max"
+                        patience=10, monitor="val_like_engagement_PRAUC", mode="max"
                     )
                 ],
             )
