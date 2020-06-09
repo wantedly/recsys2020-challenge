@@ -50,7 +50,7 @@ def build_model(
             bce_neg = tf.cast(y_true == 0, tf.float32) * class_weight[0] * bce
             bce_pos = tf.cast(y_true == 1, tf.float32) * class_weight[1] * bce
             weighted_bce = bce_neg + bce_pos # (batch_size, 1)
-            return tf.reduce_sum(weighted_bce)  # tf.keras.losses.BinaryCrossentropy は Reduction = SUM_OVER_BATCH_SIZE
+            return tf.reduce_mean(weighted_bce)  # tf.keras.losses.BinaryCrossentropy は Reduction = SUM_OVER_BATCH_SIZE
         return loss_fn
 
     loss_fns = [weighted_binary_crossentropy(w) for w in class_weights]
