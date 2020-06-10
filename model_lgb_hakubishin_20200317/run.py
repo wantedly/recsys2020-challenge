@@ -94,12 +94,9 @@ def main():
     logger.info('Train model and predict')
 
     # Modeling
-    target_columns = [
-        #"reply_engagement",
-        #"retweet_engagement",
-        #"retweet_with_comment_engagement",
-        "like_engagement",
-    ]
+    target_columns = config["target_columns"]
+    logger.info(f"targets: {target_columns}")
+
     for cat in target_columns:
         logger.info(f'============= {cat} =============')
 
