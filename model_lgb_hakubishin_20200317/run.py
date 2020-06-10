@@ -125,19 +125,20 @@ def main():
         x_test = FeatureLoader(
             data_type=config["test_data_type"], debugging=args.debug
             ).load_features(config["features"])
+        logger.debug(f'x_train: {x_train.shape}')
+        logger.debug(f'x_test: {x_test.shape}')
 
         # Get remove features name
-        remove_features = [c for c in x_train.columns if c.find("MetaFeatures") != -1]
-        remove_features = [c for c in remove_features if c.find(cat) != -1]
-        print(f"remove cols: {remove_features}")
-        print(f"original features: {len(x_train.columns)}, removed features: {len(remove_features)}")
+        if config["remove_own_meta_features"]:
+            remove_features = [c for c in x_train.columns if c.find("MetaFeatures") != -1]
+            remove_features = [c for c in remove_features if c.find(cat) != -1]
+            print(f"remove cols: {remove_features}")
+            print(f"original features: {len(x_train.columns)}, removed features: {len(remove_features)}")
 
-        logger.debug(f'x_train: {x_train.shape}')
-        logger.debug(f'x_test: {x_test.shape}')
-        x_train.drop(columns=remove_features, inplace=True)
-        x_test.drop(columns=remove_features, inplace=True)
-        logger.debug(f'x_train: {x_train.shape}')
-        logger.debug(f'x_test: {x_test.shape}')
+            x_train.drop(columns=remove_features, inplace=True)
+            x_test.drop(columns=remove_features, inplace=True)
+            logger.debug(f'x_train: {x_train.shape}')
+            logger.debug(f'x_test: {x_test.shape}')
 
         # Train and predict
         model_cls = model_map[config['model']['name']]

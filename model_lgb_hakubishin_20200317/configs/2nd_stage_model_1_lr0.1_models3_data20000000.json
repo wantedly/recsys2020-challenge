@@ -74,6 +74,7 @@
         "retweet_engagement"
     ],
     "n_models": 3,
+    "remove_own_meta_features": true,
     "model": {
         "name": "lightgbm",
         "model_params": {
