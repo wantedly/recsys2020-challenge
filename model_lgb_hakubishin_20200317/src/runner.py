@@ -40,14 +40,6 @@ class Runner(object):
         n_models = train_settings["n_models"]
         np.random.seed(train_settings["random_sampling"]["random_seed"])
 
-	    # Set params
-        if target == "like_engagement":
-            train_settings["model"]["model_params"]["subsample"] = 0.5
-            train_settings["model"]["model_params"]["subsample_for_bin"] = int(0.1 * y_train.sum())
-        else:
-            train_settings["model"]["model_params"]["subsample"] = 0.9
-            train_settings["model"]["model_params"]["subsample_for_bin"] = 1000000
-
         for i_fold, (trn_idx, val_idx) in enumerate(folds_ids):
             print(f"{i_fold+1}fold")
 
