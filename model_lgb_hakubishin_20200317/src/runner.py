@@ -31,7 +31,7 @@ class Runner(object):
         return model, val_preds
 
     def train_cv(self, x_train: pd.DataFrame, y_train: Union[pd.Series, np.array], x_test: pd.DataFrame,
-            folds_ids: List[Tuple[np.array]], train_settings: dict, target: str) -> Tuple[np.array, dict]:
+            folds_ids: List[Tuple[np.array]], train_settings: dict) -> Tuple[np.array, dict]:
         oof_preds = np.zeros(len(x_train))
         preds_list = []
         cv_score_list = []
