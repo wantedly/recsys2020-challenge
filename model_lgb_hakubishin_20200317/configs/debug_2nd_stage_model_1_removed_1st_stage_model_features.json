@@ -36,7 +36,6 @@
         "random_seed": 21
     },
     "n_models": 1,
-    "remove_own_meta_features": true,
     "model": {
         "name": "lightgbm",
         "model_params": {
