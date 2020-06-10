@@ -48,7 +48,7 @@
             "num_leaves": 256,
             "subsample": 0.9,
             "subsample_freq": 1,
-            "colsample_bytree": 0.9,
+            "colsample_bytree": 0.7,
             "min_child_samples": 200,
             "subsample_for_bin": 7000000,
             "seed": 21,
