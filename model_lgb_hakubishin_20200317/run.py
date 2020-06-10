@@ -95,9 +95,9 @@ def main():
 
     # Modeling
     target_columns = [
-        "reply_engagement",
-        "retweet_engagement",
-        "retweet_with_comment_engagement",
+        #"reply_engagement",
+        #"retweet_engagement",
+        #"retweet_with_comment_engagement",
         "like_engagement",
     ]
     for cat in target_columns:
@@ -149,7 +149,7 @@ def main():
             model_cls, model_params, model_output_dir, f'Train_{model_cls.__name__}_{cat}'
         )
         oof_preds, test_preds, evals_result = runner.train_cv(
-            x_train, y_train, x_test, folds_ids, config, cat)
+            x_train, y_train, x_test, folds_ids, config)
 
         evals_result[f"evals_result_{cat}"] = evals_result["evals_result"]
         evals_result.pop("evals_result")
