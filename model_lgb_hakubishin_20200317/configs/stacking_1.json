@@ -1,0 +1,81 @@
+{
+    "model_dir_name":
+        "model_lgb_hakubishin_20200317"
+    ,
+    "test_data_type":
+        "test"
+    ,
+    "features": {
+        "reply_engagement": {
+            "train": [
+                "mlp_1/TargetCategories_reply_engagement_oof_pred.npy",
+                "2nd_stage_model_1_lr0.01_models5_data1000000/reply_engagement_oof_pred.npy"
+            ],
+            "test": [
+                "mlp_1/TargetCategories_reply_engagement_submission.csv",
+                "2nd_stage_model_1_lr0.01_models5_data1000000/reply_engagement_submission_test.csv"
+            ]
+        },
+        "retweet_engagement": {
+            "train": [
+                "mlp_1/TargetCategories_retweet_engagement_oof_pred.npy",
+                "2nd_stage_model_1_lr0.01_models5_data1000000/retweet_engagement_oof_pred.npy"
+            ],
+            "test": [
+                "mlp_1/TargetCategories_retweet_engagement_submission.csv",
+                "2nd_stage_model_1_lr0.01_models5_data1000000/retweet_engagement_submission_test.csv"
+            ]
+        },
+        "retweet_with_comment_engagement": {
+            "train": [
+                "mlp_1/TargetCategories_retweet_with_comment_engagement_oof_pred.npy",
+                "2nd_stage_model_1_lr0.01_models5_data1000000/retweet_with_comment_engagement_oof_pred.npy"
+            ],
+            "test": [
+                "mlp_1/TargetCategories_retweet_with_comment_engagement_submission.csv",
+                "2nd_stage_model_1_lr0.01_models5_data1000000/retweet_with_comment_engagement_submission_test.csv"
+            ]
+        },
+        "like_engagement": {
+            "train": [
+                "mlp_1/TargetCategories_like_engagement_oof_pred.npy",
+                "2nd_stage_model_1_lr0.01_models5_data100000/like_engagement_oof_pred.npy"
+            ],
+            "test": [
+                "mlp_1/TargetCategories_like_engagement_submission.csv",
+                "2nd_stage_model_1_lr0.01_models5_data100000/like_engagement_submission_test.csv"
+            ]
+        }
+    },
+    "target": [
+        "TargetCategories"
+    ],
+    "key": [
+        "KeyCategories"
+    ],
+    "folds": [
+        "StratifiedGroupKFold"
+    ],
+    "negative_down_sampling": {
+        "enable": false,
+        "bagging_size": 1,
+        "random_seed": 71
+    },
+    "random_sampling": {
+        "n_data": 1000000000,
+        "random_seed": 71
+    },
+    "model": {
+        "name": "ridge",
+        "model_params": {
+            "alpha": 100,
+            "random_state": 0
+        }
+    },
+    "dataset": {
+        "input_directory": "data/input/",
+        "intermediate_directory": "data/interim/",
+        "feature_directory": "data/features/",
+        "output_directory": "data/output/"
+    }
+}
