@@ -80,7 +80,7 @@
             "learning_rate": 0.15,
             "max_depth": 10,
             "num_leaves": 256,
-            "subsample": 0.9,
+            "subsample": 0.5,
             "subsample_freq": 1,
             "colsample_bytree": 0.7,
             "min_child_samples": 200,
