@@ -7,13 +7,15 @@ from src.utils import seed_everything, get_logger, json_dump, upload_to_gcs, dow
 from src.feature_loader import FeatureLoader
 from src.runner import Runner
 from src.models.model_ridge import Model_Ridge
-from multiprocessing import cpu_count
+from src.models.model_logistic import Model_Logistic
+from io import BytesIO
 
 
 seed_everything(71)
 
 model_map = {
     'ridge': Model_Ridge,
+    'logistic': Model_Logistic
 }
 
 
@@ -42,7 +44,6 @@ def main():
             'debug': args.debug
         }
     })
-    config["model"]["model_params"]["nthread"] = cpu_count()
 
     # Create a directory for model output
     model_no = pathlib.Path(args.config).stem
@@ -130,12 +131,13 @@ def main():
         x_train = pd.DataFrame()
         for i, file_name in enumerate(train_file_name_list):
             content = download_from_gcs(bucket_dir_name, file_name)
-            oof_pred_value = np.load(BytesIO(oof_pred))
+            oof_pred_value = np.load(BytesIO(content))
             x_train[file_name] = oof_pred_value
+        print(x_train.corr())
 
         # test data
         x_test = pd.DataFrame()
-        for i, file_name in enumerate(train_file_name_list):
+        for i, file_name in enumerate(test_file_name_list):
             content = download_from_gcs(bucket_dir_name, file_name)
             test_pred = pd.read_csv(BytesIO(content), header=None)
             test_pred_value = test_pred.iloc[:, 2].values

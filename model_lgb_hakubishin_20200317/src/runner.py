@@ -40,6 +40,12 @@ class Runner(object):
         n_models = train_settings["n_models"]
         np.random.seed(train_settings["random_sampling"]["random_seed"])
 
+        for ratio in np.arange(0.01, 1, 0.01):
+            oof_preds = x_train.iloc[:, 0] * ratio + x_train.iloc[:, 1] * (1 - ratio)
+            print(calc_metrics(y_train, oof_preds))
+
+        import pdb; pdb.set_trace()
+
         for i_fold, (trn_idx, val_idx) in enumerate(folds_ids):
             print(f"{i_fold+1}fold")
 
@@ -59,19 +65,9 @@ class Runner(object):
             self.under_sampling_rate.append(under_sampling_rate)
 
             for i_model in range(n_models):
-                randint = np.random.randint(10000000)
-                train_settings["model"]["model_params"]["seed"] = randint
-                train_settings["model"]["model_params"]["bagging_seed"] = randint
-                train_settings["model"]["model_params"]["feature_fraction_seed"] = randint
-                train_settings["model"]["model_params"]["drop_seed"] = randint
-
                 positive_sampling_keys = np.random.random(len(positive_idx_of_trn_idx))
                 negative_sampling_keys = np.random.random(len(negative_idx_of_trn_idx))
                 required_data_size = train_settings["random_sampling"]["n_data"] // 2
-
-                if required_data_size > len(positive_idx_of_trn_idx):
-                    # required_data_sizeがpositiveサンプル数より大きかった場合
-                    required_data_size = len(positive_idx_of_trn_idx)
 
                 # 乱数が (欲しいデータ数) / (今のデータ数) より小さいものをサンプリング
                 resampled_pos_idx_of_trn_idx = positive_idx_of_trn_idx[positive_sampling_keys < required_data_size / len(positive_idx_of_trn_idx)]
@@ -88,13 +84,13 @@ class Runner(object):
 
                 # Training
                 model, val_pred = self.train_one_fold(i_fold, resampled_x_trn, resampled_y_trn, x_val, y_val)
-                val_pred = val_pred / (val_pred + ((1 - val_pred) / under_sampling_rate))
+                #val_pred = val_pred / (val_pred + ((1 - val_pred) / under_sampling_rate))
                 oof_preds[val_idx] += val_pred / n_models
                 best_iteration += model.get_best_iteration() / len(folds_ids) / n_models
 
                 # Predict
                 y_pred = model.predict(x_test)
-                y_pred = y_pred / (y_pred + ((1 - y_pred) / under_sampling_rate))
+                #y_pred = y_pred / (y_pred + ((1 - y_pred) / under_sampling_rate))
                 preds_list.append(y_pred)
 
                 # Save model

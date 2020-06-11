@@ -12,7 +12,7 @@
                 "2nd_stage_model_1_lr0.01_models5_data1000000/reply_engagement_oof_pred.npy"
             ],
             "test": [
-                "mlp_1/TargetCategories_reply_engagement_submission.csv",
+                "mlp_1/TargetCategories_reply_engagement_submission_test.csv",
                 "2nd_stage_model_1_lr0.01_models5_data1000000/reply_engagement_submission_test.csv"
             ]
         },
@@ -22,7 +22,7 @@
                 "2nd_stage_model_1_lr0.01_models5_data1000000/retweet_engagement_oof_pred.npy"
             ],
             "test": [
-                "mlp_1/TargetCategories_retweet_engagement_submission.csv",
+                "mlp_1/TargetCategories_retweet_engagement_submission_test.csv",
                 "2nd_stage_model_1_lr0.01_models5_data1000000/retweet_engagement_submission_test.csv"
             ]
         },
@@ -32,7 +32,7 @@
                 "2nd_stage_model_1_lr0.01_models5_data1000000/retweet_with_comment_engagement_oof_pred.npy"
             ],
             "test": [
-                "mlp_1/TargetCategories_retweet_with_comment_engagement_submission.csv",
+                "mlp_1/TargetCategories_retweet_with_comment_engagement_submission_test.csv",
                 "2nd_stage_model_1_lr0.01_models5_data1000000/retweet_with_comment_engagement_submission_test.csv"
             ]
         },
@@ -42,7 +42,7 @@
                 "2nd_stage_model_1_lr0.01_models5_data100000/like_engagement_oof_pred.npy"
             ],
             "test": [
-                "mlp_1/TargetCategories_like_engagement_submission.csv",
+                "mlp_1/TargetCategories_like_engagement_submission_test.csv",
                 "2nd_stage_model_1_lr0.01_models5_data100000/like_engagement_submission_test.csv"
             ]
         }
@@ -62,14 +62,15 @@
         "random_seed": 71
     },
     "random_sampling": {
-        "n_data": 1000000000,
+        "n_data": 10000000000,
         "random_seed": 71
     },
+    "n_models": 1,
     "model": {
-        "name": "ridge",
+        "name": "logistic",
         "model_params": {
-            "alpha": 100,
-            "random_state": 0
+            "penalty": "l2",
+            "C": 0.1
         }
     },
     "dataset": {
