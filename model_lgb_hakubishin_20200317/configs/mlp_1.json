@@ -6,47 +6,7 @@
         "test"
     ,
     "features": [
-        "LabelEncoding",
-        "CountEncoding",
-        "CommonNumericFeatures",
-        "CommonFlgFeatures",
-        "EngagedFollowFollowerRatio",
-        "EngagingFollowFollowerRatio",
-        "CountEncodingHashtags",
-        "CountEncodingPresentMedia",
-        "CountEncodingPresentDomains",
-        "CountEncodingPresentLinks",
-        "ElapsedTimeFromAccountCreated",
-        "EngagingUserFollowsEngagedUser",
-        "Connected2ndEngagingToEngaged",
-        "Connected2ndEngagedToEngaging",
-        "CountEncodingInTweetidUnits",
-        "CountEncodingTweetType",
-        "CountEncodingCrossing",
-        "CountEncodingCrossing2",
-        "AtSignFeatures",
-        "CountEncodingTextId",
-        "BertSimilarityBetweenEngagingAndEngagedTweetsVectorsFeature",
-        "BertSimilarityBetweenTweetAndTweetsUserVectorsFeature",
-        "BertSimilarityBetweenTweetAndEngagingSurfacingTweetVectorsFeature",
-        "BertSimilarityBetweenEngagedAndEngagingSurfacingTweetVectorsFeature",
-        "SentenceCount",
-        "TweetUrlFeatures",
-        "CountEncodingReciprocalPair",
-        "MultilingualFeatures",
-        "FFFeatures2",
-        "CountEncodingEngagingHashtags",
-        "CountEncodingEngagingPresentMedia",
-        "CountEncodingEngagingPresentDomains",
-        "CountEncodingEngagingPresentLinks",
-        "CountEngagingTweetWithinN",
-        "CountEngagingTweetWithinNDifference",
-        "TargetEncoding",
-        "TargetEncodingCrossing",
-        "TargetEncodingCrossing2",
-        "TargetEncodingHashtags",
-        "TargetEncodingPresentMedia",
-        "LikeGraph"
+        "MetaFeatures"
     ],
     "target": [
         "TargetCategories"
@@ -72,7 +32,7 @@
         "model_params": {
           "hidden_dims": [128, 64, 32],
           "batch_size": 1024,
-          "epochs": 50
+          "epochs": 5
         }
     },
     "dataset": {
