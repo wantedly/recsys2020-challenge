@@ -1,0 +1,45 @@
+{
+    "model_dir_name":
+        "model_lgb_hakubishin_20200317"
+    ,
+    "test_data_type":
+        "test"
+    ,
+    "features": [
+        "MetaFeatures",
+        "MetaFeaturesMLP"
+    ],
+    "target": [
+        "TargetCategories"
+    ],
+    "key": [
+        "KeyCategories"
+    ],
+    "folds": [
+        "StratifiedGroupKFold"
+    ],
+    "negative_down_sampling": {
+        "enable": true,
+        "bagging_size": 1,
+        "random_seed": 21
+    },
+    "random_sampling": {
+        "n_data": 100000,
+        "random_seed": 21
+    },
+    "n_models": 20,
+    "model": {
+        "name": "nn",
+        "model_params": {
+          "hidden_dims": [128, 64, 32],
+          "batch_size": 1024,
+          "epochs": 3
+        }
+    },
+    "dataset": {
+        "input_directory": "data/input/",
+        "intermediate_directory": "data/interim/",
+        "feature_directory": "data/features/",
+        "output_directory": "data/output/"
+    }
+}
