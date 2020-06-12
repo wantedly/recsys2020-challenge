@@ -3,6 +3,10 @@
 ## Setup
 
 - `poetry install`
+- あなたのGCPの設定をいかに代入してください
+  - `./features/base.py` の
+    - `PROJECT_ID`
+    - `GCS_BUCKET_NAME`
 
 ## Steps
 
