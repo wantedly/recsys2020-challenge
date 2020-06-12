@@ -29,16 +29,16 @@
 
 submission 1
 
-target | output_dir_name
+target | output directory name and file name
 -- | --
-reply_engagement | 2nd_stage_model_1_lr0.01_models5_data1000000
-retweet_engagement | 2nd_stage_model_1_lr0.01_models5_data1000000
-retweet_with_comment_engagement | 2nd_stage_model_1_lr0.01_models5_data1000000
-like_engagement | 2nd_stage_model_1_lr0.01_models5_data100000
+reply_engagement | 2nd_stage_model_1_lr0.01_models5_data1000000/reply_engagement_submission_test.csv
+retweet_engagement | 2nd_stage_model_1_lr0.01_models5_data1000000/retweet_engagement_submission_test.csv
+retweet_with_comment_engagement | 2nd_stage_model_1_lr0.01_models5_data1000000/retweet_with_comment_engagement_submission_test.csv
+like_engagement | 2nd_stage_model_1_lr0.01_models5_data100000/like_engagement_submission_test.csv
 
 submission 2
 
-target | output_dir_name
+target | output directory name and file name
 -- | --
 reply_engagement | wip
 retweet_engagement | wip
