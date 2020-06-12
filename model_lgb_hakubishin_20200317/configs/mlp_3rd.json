@@ -6,7 +6,7 @@
         "test"
     ,
     "features": [
-        "MetaFeatures",
+        "MetaFeatures2ndModels",
         "MetaFeaturesMLP"
     ],
     "target": [
