@@ -1,25 +1,96 @@
 # recsys2020-challenge
 
-## setup
+## Setup
 
-```bash
-poetry install
-
-sudo apt-get update
-sudo apt-get install -y make g++ libmecab-dev mecab-ipadic-utf8 curl xz-utils mecab git file sudo unzip
-git clone --depth 1 https://github.com/neologd/mecab-ipadic-neologd.git && cd mecab-ipadic-neologd && ./bin/install-mecab-ipadic-neologd -n -y
-```
-
-## Dataflow を使って生データを BigQuery に入れるスクリプト
-
-```bash
-python preprocessing/rawdata.py gs://recsys2020-challenge-wantedly/training.tsv recsys2020.training --region us-west1 --requirements_file ./dataflow_requirements.txt
-```
-
+- `poetry install`
 
 ## Steps
 
 1. Download datasets.
+    - Training data
+    - Evaluation data
+    - Final submission data
 2. Upload them to Google Cloud Storage.
 3. Insert them to Google BigQuery using Cloud Dataflow.
-  - e.g. `python preprocessing/rawdata.py gs://path/to/training.tsv recsys202.training --region <REGION> --requirements_file ./dataflow_requirements.txt`
+    - e.g. `python preprocessing/rawdata.py gs://path/to/training.tsv <DATASET NAME>.training --region <REGION> --requirements_file ./dataflow_requirements.txt`
+4. ツイートのテキスト情報をBQに格納する
+    - `./hero/hoge_train.sql` 
+    - `./hero/hoge_test.sql`
+5. Bertのpredictする
+    - ????????? わからん
+6. make features and create models
+    - `./workflow.sh`
+
+## Experiment Configuration
+
+実験の設定はJSONファイルで管理している.
+
+e.g.
+```json
+{
+    "model_dir_name":
+        "model_lgb_hakubishin_20200317"
+    ,
+    "test_data_type":
+        "test"
+    ,
+    "features": [
+        "LabelEncoding",
+        "CountEncoding",
+        "CommonNumericFeatures",
+        "CommonFlgFeatures",
+        "EngagedFollowFollowerRatio",
+        "EngagingFollowFollowerRatio",
+        "CountEncodingHashtags",
+    ],
+    "target": [
+        "TargetCategories"
+    ],
+    "key": [
+        "KeyCategories"
+    ],
+    "folds": [
+        "StratifiedGroupKFold"
+    ],
+    "negative_down_sampling": {
+        "enable": true,
+        "bagging_size": 1,
+        "random_seed": 11
+    },
+    "random_sampling": {
+        "n_data": 20000000,
+        "random_seed": 11
+    },
+    "model": {
+        "name": "lightgbm",
+        "model_params": {
+            "boosting_type": "gbdt",
+            "objective": "binary",
+            "metric": "binary",
+            "learning_rate": 0.1,
+            "max_depth": 10,
+            "num_leaves": 256,
+            "subsample": 0.7,
+            "subsample_freq": 1,
+            "colsample_bytree": 0.7,
+            "min_child_weight": 0,
+            "seed": 11,
+            "bagging_seed": 11,
+            "feature_fraction_seed": 11,
+            "drop_seed": 11,
+            "verbose": -1
+        },
+        "train_params": {
+            "num_boost_round": 10000,
+            "early_stopping_rounds": 100,
+            "verbose_eval": 500
+        }
+    },
+    "dataset": {
+        "input_directory": "data/input/",
+        "intermediate_directory": "data/interim/",
+        "feature_directory": "data/features/",
+        "output_directory": "data/output/"
+    }
+}
+```
