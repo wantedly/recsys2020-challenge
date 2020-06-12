@@ -21,10 +21,10 @@ class MetaFeaturesMLP(BaseFeature):
         df_test_features = pd.DataFrame()
 
         target_columns = [
-            "reply_engagement",
-            "retweet_engagement",
-            "retweet_with_comment_engagement",
-            "like_engagement",
+            "TargetCategories_reply_engagement",
+            "TargetCategories_retweet_engagement",
+            "TargetCategories_retweet_with_comment_engagement",
+            "TargetCategories_like_engagement",
         ]
 
         for target_col in target_columns:
