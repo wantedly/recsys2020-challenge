@@ -25,6 +25,26 @@
 6. make features and create models
     - `./workflow.sh`
 
+## Final submission
+
+submission 1
+
+target | output_dir_name
+-- | --
+reply_engagement | 2nd_stage_model_1_lr0.01_models5_data1000000
+retweet_engagement | 2nd_stage_model_1_lr0.01_models5_data1000000
+retweet_with_comment_engagement | 2nd_stage_model_1_lr0.01_models5_data1000000
+like_engagement | 2nd_stage_model_1_lr0.01_models5_data100000
+
+submission 2
+
+target | output_dir_name
+-- | --
+reply_engagement | wip
+retweet_engagement | wip
+retweet_with_comment_engagement | wip
+like_engagement | wip
+
 ## Experiment Configuration
 
 実験の設定はJSONファイルで管理している.
