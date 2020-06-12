@@ -4,6 +4,7 @@ import pandas as pd
 from typing import Union, List, Tuple, Callable
 from .metrics import calc_metrics
 from .models.model import Base_Model
+from scipy.stats import hmean
 
 
 class Runner(object):
@@ -108,7 +109,7 @@ class Runner(object):
         oof_score = calc_metrics(y_train, oof_preds)
         print(f"oof: {oof_score}")
 
-        pred_avg = np.mean(preds_list, axis=0)
+        pred_avg = hmean(preds_list)
 
         # Summary
         evals_result = {"evals_result": {
