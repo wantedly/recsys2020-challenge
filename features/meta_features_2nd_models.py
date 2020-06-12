@@ -59,4 +59,4 @@ class MetaFeatures2ndModels(BaseFeature):
 
 
 if __name__ == "__main__":
-    MetaFeatures.main()
+    MetaFeatures2ndModels.main()
