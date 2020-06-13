@@ -1,5 +1,10 @@
 # recsys2020-challenge
 
+## Machine Spec
+
+- CPUs: 64
+- Memory: 600 GB
+
 ## Setup
 
 - `poetry install`
@@ -118,7 +123,3 @@ e.g.
     }
 }
 ```
-
-## Machine Spec
-- CPUs: 64
-- Memory: 600 GB
