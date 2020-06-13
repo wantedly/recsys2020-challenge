@@ -3,8 +3,8 @@
 ## Setup
 
 - `poetry install`
-- あなたのGCPの設定をいかに代入してください
-  - `./features/base.py` の
+- Set your GCP configures below.
+  - In `./features/base.py`
     - `PROJECT_ID`
     - `GCS_BUCKET_NAME`
 
@@ -16,7 +16,7 @@
     - Final submission data
 2. Upload them to Google Cloud Storage.
 3. Insert them to Google BigQuery using Cloud Dataflow.
-    - e.g. `python preprocessing/rawdata.py gs://path/to/training.tsv <DATASET NAME>.training --region <REGION> --requirements_file ./dataflow_requirements.txt`
+    - e.g. `poetry run python preprocessing/rawdata.py gs://path/to/training.tsv <DATASET NAME>.training --region <REGION> --requirements_file ./dataflow_requirements.txt`
 4. Extract tweet texts and save them to BigQuery tables.
     - `./sqls/extract_text_train.sql`
     - `./sqls/extract_text_test.sql`
@@ -25,7 +25,7 @@
     - First, compute a set of tweet texts with `sqls/unnique_texts.sql`.
     - Second, `poetry run python features/pretrained_bert_gap.py`.
 6. make features and create models
-    - `./workflow.sh`
+    - `poetry run ./workflow.sh`
 
 ## Final submission
 
@@ -49,7 +49,7 @@ like_engagement | wip
 
 ## Experiment Configuration
 
-実験の設定はJSONファイルで管理している.
+Our experiment configures are described in JSON files.
 
 e.g.
 ```json
