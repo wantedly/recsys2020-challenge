@@ -42,7 +42,7 @@ class TargetEncoding(BaseFeature):
             print(f'============= {target_col} =============')
 
             # Get folds
-            folds_col = [c for c in folds_train.columns if c.find(target_col) != -1]
+            folds_col = ["StratifiedGroupKFold_retweet_with_comment_engagement"]
             assert len(folds_col) == 1, "The number of fold column must be one"
             folds = folds_train[folds_col]
             n_fold = folds.max().values[0] + 1

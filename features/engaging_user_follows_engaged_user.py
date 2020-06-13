@@ -6,11 +6,6 @@ from google.cloud import storage, bigquery
 from google.cloud import bigquery_storage_v1beta1
 
 
-TESTING = False
-GCS_BUCKET_NAME = "recsys2020-challenge-wantedly"
-PROJECT_ID = "wantedly-individual-naomichi"
-
-
 class EngagingUserFollowsEngagedUser(BaseFeature):
     def import_columns(self):
         return [
@@ -54,7 +49,7 @@ class EngagingUserFollowsEngagedUser(BaseFeature):
         if self.debugging:
             query += " limit 10000"
 
-        bqclient = bigquery.Client(project=PROJECT_ID)
+        bqclient = bigquery.Client(project=self.PROJECT_ID)
         bqstorageclient = bigquery_storage_v1beta1.BigQueryStorageClient()
         df = (
             bqclient.query(query)
@@ -64,14 +59,12 @@ class EngagingUserFollowsEngagedUser(BaseFeature):
         return df
 
     def make_features(self, df_train_input, df_test_input):
-        # read unnested present_media
-        train_table = f"`{PROJECT_ID}.recsys2020.training`"
-        if TESTING:
-            test_table = f"`{PROJECT_ID}.recsys2020.test`"
-        else:
-            test_table = f"`{PROJECT_ID}.recsys2020.val_20200418`"
-        train_1nd_connected = self._read_1nd_connected_count_from_bigquery(train_table, test_table, train_table)
-        test_1nd_connected = self._read_1nd_connected_count_from_bigquery(train_table, test_table, test_table)
+        train_1nd_connected = self._read_1nd_connected_count_from_bigquery(
+            self.train_table, self.test_table, self.train_table
+        )
+        test_1nd_connected = self._read_1nd_connected_count_from_bigquery(
+            self.train_table, self.test_table, self.test_table
+        )
         feature_names = ["engaging_user_follows_engaged_user"]
         print(train_1nd_connected.shape)
         print(train_1nd_connected.isnull().sum())

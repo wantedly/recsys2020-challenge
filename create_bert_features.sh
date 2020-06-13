@@ -1,0 +1,4 @@
+python -u features/bert_similarity_between_engaged_and_engaging_surfacing_tweet_vectors_feature.py
+python -u features/bert_similarity_between_engaged_tweet_and_engaging_surfacing_tweet_vectors_feature.py
+python -u features/bert_similarity_between_engaging_and_engaged_tweets_vectors_feature.py
+python -u features/bert_similarity_between_tweet_and_tweets_user_vectors_feature.py

@@ -12,7 +12,7 @@ from google.cloud import bigquery_storage_v1beta1
 from io import BytesIO
 
 
-TESTING = False
+TESTING = True
 GCS_BUCKET_NAME = "recsys2020-challenge-wantedly"
 PROJECT_ID = "wantedly-individual-naomichi"
 
@@ -30,6 +30,20 @@ class BaseFeature(abc.ABC):
         handler.setFormatter(fmt)
         handler.setLevel(INFO)
         self._logger.addHandler(handler)
+
+        self.TESTING = TESTING
+        self.GCS_BUCKET_NAME = GCS_BUCKET_NAME
+        self.PROJECT_ID = PROJECT_ID
+
+        self.train_table = f"`{PROJECT_ID}.recsys2020.training`"
+        self.train_text = f"`{PROJECT_ID}.recsys2020.texts_training`"
+
+        if TESTING:
+            self.test_table = f"`{PROJECT_ID}.recsys2020.test`"
+            self.test_text = f"`{PROJECT_ID}.recsys2020.texts_test`"
+        else:
+            self.test_table = f"`{PROJECT_ID}.recsys2020.val_20200418`"
+            self.test_text = f"`{PROJECT_ID}.recsys2020.texts_val_20200418`"
 
     @abc.abstractmethod
     def import_columns(self) -> List[str]:
@@ -69,14 +83,12 @@ class BaseFeature(abc.ABC):
             files: List[str] = []
             if TESTING:
                 test_path = os.path.join(tempdir, f"{self.name}_test.ftr")
-                test_table = f"`{PROJECT_ID}.recsys2020.test`"
             else:
                 test_path = os.path.join(tempdir, f"{self.name}_val_20200418.ftr")
-                test_table = f"`{PROJECT_ID}.recsys2020.val_20200418`"
             train_path = os.path.join(tempdir, f"{self.name}_training.ftr")
-            train_table = f"`{PROJECT_ID}.recsys2020.training`"
+
             self.read_and_save_features(
-                train_table, test_table, train_path, test_path,
+                self.train_table, self.test_table, train_path, test_path,
             )
             self._upload_to_gs([test_path, train_path])
 
