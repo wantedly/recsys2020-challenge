@@ -118,3 +118,7 @@ e.g.
     }
 }
 ```
+
+## Machine Spec
+- CPUs: 64
+- Memory: 600 GB
