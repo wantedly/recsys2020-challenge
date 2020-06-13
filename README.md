@@ -29,7 +29,7 @@
     - No fine-tuning, just embed tokens and use global average pooling to make fixed length vectors.
     - First, compute a set of tweet texts with `sqls/unnique_texts.sql`.
     - Second, `poetry run python features/pretrained_bert_gap.py`.
-6. make features and create models
+6. Make features and create models
     - `poetry run ./workflow.sh`
 
 ## Final submission
