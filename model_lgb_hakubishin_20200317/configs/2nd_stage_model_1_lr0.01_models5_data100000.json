@@ -1,0 +1,104 @@
+{
+    "model_dir_name":
+        "model_lgb_hakubishin_20200317"
+    ,
+    "test_data_type":
+        "test"
+    ,
+    "features": [
+        "LabelEncoding",
+        "CountEncoding",
+        "CommonNumericFeatures",
+        "CommonFlgFeatures",
+        "EngagedFollowFollowerRatio",
+        "EngagingFollowFollowerRatio",
+        "CountEncodingHashtags",
+        "CountEncodingPresentMedia",
+        "CountEncodingPresentDomains",
+        "CountEncodingPresentLinks",
+        "ElapsedTimeFromAccountCreated",
+        "EngagingUserFollowsEngagedUser",
+        "Connected2ndEngagingToEngaged",
+        "Connected2ndEngagedToEngaging",
+        "CountEncodingInTweetidUnits",
+        "CountEncodingTweetType",
+        "CountEncodingCrossing",
+        "CountEncodingCrossing2",
+        "AtSignFeatures",
+        "CountEncodingTextId",
+        "BertSimilarityBetweenEngagingAndEngagedTweetsVectorsFeature",
+        "BertSimilarityBetweenTweetAndTweetsUserVectorsFeature",
+        "BertSimilarityBetweenTweetAndEngagingSurfacingTweetVectorsFeature",
+        "BertSimilarityBetweenEngagedAndEngagingSurfacingTweetVectorsFeature",
+        "SentenceCount",
+        "TweetUrlFeatures",
+        "CountEncodingReciprocalPair",
+        "MultilingualFeatures",
+        "FFFeatures2",
+        "CountEncodingEngagingHashtags",
+        "CountEncodingEngagingPresentMedia",
+        "CountEncodingEngagingPresentDomains",
+        "CountEncodingEngagingPresentLinks",
+        "CountEngagingTweetWithinN",
+        "CountEngagingTweetWithinNDifference",
+        "TargetEncoding",
+        "TargetEncodingCrossing",
+        "TargetEncodingCrossing2",
+        "TargetEncodingHashtags",
+        "TargetEncodingPresentMedia",
+        "LikeGraph",
+        "MetaFeatures",
+        "MetaFeaturesAggByEngagingUserId",
+        "MetaFeaturesAggByEngagedUserId",
+        "MetaFeaturesAggByTweetId"
+    ],
+    "target": [
+        "TargetCategories"
+    ],
+    "key": [
+        "KeyCategories"
+    ],
+    "folds": [
+        "StratifiedGroupKFold"
+    ],
+    "negative_down_sampling": {
+        "enable": true,
+        "bagging_size": 1,
+        "random_seed": 28
+    },
+    "random_sampling": {
+        "n_data": 100000,
+        "random_seed": 28
+    },
+    "n_models": 5,
+    "model": {
+        "name": "lightgbm",
+        "model_params": {
+            "boosting_type": "gbdt",
+            "objective": "binary",
+            "metric": "binary",
+            "learning_rate": 0.01,
+            "max_depth": 10,
+            "num_leaves": 256,
+            "subsample_freq": 1,
+            "colsample_bytree": 0.7,
+            "min_child_weight": 0,
+            "seed": 21,
+            "bagging_seed": 21,
+            "feature_fraction_seed": 21,
+            "drop_seed": 21,
+            "verbose": -1
+        },
+        "train_params": {
+            "num_boost_round": 10000,
+            "early_stopping_rounds": 100,
+            "verbose_eval": 500
+        }
+    },
+    "dataset": {
+        "input_directory": "data/input/",
+        "intermediate_directory": "data/interim/",
+        "feature_directory": "data/features/",
+        "output_directory": "data/output/"
+    }
+}
