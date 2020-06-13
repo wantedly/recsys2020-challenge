@@ -64,10 +64,7 @@ e.g.
         "LabelEncoding",
         "CountEncoding",
         "CommonNumericFeatures",
-        "CommonFlgFeatures",
-        "EngagedFollowFollowerRatio",
-        "EngagingFollowFollowerRatio",
-        "CountEncodingHashtags",
+        "CommonFlgFeatures"
     ],
     "target": [
         "TargetCategories"
@@ -87,6 +84,7 @@ e.g.
         "n_data": 20000000,
         "random_seed": 11
     },
+    "n_models": 3,
     "model": {
         "name": "lightgbm",
         "model_params": {
