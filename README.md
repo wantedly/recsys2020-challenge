@@ -17,11 +17,13 @@
 2. Upload them to Google Cloud Storage.
 3. Insert them to Google BigQuery using Cloud Dataflow.
     - e.g. `python preprocessing/rawdata.py gs://path/to/training.tsv <DATASET NAME>.training --region <REGION> --requirements_file ./dataflow_requirements.txt`
-4. ツイートのテキスト情報をBQに格納する
-    - `./hero/hoge_train.sql` 
-    - `./hero/hoge_test.sql`
-5. Bertのpredictする
-    - ????????? わからん
+4. Extract tweet texts and save them to BigQuery tables.
+    - `./sqls/extract_text_train.sql`
+    - `./sqls/extract_text_test.sql`
+5. Embed tweet texts using pretrained multilingual BERT.
+    - No fine-tuning, just embed tokens and use global average pooling to make fixed length vectors.
+    - First, compute a set of tweet texts with `sqls/unnique_texts.sql`.
+    - Second, `poetry run python features/pretrained_bert_gap.py`.
 6. make features and create models
     - `./workflow.sh`
 
