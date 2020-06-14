@@ -34,7 +34,5 @@ python -u model_lgb_hakubishin_20200317/ensemble.py --config model_lgb_hakubishi
 # ================================================
 # === 2nd stageモデルの作成
 # ================================================
-python -u model_lgb_hakubishin_20200317/run.py --config model_lgb_hakubishin_20200317/configs/2nd_stage_model_1.json
-python -u model_lgb_hakubishin_20200317/run.py --config model_lgb_hakubishin_20200317/configs/2nd_stage_model_2.json
-python -u model_lgb_hakubishin_20200317/run.py --config model_lgb_hakubishin_20200317/configs/2nd_stage_model_3.json
-python -u model_lgb_hakubishin_20200317/ensemble.py --config model_lgb_hakubishin_20200317/configs/2nd_stage_model_ensemble.json
+python -u model_lgb_hakubishin_20200317/run.py --config model_lgb_hakubishin_20200317/configs/2nd_stage_model_1_lr0.01_models5_data100000.json
+python -u model_lgb_hakubishin_20200317/run.py --config model_lgb_hakubishin_20200317/configs/2nd_stage_model_1_lr0.01_models5_data1000000.json

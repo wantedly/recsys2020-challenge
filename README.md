@@ -1,17 +1,125 @@
 # recsys2020-challenge
 
-## setup
+## Machine Spec
 
-```bash
-poetry install
+- CPUs: 64
+- Memory: 600 GB
 
-sudo apt-get update
-sudo apt-get install -y make g++ libmecab-dev mecab-ipadic-utf8 curl xz-utils mecab git file sudo unzip
-git clone --depth 1 https://github.com/neologd/mecab-ipadic-neologd.git && cd mecab-ipadic-neologd && ./bin/install-mecab-ipadic-neologd -n -y
-```
+## Setup
 
-## Dataflow を使って生データを BigQuery に入れるスクリプト
+- `poetry install`
+- Set your GCP configures below.
+  - In `./features/base.py`
+    - `PROJECT_ID`
+    - `GCS_BUCKET_NAME`
 
-```bash
-python preprocessing/rawdata.py gs://recsys2020-challenge-wantedly/training.tsv recsys2020.training --region us-west1 --requirements_file ./dataflow_requirements.txt
+## Steps
+
+1. Download datasets.
+    - Training data
+    - Evaluation data
+    - Final submission data
+2. Upload them to Google Cloud Storage.
+3. Insert them to Google BigQuery using Cloud Dataflow.
+    - e.g. `poetry run python preprocessing/rawdata.py gs://path/to/training.tsv <DATASET NAME>.training --region <REGION> --requirements_file ./dataflow_requirements.txt`
+4. Extract tweet texts and save them to BigQuery tables.
+    - `./sqls/extract_text_train.sql`
+    - `./sqls/extract_text_test.sql`
+5. Embed tweet texts using pretrained multilingual BERT.
+    - No fine-tuning, just embed tokens and use global average pooling to make fixed length vectors.
+    - First, compute a set of tweet texts with `sqls/unnique_texts.sql`.
+    - Second, `poetry run python features/pretrained_bert_gap.py`.
+6. Make features and create models
+    - `poetry run ./workflow.sh`
+
+## Final submission
+
+submission 1
+
+target | output directory name and file name
+-- | --
+reply_engagement | 2nd_stage_model_1_lr0.01_models5_data1000000/reply_engagement_submission_test.csv
+retweet_engagement | 2nd_stage_model_1_lr0.01_models5_data1000000/retweet_engagement_submission_test.csv
+retweet_with_comment_engagement | 2nd_stage_model_1_lr0.01_models5_data1000000/retweet_with_comment_engagement_submission_test.csv
+like_engagement | 2nd_stage_model_1_lr0.01_models5_data100000/like_engagement_submission_test.csv
+
+submission 2
+
+target | output directory name and file name
+-- | --
+reply_engagement | wip
+retweet_engagement | wip
+retweet_with_comment_engagement | wip
+like_engagement | wip
+
+## Experiment Configuration
+
+Our experiment configures are described in JSON files.
+
+e.g.
+```json
+{
+    "model_dir_name":
+        "model_lgb_hakubishin_20200317"
+    ,
+    "test_data_type":
+        "test"
+    ,
+    "features": [
+        "LabelEncoding",
+        "CountEncoding",
+        "CommonNumericFeatures",
+        "CommonFlgFeatures"
+    ],
+    "target": [
+        "TargetCategories"
+    ],
+    "key": [
+        "KeyCategories"
+    ],
+    "folds": [
+        "StratifiedGroupKFold"
+    ],
+    "negative_down_sampling": {
+        "enable": true,
+        "bagging_size": 1,
+        "random_seed": 11
+    },
+    "random_sampling": {
+        "n_data": 20000000,
+        "random_seed": 11
+    },
+    "n_models": 3,
+    "model": {
+        "name": "lightgbm",
+        "model_params": {
+            "boosting_type": "gbdt",
+            "objective": "binary",
+            "metric": "binary",
+            "learning_rate": 0.1,
+            "max_depth": 10,
+            "num_leaves": 256,
+            "subsample": 0.7,
+            "subsample_freq": 1,
+            "colsample_bytree": 0.7,
+            "min_child_weight": 0,
+            "seed": 11,
+            "bagging_seed": 11,
+            "feature_fraction_seed": 11,
+            "drop_seed": 11,
+            "verbose": -1
+        },
+        "train_params": {
+            "num_boost_round": 10000,
+            "early_stopping_rounds": 100,
+            "verbose_eval": 500
+        }
+    },
+    "dataset": {
+        "input_directory": "data/input/",
+        "intermediate_directory": "data/interim/",
+        "feature_directory": "data/features/",
+        "output_directory": "data/output/"
+    }
+}
 ```
