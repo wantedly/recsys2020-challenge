@@ -49,21 +49,49 @@ class RunnerMulti(object):
             print(f"original train size: {len(y_trn)}")
             print(f"trn_pos={y_trn.sum()}, trn_neg={(y_trn == 0).sum()}")
 
-            print(f"train size after random-sampling: {len(y_trn)}")
-            print(f"trn_pos={y_trn.sum()}, trn_neg={(y_trn == 0).sum()}")
+            y_trn_rt_with_comment = y_trn[:, 2]  # See run_multi_output.py
+            # Negative down sampling
+            positive_idx_of_trn_idx = np.where(y_trn_rt_with_comment == 1)[0]  # trn_idx の何番目が positive か
+            negative_idx_of_trn_idx = np.where(y_trn_rt_with_comment == 0)[0]  # trn_idx の何番目が negative か
 
-            # Training
-            model, val_preds = self.train_one_fold(i_fold, x_trn, y_trn, x_val, y_val)
-            val_preds = np.concatenate(val_preds, axis=1)  # (N, 4)
-            oof_preds[val_idx] += val_preds
-            best_iteration += model.get_best_iteration() / len(folds_ids) / n_models
+            positive_ratio = float(y_trn.sum()) / len(trn_idx)
+            under_sampling_rate = positive_ratio / (1 - positive_ratio)
+            self.under_sampling_rate.append(under_sampling_rate)
 
-            # Predict
-            y_pred = model.predict(x_test)
-            preds_list.append(np.concatenate(y_pred, axis=1))
+            for i_model in range(n_models):
+                positive_sampling_keys = np.random.random(len(positive_idx_of_trn_idx))
+                negative_sampling_keys = np.random.random(len(negative_idx_of_trn_idx))
+                required_data_size = train_settings["random_sampling"]["n_data"] // 2
 
-            # Save model
-            model.save_model()
+                if required_data_size > len(positive_idx_of_trn_idx):
+                    # required_data_sizeがpositiveサンプル数より大きかった場合
+                    required_data_size = len(positive_idx_of_trn_idx)
+
+                # 乱数が (欲しいデータ数) / (今のデータ数) より小さいものをサンプリング
+                resampled_pos_idx_of_trn_idx = positive_idx_of_trn_idx[positive_sampling_keys < required_data_size / len(positive_idx_of_trn_idx)]
+                resampled_neg_idx_of_trn_idx = negative_idx_of_trn_idx[negative_sampling_keys < required_data_size / len(negative_idx_of_trn_idx)]
+                # trn_idx の何番目を採用するか
+                resampled_idx_of_trn_idx = np.concatenate([resampled_pos_idx_of_trn_idx, resampled_neg_idx_of_trn_idx])
+                # x_train の何番目を採用するか
+                resampled_trn_idx = trn_idx[resampled_idx_of_trn_idx]
+                resampled_x_trn = x_train.iloc[resampled_trn_idx]
+                resampled_y_trn = y_train[resampled_trn_idx]
+
+                print(f"train size after random-sampling: {len(resampled_y_trn)}")
+                print(f"trn_pos={resampled_y_trn.sum()}, trn_neg={(resampled_y_trn == 0).sum()}")
+
+                # Training
+                model, val_preds = self.train_one_fold(i_fold, resampled_x_trn, resampled_y_trn, x_val, y_val)
+                val_preds = np.concatenate(val_preds, axis=1) # (N, 4)
+                oof_preds[val_idx] += val_preds / n_models
+                best_iteration += model.get_best_iteration() / len(folds_ids) / n_models
+
+                # Predict
+                y_pred = model.predict(x_test)
+                preds_list.append(np.concatenate(y_pred, axis=1))
+
+                # Save model
+                model.save_model()
 
             # done calculation for one-fold
             score = [calc_metrics(y_val[:, i], oof_preds[val_idx][:, i]) for i in range(4)]
