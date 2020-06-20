@@ -15,5 +15,8 @@
         "intermediate_directory": "data/interim/",
         "feature_directory": "data/features/",
         "output_directory": "data/output/"
-    }
+    },
+  	"target": [
+        "TargetCategories"
+    ]
 }

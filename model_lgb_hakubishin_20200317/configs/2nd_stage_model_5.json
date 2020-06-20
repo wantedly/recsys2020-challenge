@@ -38,7 +38,19 @@
         "CountEncodingEngagingHashtags",
         "CountEncodingEngagingPresentMedia",
         "CountEncodingEngagingPresentDomains",
-        "CountEncodingEngagingPresentLinks"
+        "CountEncodingEngagingPresentLinks",
+        "CountEngagingTweetWithinN",
+        "CountEngagingTweetWithinNDifference",
+        "TargetEncoding",
+        "TargetEncodingCrossing",
+        "TargetEncodingCrossing2",
+        "TargetEncodingHashtags",
+        "TargetEncodingPresentMedia",
+        "LikeGraph",
+        "MetaFeatures",
+        "MetaFeaturesAggByEngagingUserId",
+        "MetaFeaturesAggByEngagedUserId",
+        "MetaFeaturesAggByTweetId"
     ],
     "target": [
         "TargetCategories"
@@ -52,13 +64,13 @@
     "negative_down_sampling": {
         "enable": true,
         "bagging_size": 1,
-        "random_seed": 11
+        "random_seed": 25
     },
     "random_sampling": {
-        "n_data": 20000000,
-        "random_seed": 11
+        "n_data": 100000,
+        "random_seed": 25
     },
-    "n_models": 1,
+    "n_models": 20,
     "model": {
         "name": "lightgbm",
         "model_params": {
@@ -68,14 +80,13 @@
             "learning_rate": 0.1,
             "max_depth": 10,
             "num_leaves": 256,
-            "subsample": 0.7,
             "subsample_freq": 1,
             "colsample_bytree": 0.7,
             "min_child_weight": 0,
-            "seed": 11,
-            "bagging_seed": 11,
-            "feature_fraction_seed": 11,
-            "drop_seed": 11,
+            "seed": 25,
+            "bagging_seed": 25,
+            "feature_fraction_seed": 25,
+            "drop_seed": 25,
             "verbose": -1
         },
         "train_params": {

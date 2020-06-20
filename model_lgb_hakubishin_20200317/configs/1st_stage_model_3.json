@@ -38,9 +38,7 @@
         "CountEncodingEngagingHashtags",
         "CountEncodingEngagingPresentMedia",
         "CountEncodingEngagingPresentDomains",
-        "CountEncodingEngagingPresentLinks",
-        "CountEngagingTweetWithinN",
-        "CountEngagingTweetWithinNDifference"
+        "CountEncodingEngagingPresentLinks"
     ],
     "target": [
         "TargetCategories"
@@ -60,6 +58,7 @@
         "n_data": 20000000,
         "random_seed": 13
     },
+    "n_models": 1,
     "model": {
         "name": "lightgbm",
         "model_params": {
