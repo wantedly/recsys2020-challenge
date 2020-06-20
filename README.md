@@ -47,10 +47,10 @@ submission 2
 
 target | output directory name and file name
 -- | --
-reply_engagement | 2nd_stage_model_ensemble
-retweet_engagement | 2nd_stage_model_ensemble
-retweet_with_comment_engagement | 2nd_stage_model_ensemble
-like_engagement | 2nd_stage_model_ensemble
+reply_engagement | 2nd_stage_model_ensemble/reply_engagement_submission_test.csv
+retweet_engagement | 2nd_stage_model_ensemble/retweet_engagement_submission_test.csv
+retweet_with_comment_engagement | 2nd_stage_model_ensemble/retweet_with_comment_engagement_submission_test.csv
+like_engagement | 2nd_stage_model_ensemble/like_engagement_submission_test.csv
 
 ## Experiment Configuration
 
