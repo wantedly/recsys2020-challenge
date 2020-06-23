@@ -2,7 +2,11 @@
 name = "recsys2020-challenge"
 version = "0.1.0"
 description = ""
-authors = ["Naomichi Agata <agatan039@gmail.com>"]
+authors = [
+  "Shuhei Goda <shu@wantedly.com>",
+  "Yuya Matsumura <yuya@wantedly.com>",
+  "Naomichi Agata <naomichi@wantedly.com>"
+]
 
 [tool.poetry.dependencies]
 python = "3.7.3"
